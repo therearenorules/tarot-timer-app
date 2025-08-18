@@ -547,6 +547,29 @@ export default function App() {
             {getText({ ko: '설정', en: 'Settings' })}
           </Text>
           
+          {/* 언어 설정 */}
+          <View style={styles.settingSection}>
+            <Text style={[styles.settingSectionTitle, godoFont]}>
+              {getText({ ko: '언어 설정', en: 'Language Settings' })}
+            </Text>
+            <View style={styles.languageSelector}>
+              {LANGUAGES.map((lang) => (
+                <TouchableOpacity
+                  key={lang.code}
+                  style={[
+                    styles.languageButton,
+                    currentLanguage === lang.code && styles.languageButtonActive
+                  ]}
+                  onPress={() => setCurrentLanguage(lang.code)}
+                >
+                  <Text style={styles.languageFlag}>{lang.flag}</Text>
+                  <Text style={[styles.languageText, godoFont]}>{lang.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          
+          {/* 잠금화면 설정 */}
           <View style={styles.settingItem}>
             <Text style={[styles.settingLabel, godoFont]}>
               {getText({ ko: '잠금화면 카드 표시', en: 'Lock Screen Card Display' })}
@@ -888,36 +911,6 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(10px)',
   },
 
-  languageSelector: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    padding: 5,
-  },
-
-  languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-  },
-
-  languageButtonActive: {
-    backgroundColor: 'rgba(255, 107, 157, 0.3)',
-  },
-
-  languageFlag: {
-    fontSize: 16,
-    marginRight: 5,
-  },
-
-  languageText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-
   appTitle: {
     color: '#fff',
     fontSize: 24,
@@ -926,6 +919,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(255, 107, 157, 0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 10,
+    flex: 1,
   },
 
   headerActions: {
@@ -1291,6 +1285,52 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  settingSection: {
+    marginBottom: 20,
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+
+  settingSectionTitle: {
+    color: '#FF6B9D',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+
+  languageSelector: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
+    padding: 5,
+  },
+
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+    flex: 1,
+    justifyContent: 'center',
+  },
+
+  languageButtonActive: {
+    backgroundColor: 'rgba(255, 107, 157, 0.3)',
+  },
+
+  languageFlag: {
+    fontSize: 16,
+    marginRight: 5,
+  },
+
+  languageText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
   settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1305,8 +1345,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
   },
-
-  pointsDisplay: {
     backgroundColor: 'rgba(255, 107, 157, 0.1)',
     borderRadius: 15,
     padding: 15,
@@ -1413,10 +1451,11 @@ const styles = StyleSheet.create({
   },
 
   zoomedCard: {
-    width: 200,
-    height: 300,
+    width: 280,
+    height: 420,
     borderRadius: 20,
-    borderWidth: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
     padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
