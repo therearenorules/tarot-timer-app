@@ -11,12 +11,25 @@ import {
   Dimensions,
   ImageBackground,
   Animated,
-  SafeAreaView
+  SafeAreaView,
+  TextInput,
+  Linking,
+  Platform
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-// 화면 크기
+// 화면 크기 (반응형)
 const { width, height } = Dimensions.get('window');
+const isSmallScreen = width < 360;
+const isMediumScreen = width >= 360 && width < 400;
+const isLargeScreen = width >= 400;
+
+// 반응형 크기 계산
+const getResponsiveSize = (small: number, medium: number, large: number) => {
+  if (isSmallScreen) return small;
+  if (isMediumScreen) return medium;
+  return large;
+};
 
 // 타입 정의
 interface MultiLanguageText {
@@ -53,6 +66,31 @@ interface TimeSlot {
   card: TarotCard | null;
   isActive: boolean;
   isDrawn: boolean;
+  memo?: string;
+}
+
+interface DiaryEntry {
+  id: string;
+  date: string;
+  timeSlots: TimeSlot[];
+  createdAt: Date;
+}
+
+interface NoticePost {
+  id: string;
+  title: MultiLanguageText;
+  content: MultiLanguageText;
+  date: string;
+  isImportant: boolean;
+}
+
+interface InquiryPost {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+  status: 'pending' | 'answered';
+  answer?: string;
 }
 
 // 언어 타입
@@ -292,11 +330,43 @@ function generateMinorArcana(): TarotCard[] {
     }
   });
 
-  return cards;
-}
-
 // 카드 테마들
 const CARD_THEMES: CardTheme[] = [
+
+// 공지사항 및 문의 데이터
+const NOTICE_POSTS: NoticePost[] = [
+  {
+    id: 'notice_001',
+    title: { ko: '타로 타이머 앱 출시!', en: 'Tarot Timer App Launch!' },
+    content: { 
+      ko: '24시간 타로 카드와 함께하는 의미있는 하루를 시작하세요. 새로운 기능들을 확인해보세요!',
+      en: 'Start a meaningful day with 24-hour tarot cards. Check out the new features!'
+    },
+    date: '2025-01-15',
+    isImportant: true
+  },
+  {
+    id: 'notice_002',
+    title: { ko: '타로 일기 기능 추가', en: 'Tarot Diary Feature Added' },
+    content: { 
+      ko: '이제 매일의 타로 카드를 일기로 저장하고 메모를 남길 수 있습니다.',
+      en: 'Now you can save daily tarot cards as diary entries and leave memos.'
+    },
+    date: '2025-01-10',
+    isImportant: false
+  }
+];
+
+// 배너 설정
+const BANNER_CONFIG = {
+  imageUrl: 'https://via.placeholder.com/350x100/FF6B9D/FFFFFF?text=타로+타이머+배너',
+  linkUrl: {
+    ios: 'https://your-website.com/ios',
+    android: 'https://your-website.com/android',
+    web: 'https://your-website.com'
+  },
+  title: { ko: '특별 이벤트 진행중!', en: 'Special Event in Progress!' }
+};
   {
     id: 'classic',
     name: { ko: '기본 타로카드', en: 'Classic Tarot' },
@@ -339,6 +409,17 @@ export default function App() {
   const [userPoints, setUserPoints] = useState(5000);
   const [lockScreenEnabled, setLockScreenEnabled] = useState(false);
   const [animationValue] = useState(new Animated.Value(0));
+  
+  // 새로운 상태들
+  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [showDiary, setShowDiary] = useState(false);
+  const [showMemoModal, setShowMemoModal] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<{ hour: number; memo: string } | null>(null);
+  const [showNoticeBoard, setShowNoticeBoard] = useState(false);
+  const [showInquiryBoard, setShowInquiryBoard] = useState(false);
+  const [inquiries, setInquiries] = useState<InquiryPost[]>([]);
+  const [inquiryTitle, setInquiryTitle] = useState('');
+  const [inquiryContent, setInquiryContent] = useState('');
 
   // 고도M 폰트 스타일
   const godoFont = {
@@ -420,8 +501,139 @@ export default function App() {
     }
   }, [currentLanguage]);
 
+  // 오늘의 타로 일기 저장
+  const saveTodayDiary = useCallback(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const existingEntry = diaryEntries.find(entry => entry.date === today);
+    
+    if (existingEntry) {
+      Alert.alert(
+        getText({ ko: '이미 저장됨', en: 'Already Saved' }),
+        getText({ ko: '오늘의 일기가 이미 저장되어 있습니다.', en: 'Today\'s diary is already saved.' })
+      );
+      return;
+    }
+
+    const drawnSlots = timeSlots.filter(slot => slot.card !== null);
+    if (drawnSlots.length === 0) {
+      Alert.alert(
+        getText({ ko: '카드 없음', en: 'No Cards' }),
+        getText({ ko: '저장할 카드가 없습니다. 먼저 카드를 뽑아주세요.', en: 'No cards to save. Please draw cards first.' })
+      );
+      return;
+    }
+
+    const newEntry: DiaryEntry = {
+      id: `diary_${Date.now()}`,
+      date: today,
+      timeSlots: [...timeSlots],
+      createdAt: new Date()
+    };
+
+    setDiaryEntries(prev => [newEntry, ...prev]);
+    Alert.alert(
+      getText({ ko: '저장 완료!', en: 'Saved!' }),
+      getText({ ko: '오늘의 타로 일기가 저장되었습니다.', en: 'Today\'s tarot diary has been saved.' })
+    );
+  }, [timeSlots, diaryEntries, getText]);
+
+  // 일기 삭제
+  const deleteDiaryEntry = useCallback((entryId: string) => {
+    Alert.alert(
+      getText({ ko: '삭제 확인', en: 'Confirm Delete' }),
+      getText({ ko: '정말로 삭제하시겠습니까?', en: 'Are you sure you want to delete?' }),
+      [
+        { text: getText({ ko: '취소', en: 'Cancel' }), style: 'cancel' },
+        {
+          text: getText({ ko: '삭제', en: 'Delete' }),
+          style: 'destructive',
+          onPress: () => {
+            setDiaryEntries(prev => prev.filter(entry => entry.id !== entryId));
+          }
+        }
+      ]
+    );
+  }, [getText]);
+
+  // 메모 저장
+  const saveMemo = useCallback((hour: number, memo: string) => {
+    setTimeSlots(prev => prev.map(slot => 
+      slot.hour === hour ? { ...slot, memo } : slot
+    ));
+    
+    // 일기에도 반영
+    setDiaryEntries(prev => prev.map(entry => {
+      if (entry.date === new Date().toISOString().split('T')[0]) {
+        return {
+          ...entry,
+          timeSlots: entry.timeSlots.map(slot => 
+            slot.hour === hour ? { ...slot, memo } : slot
+          )
+        };
+      }
+      return entry;
+    }));
+  }, []);
+
+  // 문의 제출
+  const submitInquiry = useCallback(() => {
+    if (!inquiryTitle.trim() || !inquiryContent.trim()) {
+      Alert.alert(
+        getText({ ko: '입력 오류', en: 'Input Error' }),
+        getText({ ko: '제목과 내용을 모두 입력해주세요.', en: 'Please enter both title and content.' })
+      );
+      return;
+    }
+
+    const newInquiry: InquiryPost = {
+      id: `inquiry_${Date.now()}`,
+      title: inquiryTitle.trim(),
+      content: inquiryContent.trim(),
+      date: new Date().toLocaleDateString(),
+      status: 'pending'
+    };
+
+    setInquiries(prev => [newInquiry, ...prev]);
+    setInquiryTitle('');
+    setInquiryContent('');
+    
+    Alert.alert(
+      getText({ ko: '문의 완료!', en: 'Inquiry Submitted!' }),
+      getText({ ko: '문의가 접수되었습니다. 빠른 시일 내에 답변드리겠습니다.', en: 'Your inquiry has been submitted. We will respond as soon as possible.' })
+    );
+  }, [inquiryTitle, inquiryContent, getText]);
+
+  // 배너 클릭 처리
+  const handleBannerPress = useCallback(() => {
+    const url = Platform.OS === 'ios' 
+      ? BANNER_CONFIG.linkUrl.ios 
+      : Platform.OS === 'android' 
+        ? BANNER_CONFIG.linkUrl.android 
+        : BANNER_CONFIG.linkUrl.web;
+    
+    Linking.openURL(url).catch(() => {
+      Alert.alert(
+        getText({ ko: '링크 오류', en: 'Link Error' }),
+        getText({ ko: '링크를 열 수 없습니다.', en: 'Cannot open the link.' })
+      );
+    });
+  }, [getText]);
+    if (userPoints >= theme.price) {
+      setUserPoints(prev => prev - theme.price);
+      setCurrentTheme(theme);
+      Alert.alert(
+        getText({ ko: '구매 완료!', en: 'Purchase Complete!' }),
+        getText({ ko: '새 테마가 적용되었습니다.', en: 'New theme has been applied.' })
+      );
+    } else {
+      Alert.alert(
+        getText({ ko: '포인트 부족', en: 'Insufficient Points' }),
+        getText({ ko: '포인트가 부족합니다.', en: 'You don\'t have enough points.' })
+      );
+    }
   // 테마 구매
   const purchaseTheme = useCallback((theme: CardTheme) => {
+
     if (userPoints >= theme.price) {
       setUserPoints(prev => prev - theme.price);
       setCurrentTheme(theme);
@@ -436,8 +648,6 @@ export default function App() {
       );
     }
   }, [userPoints, getText]);
-
-  // 타로카드 컴포넌트
   const TarotCard = React.memo(({ 
     card, 
     size = 'medium', 
@@ -547,6 +757,19 @@ export default function App() {
             {getText({ ko: '설정', en: 'Settings' })}
           </Text>
           
+          {/* 배너 */}
+          <TouchableOpacity style={styles.banner} onPress={handleBannerPress}>
+            <View style={styles.bannerContent}>
+              <Text style={[styles.bannerTitle, godoFont]}>
+                {getText(BANNER_CONFIG.title)}
+              </Text>
+              <Text style={styles.bannerSubtitle}>
+                {getText({ ko: '터치하여 자세히 보기', en: 'Tap for more details' })}
+              </Text>
+            </View>
+            <Text style={styles.bannerIcon}>🔗</Text>
+          </TouchableOpacity>
+          
           {/* 언어 설정 */}
           <View style={styles.settingSection}>
             <Text style={[styles.settingSectionTitle, godoFont]}>
@@ -581,6 +804,27 @@ export default function App() {
             />
           </View>
 
+          {/* 게시판 버튼들 */}
+          <View style={styles.boardButtons}>
+            <TouchableOpacity
+              style={styles.boardButton}
+              onPress={() => setShowNoticeBoard(true)}
+            >
+              <Text style={[styles.boardButtonText, godoFont]}>
+                📢 {getText({ ko: '공지사항', en: 'Notices' })}
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.boardButton}
+              onPress={() => setShowInquiryBoard(true)}
+            >
+              <Text style={[styles.boardButtonText, godoFont]}>
+                💬 {getText({ ko: '문의하기', en: 'Inquiries' })}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setShowSettings(false)}
@@ -592,10 +836,305 @@ export default function App() {
         </View>
       </View>
     </Modal>
+  ); ko: '닫기', en: 'Close' })}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 
-  // 테마 상점 모달
-  const ThemeStoreModal = () => (
+  // 타로 일기 모달
+  const DiaryModal = () => (
+    <Modal
+      visible={showDiary}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setShowDiary(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={[styles.modalTitle, godoFont]}>
+            📖 {getText({ ko: '타로 일기', en: 'Tarot Diary' })}
+          </Text>
+          
+          <ScrollView style={styles.diaryList} showsVerticalScrollIndicator={false}>
+            {diaryEntries.length === 0 ? (
+              <View style={styles.emptyDiary}>
+                <Text style={[styles.emptyDiaryText, godoFont]}>
+                  {getText({ ko: '저장된 일기가 없습니다.', en: 'No diary entries saved.' })}
+                </Text>
+                <Text style={styles.emptyDiarySubtext}>
+                  {getText({ ko: '카드를 뽑고 "오늘 일기 저장"을 눌러보세요!', en: 'Draw cards and tap "Save Today\'s Diary"!' })}
+                </Text>
+              </View>
+            ) : (
+              diaryEntries.map((entry) => (
+                <View key={entry.id} style={styles.diaryEntry}>
+                  <View style={styles.diaryEntryHeader}>
+                    <Text style={[styles.diaryEntryDate, godoFont]}>
+                      📅 {new Date(entry.date).toLocaleDateString(currentLanguage === 'ko' ? 'ko-KR' : 'en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        weekday: 'long'
+                      })}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => deleteDiaryEntry(entry.id)}
+                    >
+                      <Text style={styles.deleteButtonText}>🗑️</Text>
+                    </TouchableOpacity>
+                  </View>
+                  
+                  <ScrollView horizontal style={styles.diaryCards} showsHorizontalScrollIndicator={false}>
+                    {entry.timeSlots.filter(slot => slot.card).map((slot) => (
+                      <View key={slot.hour} style={styles.diaryCardItem}>
+                        <Text style={styles.diaryCardTime}>{formatTime(slot.hour)}</Text>
+                        <TarotCard 
+                          card={slot.card!} 
+                          size="small"
+                          onPress={() => setZoomedCard(slot.card)}
+                        />
+                        {slot.memo && (
+                          <Text style={styles.diaryCardMemo}>
+                            📝 {slot.memo.substring(0, 15)}{slot.memo.length > 15 ? '...' : ''}
+                          </Text>
+                        )}
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              ))
+            )}
+          </ScrollView>
+
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowDiary(false)}
+          >
+            <Text style={[styles.closeButtonText, godoFont]}>
+              {getText({ ko: '닫기', en: 'Close' })}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // 메모 작성 모달
+  const MemoModal = () => (
+    <Modal
+      visible={showMemoModal}
+      transparent
+      animationType="fade"
+      onRequestClose={() => setShowMemoModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.memoModalContent}>
+          <Text style={[styles.modalTitle, godoFont]}>
+            ✏️ {getText({ ko: '메모 작성', en: 'Write Memo' })}
+          </Text>
+          
+          {selectedTimeSlot && (
+            <>
+              <Text style={[styles.memoTimeText, godoFont]}>
+                {formatTime(selectedTimeSlot.hour)}
+              </Text>
+              
+              <TextInput
+                style={[styles.memoInput, godoFont]}
+                placeholder={getText({ ko: '이 시간의 타로카드에 대한 메모를 작성해보세요...', en: 'Write a memo about this hour\'s tarot card...' })}
+                placeholderTextColor="#888"
+                value={selectedTimeSlot.memo}
+                onChangeText={(text) => setSelectedTimeSlot(prev => prev ? {...prev, memo: text} : null)}
+                multiline
+                numberOfLines={4}
+                maxLength={200}
+              />
+              
+              <View style={styles.memoActions}>
+                <TouchableOpacity
+                  style={[styles.memoActionButton, styles.memoCancelButton]}
+                  onPress={() => {
+                    setShowMemoModal(false);
+                    setSelectedTimeSlot(null);
+                  }}
+                >
+                  <Text style={[styles.memoActionText, godoFont]}>
+                    {getText({ ko: '취소', en: 'Cancel' })}
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.memoActionButton, styles.memoSaveButton]}
+                  onPress={() => {
+                    if (selectedTimeSlot) {
+                      saveMemo(selectedTimeSlot.hour, selectedTimeSlot.memo);
+                      setShowMemoModal(false);
+                      setSelectedTimeSlot(null);
+                    }
+                  }}
+                >
+                  <Text style={[styles.memoActionText, godoFont]}>
+                    {getText({ ko: '저장', en: 'Save' })}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // 공지사항 모달
+  const NoticeBoardModal = () => (
+    <Modal
+      visible={showNoticeBoard}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setShowNoticeBoard(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={[styles.modalTitle, godoFont]}>
+            📢 {getText({ ko: '공지사항', en: 'Notices' })}
+          </Text>
+          
+          <ScrollView style={styles.noticeList} showsVerticalScrollIndicator={false}>
+            {NOTICE_POSTS.map((notice) => (
+              <View key={notice.id} style={[styles.noticeItem, notice.isImportant && styles.importantNotice]}>
+                <View style={styles.noticeHeader}>
+                  {notice.isImportant && <Text style={styles.importantBadge}>🔥 중요</Text>}
+                  <Text style={styles.noticeDate}>{notice.date}</Text>
+                </View>
+                <Text style={[styles.noticeTitle, godoFont]}>
+                  {getText(notice.title)}
+                </Text>
+                <Text style={styles.noticeContent}>
+                  {getText(notice.content)}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowNoticeBoard(false)}
+          >
+            <Text style={[styles.closeButtonText, godoFont]}>
+              {getText({ ko: '닫기', en: 'Close' })}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // 문의 게시판 모달
+  const InquiryBoardModal = () => (
+    <Modal
+      visible={showInquiryBoard}
+      transparent
+      animationType="slide"
+      onRequestClose={() => setShowInquiryBoard(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={[styles.modalTitle, godoFont]}>
+            💬 {getText({ ko: '문의하기', en: 'Inquiries' })}
+          </Text>
+          
+          {/* 문의 작성 폼 */}
+          <View style={styles.inquiryForm}>
+            <TextInput
+              style={[styles.inquiryTitleInput, godoFont]}
+              placeholder={getText({ ko: '문의 제목을 입력하세요', en: 'Enter inquiry title' })}
+              placeholderTextColor="#888"
+              value={inquiryTitle}
+              onChangeText={setInquiryTitle}
+              maxLength={50}
+            />
+            
+            <TextInput
+              style={[styles.inquiryContentInput, godoFont]}
+              placeholder={getText({ ko: '문의 내용을 자세히 작성해주세요...', en: 'Please write your inquiry in detail...' })}
+              placeholderTextColor="#888"
+              value={inquiryContent}
+              onChangeText={setInquiryContent}
+              multiline
+              numberOfLines={5}
+              maxLength={500}
+            />
+            
+            <TouchableOpacity
+              style={styles.submitInquiryButton}
+              onPress={submitInquiry}
+            >
+              <Text style={[styles.submitInquiryText, godoFont]}>
+                ✉️ {getText({ ko: '문의 접수', en: 'Submit Inquiry' })}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* 내 문의 목록 */}
+          <View style={styles.myInquiries}>
+            <Text style={[styles.myInquiriesTitle, godoFont]}>
+              {getText({ ko: '내 문의 내역', en: 'My Inquiries' })}
+            </Text>
+            
+            <ScrollView style={styles.inquiryList} showsVerticalScrollIndicator={false}>
+              {inquiries.length === 0 ? (
+                <Text style={styles.emptyInquiryText}>
+                  {getText({ ko: '문의 내역이 없습니다.', en: 'No inquiries found.' })}
+                </Text>
+              ) : (
+                inquiries.map((inquiry) => (
+                  <View key={inquiry.id} style={styles.inquiryItem}>
+                    <View style={styles.inquiryItemHeader}>
+                      <Text style={[styles.inquiryItemTitle, godoFont]}>{inquiry.title}</Text>
+                      <View style={[
+                        styles.inquiryStatus,
+                        inquiry.status === 'answered' ? styles.answeredStatus : styles.pendingStatus
+                      ]}>
+                        <Text style={styles.inquiryStatusText}>
+                          {inquiry.status === 'answered' 
+                            ? getText({ ko: '답변완료', en: 'Answered' })
+                            : getText({ ko: '대기중', en: 'Pending' })
+                          }
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={styles.inquiryItemDate}>{inquiry.date}</Text>
+                    <Text style={styles.inquiryItemContent}>{inquiry.content}</Text>
+                    {inquiry.answer && (
+                      <View style={styles.inquiryAnswer}>
+                        <Text style={[styles.inquiryAnswerLabel, godoFont]}>
+                          💬 {getText({ ko: '답변', en: 'Answer' })}:
+                        </Text>
+                        <Text style={styles.inquiryAnswerText}>{inquiry.answer}</Text>
+                      </View>
+                    )}
+                  </View>
+                ))
+              )}
+            </ScrollView>
+          </View>
+
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowInquiryBoard(false)}
+          >
+            <Text style={[styles.closeButtonText, godoFont]}>
+              {getText({ ko: '닫기', en: 'Close' })}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
     <Modal
       visible={showThemeStore}
       transparent
@@ -763,7 +1302,6 @@ export default function App() {
         )}
       </View>
 
-      {/* 메인 컨트롤 버튼들 */}
       <View style={styles.controlButtons}>
         <TouchableOpacity
           style={[styles.controlButton, styles.drawAllButton]}
@@ -775,11 +1313,20 @@ export default function App() {
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={[styles.controlButton, styles.resetButton]}
-          onPress={initializeTimeSlots}
+          style={[styles.controlButton, styles.saveButton]}
+          onPress={saveTodayDiary}
         >
           <Text style={[styles.controlButtonText, godoFont]}>
-            🔄 {getText({ ko: '리셋', en: 'Reset' })}
+            💾 {getText({ ko: '오늘 일기 저장', en: 'Save Today\'s Diary' })}
+          </Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.controlButton, styles.diaryButton]}
+          onPress={() => setShowDiary(true)}
+        >
+          <Text style={[styles.controlButtonText, godoFont]}>
+            📖 {getText({ ko: '일기 보기', en: 'View Diary' })}
           </Text>
         </TouchableOpacity>
       </View>
@@ -823,6 +1370,8 @@ export default function App() {
                     <TarotCard 
                       card={slot.card} 
                       size="small"
+                      hour={slot.hour}
+                      showMemoButton={true}
                       onPress={() => setZoomedCard(slot.card)}
                     />
                     <View style={styles.timeSlotCardInfo}>
@@ -832,6 +1381,11 @@ export default function App() {
                       <Text style={styles.timeSlotCardKeyword}>
                         {getText(slot.card.keywords[0])}
                       </Text>
+                      {slot.memo && (
+                        <Text style={styles.timeSlotMemo}>
+                          📝 {slot.memo.substring(0, 20)}{slot.memo.length > 20 ? '...' : ''}
+                        </Text>
+                      )}
                     </View>
                   </View>
                 ) : (
@@ -871,6 +1425,10 @@ export default function App() {
       <CardZoomModal />
       <SettingsModal />
       <ThemeStoreModal />
+      <DiaryModal />
+      <MemoModal />
+      <NoticeBoardModal />
+      <InquiryBoardModal />
     </SafeAreaView>
   );
 }
@@ -1019,18 +1577,21 @@ const styles = StyleSheet.create({
   controlButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 20,
+    paddingHorizontal: getResponsiveSize(10, 15, 20),
     marginBottom: 20,
+    flexWrap: 'wrap',
   },
 
   controlButton: {
     flex: 1,
-    paddingVertical: 15,
+    paddingVertical: getResponsiveSize(12, 15, 18),
     borderRadius: 25,
-    marginHorizontal: 10,
+    marginHorizontal: getResponsiveSize(5, 8, 10),
+    marginVertical: 5,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
+    minWidth: getResponsiveSize(100, 120, 140),
   },
 
   drawAllButton: {
@@ -1038,9 +1599,14 @@ const styles = StyleSheet.create({
     borderColor: '#FF6B9D',
   },
 
-  resetButton: {
+  saveButton: {
     backgroundColor: 'rgba(103, 126, 234, 0.2)',
     borderColor: '#677EEA',
+  },
+
+  diaryButton: {
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+    borderColor: '#4CAF50',
   },
 
   controlButtonText: {
@@ -1514,9 +2080,447 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
 
+  timeSlotMemo: {
+    color: '#4CAF50',
+    fontSize: getResponsiveSize(10, 11, 12),
+    fontStyle: 'italic',
+    marginTop: 2,
+  },
+
+  cardContainer: {
+    alignItems: 'center',
+    position: 'relative',
+  },
+
+  memoButton: {
+    position: 'absolute',
+    bottom: -8,
+    right: -8,
+    width: getResponsiveSize(24, 28, 32),
+    height: getResponsiveSize(24, 28, 32),
+    borderRadius: getResponsiveSize(12, 14, 16),
+    backgroundColor: 'rgba(76, 175, 80, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
+  memoIcon: {
+    fontSize: getResponsiveSize(12, 14, 16),
+  },
+
+  // 배너 스타일
+  banner: {
+    backgroundColor: 'linear-gradient(135deg, #FF6B9D, #677EEA)',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 157, 0.3)',
+    shadowColor: '#FF6B9D',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+
+  bannerContent: {
+    flex: 1,
+  },
+
+  bannerTitle: {
+    color: '#fff',
+    fontSize: getResponsiveSize(16, 18, 20),
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+
+  bannerSubtitle: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: getResponsiveSize(12, 14, 16),
+  },
+
+  bannerIcon: {
+    fontSize: getResponsiveSize(24, 28, 32),
+    marginLeft: 10,
+  },
+
+  // 게시판 버튼들
+  boardButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 15,
+  },
+
+  boardButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    marginHorizontal: 5,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 107, 157, 0.3)',
+  },
+
+  boardButtonText: {
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    fontWeight: '600',
+  },
+
+  // 일기 모달 스타일
+  diaryList: {
+    maxHeight: height * 0.6,
+    marginBottom: 20,
+  },
+
+  emptyDiary: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+
+  emptyDiaryText: {
+    color: '#fff',
+    fontSize: getResponsiveSize(16, 18, 20),
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+
+  emptyDiarySubtext: {
+    color: '#888',
+    fontSize: getResponsiveSize(12, 14, 16),
+    textAlign: 'center',
+  },
+
+  diaryEntry: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+
+  diaryEntryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+
+  diaryEntryDate: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveSize(14, 16, 18),
+    fontWeight: 'bold',
+  },
+
+  deleteButton: {
+    padding: 5,
+  },
+
+  deleteButtonText: {
+    fontSize: getResponsiveSize(18, 20, 22),
+  },
+
+  diaryCards: {
+    flexDirection: 'row',
+  },
+
+  diaryCardItem: {
+    alignItems: 'center',
+    marginRight: 15,
+    minWidth: getResponsiveSize(70, 80, 90),
+  },
+
+  diaryCardTime: {
+    color: '#ccc',
+    fontSize: getResponsiveSize(10, 12, 14),
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+
+  diaryCardMemo: {
+    color: '#4CAF50',
+    fontSize: getResponsiveSize(8, 10, 12),
+    textAlign: 'center',
+    marginTop: 5,
+    maxWidth: getResponsiveSize(60, 70, 80),
+  },
+
+  // 메모 모달 스타일
+  memoModalContent: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 20,
+    padding: 20,
+    width: width * 0.9,
+    maxWidth: 400,
+    borderWidth: 2,
+    borderColor: 'rgba(76, 175, 80, 0.3)',
+  },
+
+  memoTimeText: {
+    color: '#4CAF50',
+    fontSize: getResponsiveSize(18, 20, 22),
+    textAlign: 'center',
+    marginBottom: 15,
+    fontWeight: 'bold',
+  },
+
+  memoInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    minHeight: 100,
+    textAlignVertical: 'top',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+
+  memoActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  memoActionButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 12,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+
+  memoCancelButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+
+  memoSaveButton: {
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+  },
+
+  memoActionText: {
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    fontWeight: 'bold',
+  },
+
+  // 공지사항 스타일
+  noticeList: {
+    maxHeight: height * 0.6,
+    marginBottom: 20,
+  },
+
+  noticeItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+
+  importantNotice: {
+    borderColor: '#FF6B9D',
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+  },
+
+  noticeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  importantBadge: {
+    backgroundColor: '#FF6B9D',
+    color: '#fff',
+    fontSize: getResponsiveSize(10, 12, 14),
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    fontWeight: 'bold',
+  },
+
+  noticeDate: {
+    color: '#888',
+    fontSize: getResponsiveSize(10, 12, 14),
+  },
+
+  noticeTitle: {
+    color: '#fff',
+    fontSize: getResponsiveSize(16, 18, 20),
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+
+  noticeContent: {
+    color: '#ccc',
+    fontSize: getResponsiveSize(12, 14, 16),
+    lineHeight: getResponsiveSize(18, 20, 22),
+  },
+
+  // 문의 게시판 스타일
+  inquiryForm: {
+    marginBottom: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+
+  inquiryTitleInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+
+  inquiryContentInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    minHeight: 120,
+    textAlignVertical: 'top',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+
+  submitInquiryButton: {
+    backgroundColor: 'rgba(255, 107, 157, 0.2)',
+    borderRadius: 12,
+    padding: 15,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#FF6B9D',
+  },
+
+  submitInquiryText: {
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    fontWeight: 'bold',
+  },
+
+  myInquiries: {
+    flex: 1,
+  },
+
+  myInquiriesTitle: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveSize(16, 18, 20),
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+
+  inquiryList: {
+    maxHeight: height * 0.3,
+  },
+
+  emptyInquiryText: {
+    color: '#888',
+    fontSize: getResponsiveSize(12, 14, 16),
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingVertical: 20,
+  },
+
+  inquiryItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+
+  inquiryItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+
+  inquiryItemTitle: {
+    color: '#fff',
+    fontSize: getResponsiveSize(14, 16, 18),
+    fontWeight: 'bold',
+    flex: 1,
+  },
+
+  inquiryStatus: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginLeft: 10,
+  },
+
+  pendingStatus: {
+    backgroundColor: 'rgba(255, 193, 7, 0.2)',
+    borderWidth: 1,
+    borderColor: '#FFC107',
+  },
+
+  answeredStatus: {
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+  },
+
+  inquiryStatusText: {
+    color: '#fff',
+    fontSize: getResponsiveSize(10, 12, 14),
+    fontWeight: 'bold',
+  },
+
+  inquiryItemDate: {
+    color: '#888',
+    fontSize: getResponsiveSize(10, 12, 14),
+    marginBottom: 8,
+  },
+
+  inquiryItemContent: {
+    color: '#ccc',
+    fontSize: getResponsiveSize(12, 14, 16),
+    lineHeight: getResponsiveSize(16, 18, 20),
+    marginBottom: 10,
+  },
+
+  inquiryAnswer: {
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    borderRadius: 8,
+    padding: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#4CAF50',
+  },
+
+  inquiryAnswerLabel: {
+    color: '#4CAF50',
+    fontSize: getResponsiveSize(12, 14, 16),
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+
   keywordText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: getResponsiveSize(12, 14, 16),
     fontWeight: '600',
   },
 });
