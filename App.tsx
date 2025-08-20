@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Alert,
   Dimensions,
@@ -14,6 +14,8 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { captureRef } from 'react-native-view-shot';
+import * as MediaLibrary from 'expo-media-library';
 
 // 화면 크기 및 반응형 설정
 const { width, height } = Dimensions.get('window');
@@ -94,6 +96,34 @@ interface InquiryPost {
   date: string;
   status: 'waiting' | 'answered';
   answer?: string;
+}
+
+// 스프레드 관련 타입 정의
+interface SpreadCard {
+  position: number;
+  card: TarotCard | null;
+  x: number; // 상대적 위치 (0-1)
+  y: number; // 상대적 위치 (0-1)
+  meaning?: { ko: string; en: string };
+}
+
+interface SpreadLayout {
+  id: string;
+  name: { ko: string; en: string };
+  description: { ko: string; en: string };
+  cards: SpreadCard[];
+  hasTimeline?: boolean;
+  timelineCards?: TarotCard[];
+}
+
+interface SavedSpread {
+  id: string;
+  spreadId: string;
+  title: string;
+  cards: SpreadCard[];
+  timelineCards?: TarotCard[];
+  date: string;
+  createdAt: Date;
 }
 
 // 타로 카드 데이터(일부 샘플)
@@ -294,6 +324,85 @@ const NOTICE_POSTS: NoticePost[] = [
   },
 ];
 
+// 스프레드 레이아웃 정의
+const SPREAD_LAYOUTS: SpreadLayout[] = [
+  {
+    id: 'single_card',
+    name: { ko: '원카드', en: 'Single Card' },
+    description: { ko: '하나의 카드로 현재 상황을 알아보세요', en: 'Discover your current situation with one card' },
+    cards: [
+      { position: 1, card: null, x: 0.5, y: 0.5, meaning: { ko: '현재 상황', en: 'Current Situation' } }
+    ]
+  },
+  {
+    id: 'three_card',
+    name: { ko: '쓰리카드', en: 'Three Card' },
+    description: { ko: '과거, 현재, 미래를 알아보세요', en: 'Explore past, present, and future' },
+    cards: [
+      { position: 1, card: null, x: 0.2, y: 0.5, meaning: { ko: '과거', en: 'Past' } },
+      { position: 2, card: null, x: 0.5, y: 0.5, meaning: { ko: '현재', en: 'Present' } },
+      { position: 3, card: null, x: 0.8, y: 0.5, meaning: { ko: '미래', en: 'Future' } }
+    ]
+  },
+  {
+    id: 'five_card',
+    name: { ko: '파이브카드', en: 'Five Card' },
+    description: { ko: '5장의 카드로 상세한 운세를 확인하세요', en: 'Get detailed fortune with 5 cards' },
+    cards: [
+      { position: 1, card: null, x: 0.3, y: 0.7, meaning: { ko: '선택A 결과', en: 'Choice A Result' } },
+      { position: 2, card: null, x: 0.5, y: 0.3, meaning: { ko: '선택B 결과', en: 'Choice B Result' } },
+      { position: 3, card: null, x: 0.5, y: 0.9, meaning: { ko: '질문자 태도', en: 'Querent Attitude' } },
+      { position: 4, card: null, x: 0.1, y: 0.5, meaning: { ko: '선택A 결과', en: 'Choice A Result' } },
+      { position: 5, card: null, x: 0.9, y: 0.5, meaning: { ko: '선택B 결과', en: 'Choice B Result' } }
+    ],
+    hasTimeline: true
+  },
+  {
+    id: 'celtic_cross',
+    name: { ko: '캘틱크로스', en: 'Celtic Cross' },
+    description: { ko: '가장 상세한 10장 스프레드', en: 'Most detailed 10-card spread' },
+    cards: [
+      { position: 1, card: null, x: 0.3, y: 0.6, meaning: { ko: '나의 현재 상태', en: 'My Current State' } },
+      { position: 2, card: null, x: 0.3, y: 0.4, meaning: { ko: '방해물', en: 'Obstacle' } },
+      { position: 3, card: null, x: 0.3, y: 0.2, meaning: { ko: '문제의 핵심', en: 'Core Issue' } },
+      { position: 4, card: null, x: 0.1, y: 0.6, meaning: { ko: '과거', en: 'Past' } },
+      { position: 5, card: null, x: 0.3, y: 0.05, meaning: { ko: '현재', en: 'Present' } },
+      { position: 6, card: null, x: 0.5, y: 0.6, meaning: { ko: '미래', en: 'Future' } },
+      { position: 7, card: null, x: 0.75, y: 0.8, meaning: { ko: '질문자 관점', en: 'Querent Perspective' } },
+      { position: 8, card: null, x: 0.75, y: 0.6, meaning: { ko: '외부 상황', en: 'External Situation' } },
+      { position: 9, card: null, x: 0.75, y: 0.4, meaning: { ko: '질문자 바람, 두려움', en: 'Hopes and Fears' } },
+      { position: 10, card: null, x: 0.75, y: 0.2, meaning: { ko: '상대가 나에게 바라는 점', en: 'Final Outcome' } }
+    ],
+    hasTimeline: true
+  },
+  {
+    id: 'cross_spread',
+    name: { ko: '크로스 스프레드', en: 'Cross Spread' },
+    description: { ko: '십자가 모양의 5장 스프레드', en: 'Cross-shaped 5-card spread' },
+    cards: [
+      { position: 1, card: null, x: 0.3, y: 0.7, meaning: { ko: '현상황', en: 'Current Situation' } },
+      { position: 2, card: null, x: 0.1, y: 0.5, meaning: { ko: '방해물', en: 'Obstacle' } },
+      { position: 3, card: null, x: 0.3, y: 0.5, meaning: { ko: '질문자', en: 'Querent' } },
+      { position: 4, card: null, x: 0.5, y: 0.5, meaning: { ko: '과거', en: 'Past' } },
+      { position: 5, card: null, x: 0.3, y: 0.3, meaning: { ko: '미래', en: 'Future' } }
+    ]
+  },
+  {
+    id: 'horseshoe_spread',
+    name: { ko: '호스슈 스프레드', en: 'Horseshoe Spread' },
+    description: { ko: '말굽 모양의 7장 스프레드', en: 'Horseshoe-shaped 7-card spread' },
+    cards: [
+      { position: 1, card: null, x: 0.1, y: 0.8, meaning: { ko: '나의 현재 상태', en: 'Current State' } },
+      { position: 2, card: null, x: 0.2, y: 0.5, meaning: { ko: '우리의 현재 상태', en: 'Our Current State' } },
+      { position: 3, card: null, x: 0.35, y: 0.3, meaning: { ko: '상대의 현재 상태', en: 'Their Current State' } },
+      { position: 4, card: null, x: 0.5, y: 0.2, meaning: { ko: '과거', en: 'Past' } },
+      { position: 5, card: null, x: 0.65, y: 0.3, meaning: { ko: '방해물', en: 'Obstacle' } },
+      { position: 6, card: null, x: 0.8, y: 0.5, meaning: { ko: '미래', en: 'Future' } },
+      { position: 7, card: null, x: 0.9, y: 0.8, meaning: { ko: '질문자 관점', en: 'Querent Perspective' } }
+    ]
+  }
+];
+
 export default function App() {
   // 상태 관리
   const [currentLanguage, setCurrentLanguage] = useState<Language>('ko');
@@ -321,6 +430,16 @@ export default function App() {
   // 문의 관련 상태
   const [inquiryTitle, setInquiryTitle] = useState('');
   const [inquiryContent, setInquiryContent] = useState('');
+
+  // 스프레드 관련 상태
+  const [spreads] = useState<SpreadLayout[]>(SPREAD_LAYOUTS);
+  const [currentSpread, setCurrentSpread] = useState<SpreadLayout | null>(null);
+  const [savedSpreads, setSavedSpreads] = useState<SavedSpread[]>([]);
+  const [spreadTitle, setSpreadTitle] = useState('');
+  const [showTimelineDraw, setShowTimelineDraw] = useState(false);
+
+  // 스프레드 캡처를 위한 ref
+  const spreadViewRef = useRef<View>(null);
 
   // 화면 크기 변경 감지(필요 시 사용)
   const [screenData, setScreenData] = useState(Dimensions.get('window'));
@@ -434,6 +553,81 @@ export default function App() {
     setShowMemo(true);
   };
 
+  // 스프레드 카드 뽑기
+  const drawSpreadCards = (spread: SpreadLayout) => {
+    const updatedCards = spread.cards.map(card => ({
+      ...card,
+      card: getRandomCard()
+    }));
+    
+    const updatedSpread = {
+      ...spread,
+      cards: updatedCards,
+      timelineCards: []
+    };
+    
+    setCurrentSpread(updatedSpread);
+    setShowTimelineDraw(spread.hasTimeline || false);
+  };
+
+  // 시간선 카드 뽑기
+  const drawTimelineCards = () => {
+    if (!currentSpread) return;
+    
+    const timelineCards = Array.from({ length: 4 }, () => getRandomCard());
+    setCurrentSpread(prev => prev ? { ...prev, timelineCards } : null);
+    setShowTimelineDraw(false);
+  };
+
+  // 스프레드 다시 뽑기
+  const redrawSpread = () => {
+    if (!currentSpread) return;
+    drawSpreadCards(currentSpread);
+  };
+
+  // 스프레드 저장
+  const saveSpread = async () => {
+    if (!currentSpread) return;
+    
+    try {
+      // 미디어 라이브러리 권한 요청
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(getText({ ko: '권한 필요', en: 'Permission Required' }), getText({ ko: '이미지를 저장하려면 갤러리 접근 권한이 필요합니다.', en: 'Gallery access permission is required to save images.' }));
+        return;
+      }
+
+      if (spreadViewRef.current) {
+        const uri = await captureRef(spreadViewRef.current, {
+          format: 'png',
+          quality: 0.8,
+        });
+        
+        await MediaLibrary.saveToLibraryAsync(uri);
+        
+        // 내부 저장소에도 저장
+        const savedSpread: SavedSpread = {
+          id: `spread_${Date.now()}`,
+          spreadId: currentSpread.id,
+          title: spreadTitle || getText(currentSpread.name),
+          cards: currentSpread.cards,
+          timelineCards: currentSpread.timelineCards,
+          date: new Date().toLocaleDateString(),
+          createdAt: new Date()
+        };
+        
+        setSavedSpreads(prev => [savedSpread, ...prev]);
+        
+        Alert.alert(
+          getText({ ko: '저장 완료!', en: 'Saved!' }), 
+          getText({ ko: '스프레드가 갤러리에 저장되었습니다.', en: 'Spread has been saved to gallery.' })
+        );
+      }
+    } catch (error) {
+      Alert.alert(getText({ ko: '저장 실패', en: 'Save Failed' }), getText({ ko: '이미지 저장 중 오류가 발생했습니다.', en: 'An error occurred while saving the image.' }));
+    }
+  };
+
   // 문의 제출
   const submitInquiry = () => {
     if (!inquiryTitle.trim() || !inquiryContent.trim()) {
@@ -485,6 +679,56 @@ export default function App() {
     const currentHour = currentTime.getHours();
     const currentSlot = timeSlots.find(s => s.hour === currentHour);
     return currentSlot?.card || null;
+  };
+
+  // 스프레드 카드 슬롯 컴포넌트
+  const SpreadCardSlot = ({ spreadCard, containerWidth, containerHeight }: { 
+    spreadCard: SpreadCard; 
+    containerWidth: number; 
+    containerHeight: number; 
+  }) => {
+    const cardSize = getResponsiveSize(60, 70, 80, 90);
+    const left = spreadCard.x * containerWidth - cardSize / 2;
+    const top = spreadCard.y * containerHeight - cardSize * 1.5 / 2;
+
+    return (
+      <View
+        style={[
+          styles.spreadCardSlot,
+          {
+            position: 'absolute',
+            left: Math.max(0, Math.min(left, containerWidth - cardSize)),
+            top: Math.max(0, Math.min(top, containerHeight - cardSize * 1.5)),
+            alignItems: 'center',
+          },
+        ]}
+      >
+        <Text style={[styles.spreadCardPosition, { fontSize: getResponsiveFontSize(12), marginBottom: 5 }]}>
+          {spreadCard.position}
+        </Text>
+        {spreadCard.card ? (
+          <TarotCardView card={spreadCard.card} hour={0} size="small" />
+        ) : (
+          <View
+            style={[
+              styles.emptySpreadCard,
+              {
+                width: cardSize,
+                height: cardSize * 1.5,
+                borderRadius: getResponsiveSpacing(8),
+              },
+            ]}
+          >
+            <Text style={[styles.emptySpreadCardText, { fontSize: getResponsiveFontSize(14) }]}>?</Text>
+          </View>
+        )}
+        {spreadCard.meaning && (
+          <Text style={[styles.spreadCardMeaning, { fontSize: getResponsiveFontSize(10), marginTop: 5, width: cardSize + 20 }]}>
+            {getText(spreadCard.meaning)}
+          </Text>
+        )}
+      </View>
+    );
   };
 
   // 타로 카드 컴포넌트
@@ -669,13 +913,149 @@ export default function App() {
     </ScrollView>
   );
 
-  // 스프레드 페이지(Coming Soon)
-  const SpreadPage = () => (
-    <View style={styles.comingSoonContainer}>
-      <Text style={styles.comingSoonTitle}>🔮 스프레드</Text>
-      <Text style={styles.comingSoonText}>{getText({ ko: '곧 추가될 예정입니다!', en: 'Coming Soon!' })}</Text>
-    </View>
+  // 스프레드 목록 페이지
+  const SpreadListPage = () => (
+    <ScrollView 
+      style={styles.pageContainer}
+      onScroll={(event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        saveScrollPosition('spread', offsetY);
+      }}
+      scrollEventThrottle={16}
+      contentOffset={{ x: 0, y: getScrollPosition('spread') }}
+    >
+      <Text style={styles.pageTitle}>🔮 {getText({ ko: '스프레드', en: 'Spreads' })}</Text>
+      
+      {spreads.map(spread => (
+        <TouchableOpacity
+          key={spread.id}
+          style={styles.spreadListItem}
+          onPress={() => setCurrentSpread(spread)}
+        >
+          <View style={styles.spreadListItemContent}>
+            <Text style={styles.spreadListItemTitle}>{getText(spread.name)}</Text>
+            <Text style={styles.spreadListItemDescription}>{getText(spread.description)}</Text>
+            <Text style={styles.spreadListItemInfo}>
+              {spread.cards.length}장 {spread.hasTimeline ? '+4장 시간선' : ''}
+            </Text>
+          </View>
+          <Text style={styles.spreadListItemArrow}>▶</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
+
+  // 스프레드 상세 페이지
+  const SpreadDetailPage = () => {
+    if (!currentSpread) return <SpreadListPage />;
+
+    const containerWidth = width - getResponsiveSpacing(40);
+    const containerHeight = height * 0.5;
+
+    return (
+      <ScrollView style={styles.pageContainer}>
+        <View style={styles.spreadDetailHeader}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => setCurrentSpread(null)}
+          >
+            <Text style={styles.backButtonText}>← {getText({ ko: '목록으로', en: 'Back to List' })}</Text>
+          </TouchableOpacity>
+          <Text style={styles.spreadDetailTitle}>{getText(currentSpread.name)}</Text>
+        </View>
+
+        <View style={styles.spreadTitleInput}>
+          <TextInput
+            style={styles.spreadTitleInputField}
+            value={spreadTitle}
+            onChangeText={setSpreadTitle}
+            placeholder={getText({ ko: '스프레드 제목 입력...', en: 'Enter spread title...' })}
+            placeholderTextColor="#999"
+          />
+        </View>
+
+        <View 
+          ref={spreadViewRef}
+          style={[
+            styles.spreadContainer,
+            {
+              width: containerWidth,
+              height: containerHeight,
+              alignSelf: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: getResponsiveSpacing(15),
+              marginVertical: getResponsiveSpacing(20),
+            },
+          ]}
+        >
+          {currentSpread.cards.map(card => (
+            <SpreadCardSlot
+              key={card.position}
+              spreadCard={card}
+              containerWidth={containerWidth}
+              containerHeight={containerHeight}
+            />
+          ))}
+        </View>
+
+        {/* 시간선 카드 표시 */}
+        {currentSpread.timelineCards && currentSpread.timelineCards.length > 0 && (
+          <View style={styles.timelineCardsContainer}>
+            <Text style={styles.timelineTitle}>⏰ {getText({ ko: '시간선 카드', en: 'Timeline Cards' })}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {currentSpread.timelineCards.map((card, index) => (
+                <View key={index} style={styles.timelineCard}>
+                  <Text style={styles.timelineCardLabel}>{index + 1}</Text>
+                  <TarotCardView card={card} hour={0} size="small" />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        <View style={styles.spreadControls}>
+          {!currentSpread.cards.some(c => c.card) ? (
+            <TouchableOpacity
+              style={[styles.controlButton, styles.drawSpreadButton]}
+              onPress={() => drawSpreadCards(currentSpread)}
+            >
+              <Text style={styles.controlButtonText}>🎴 {getText({ ko: '카드 뽑기', en: 'Draw Cards' })}</Text>
+            </TouchableOpacity>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[styles.controlButton, styles.redrawButton]}
+                onPress={redrawSpread}
+              >
+                <Text style={styles.controlButtonText}>🔄 {getText({ ko: '다시 뽑기', en: 'Redraw' })}</Text>
+              </TouchableOpacity>
+
+              {showTimelineDraw && (
+                <TouchableOpacity
+                  style={[styles.controlButton, styles.timelineButton]}
+                  onPress={drawTimelineCards}
+                >
+                  <Text style={styles.controlButtonText}>⏰ {getText({ ko: '시간선 뽑기', en: 'Draw Timeline' })}</Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={[styles.controlButton, styles.saveSpreadButton]}
+                onPress={saveSpread}
+              >
+                <Text style={styles.controlButtonText}>💾 {getText({ ko: '저장하기', en: 'Save' })}</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </ScrollView>
+    );
+  };
+
+  // 스프레드 페이지 (목록 또는 상세)
+  const SpreadPage = () => {
+    return currentSpread ? <SpreadDetailPage /> : <SpreadListPage />;
+  };
 
   // 타임라인 페이지
   const TimelinePage = () => (
@@ -1757,5 +2137,180 @@ const styles = StyleSheet.create({
   inquiryItemDate: {
     color: '#999',
     fontSize: 10,
+  },
+  
+  // 스프레드 관련 스타일
+  spreadListItem: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: getResponsiveSpacing(15),
+    padding: getResponsiveSpacing(20),
+    marginBottom: getResponsiveSpacing(15),
+    marginHorizontal: getResponsiveSpacing(20),
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+  },
+  spreadListItemContent: {
+    flex: 1,
+  },
+  spreadListItemTitle: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  spreadListItemDescription: {
+    color: '#ccc',
+    fontSize: getResponsiveFontSize(14),
+    marginBottom: 5,
+    lineHeight: 20,
+  },
+  spreadListItemInfo: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(12),
+  },
+  spreadListItemArrow: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(20),
+    marginLeft: 10,
+  },
+  
+  // 스프레드 상세 페이지 스타일
+  spreadDetailHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: getResponsiveSpacing(20),
+    paddingVertical: getResponsiveSpacing(15),
+  },
+  backButton: {
+    paddingVertical: 5,
+    paddingRight: 15,
+  },
+  backButtonText: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+  },
+  spreadDetailTitle: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(20),
+    fontWeight: 'bold',
+    flex: 1,
+    textAlign: 'center',
+    marginRight: 60, // 뒤로가기 버튼 공간 확보
+  },
+  spreadTitleInput: {
+    paddingHorizontal: getResponsiveSpacing(20),
+    marginBottom: getResponsiveSpacing(15),
+  },
+  spreadTitleInputField: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: getResponsiveSpacing(12),
+    padding: getResponsiveSpacing(15),
+    color: '#fff',
+    fontSize: getResponsiveFontSize(16),
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  spreadContainer: {
+    position: 'relative',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: getResponsiveSpacing(15),
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  spreadCardSlot: {
+    alignItems: 'center',
+  },
+  spreadCardPosition: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    textAlign: 'center',
+    minWidth: 20,
+  },
+  emptySpreadCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderStyle: 'dashed',
+  },
+  emptySpreadCardText: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: 'bold',
+  },
+  spreadCardMeaning: {
+    color: '#ccc',
+    fontSize: getResponsiveFontSize(10),
+    textAlign: 'center',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  
+  // 시간선 카드 스타일
+  timelineCardsContainer: {
+    paddingHorizontal: getResponsiveSpacing(20),
+    marginVertical: getResponsiveSpacing(20),
+  },
+  timelineTitle: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: 'bold',
+    marginBottom: getResponsiveSpacing(15),
+    textAlign: 'center',
+  },
+  timelineCard: {
+    alignItems: 'center',
+    marginRight: getResponsiveSpacing(15),
+  },
+  timelineCardLabel: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(255, 107, 157, 0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginBottom: 5,
+    textAlign: 'center',
+    minWidth: 24,
+  },
+  
+  // 스프레드 컨트롤 버튼들
+  spreadControls: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    paddingHorizontal: getResponsiveSpacing(20),
+    paddingBottom: getResponsiveSpacing(30),
+    gap: getResponsiveSpacing(10),
+  },
+  drawSpreadButton: {
+    backgroundColor: '#4ECDC4',
+    flex: 1,
+    minWidth: width * 0.8,
+  },
+  redrawButton: {
+    backgroundColor: '#FF9500',
+    minWidth: width * 0.25,
+  },
+  timelineButton: {
+    backgroundColor: '#9B59B6',
+    minWidth: width * 0.25,
+  },
+  saveSpreadButton: {
+    backgroundColor: '#4CAF50',
+    minWidth: width * 0.25,
   },
 });
