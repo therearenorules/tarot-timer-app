@@ -1,64 +1,67 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Modal, 
-  Switch,
+import React, { useEffect, useState } from 'react';
+import {
   Alert,
   Dimensions,
-  ImageBackground,
-  Animated,
-  SafeAreaView,
-  TextInput,
+  Image,
   Linking,
-  Platform
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-// 화면 크기 (반응형)
+// 화면 크기 및 반응형 설정
 const { width, height } = Dimensions.get('window');
 const isSmallScreen = width < 360;
 const isMediumScreen = width >= 360 && width < 400;
 const isLargeScreen = width >= 400;
+const isTablet = width >= 768;
 
-// 반응형 크기 계산
-const getResponsiveSize = (small: number, medium: number, large: number) => {
-  if (isSmallScreen) return small;
+// 반응형 유틸
+const getResponsiveSize = (small: number, medium: number, large: number, tablet?: number) => {
+  if (isTablet && tablet) return tablet;
+  if (isLargeScreen) return large;
   if (isMediumScreen) return medium;
-  return large;
+  return small;
+};
+
+const getResponsiveFontSize = (base: number) => {
+  if (isTablet) return base * 1.2;
+  if (isLargeScreen) return base * 1.1;
+  if (isMediumScreen) return base;
+  return base * 0.9;
+};
+
+const getResponsiveSpacing = (base: number) => {
+  return getResponsiveSize(base * 0.8, base, base * 1.2, base * 1.5);
 };
 
 // 타입 정의
-interface MultiLanguageText {
-  ko: string;
-  en: string;
-}
+type Language = 'ko' | 'en';
 
 interface TarotCard {
   id: string;
-  name: MultiLanguageText;
-  keywords: MultiLanguageText[];
-  description: MultiLanguageText;
-  suit: string;
-  number: number;
-  type: 'major' | 'minor';
-  element?: string;
+  name: { ko: string; en: string };
+  keywords: { ko: string; en: string }[];
   emoji: string;
   color: string;
-  classicImage: string;
+  imagePath?: string;
 }
 
 interface CardTheme {
   id: string;
-  name: MultiLanguageText;
-  description: MultiLanguageText;
-  thumbnail: string;
-  isPremium: boolean;
+  name: { ko: string; en: string };
+  description: { ko: string; en: string };
   price: number;
-  previewCards: string[];
+  preview: string;
+  folderPath: string;
+  isPurchased: boolean;
+  isDefault: boolean;
 }
 
 interface TimeSlot {
@@ -78,8 +81,8 @@ interface DiaryEntry {
 
 interface NoticePost {
   id: string;
-  title: MultiLanguageText;
-  content: MultiLanguageText;
+  title: { ko: string; en: string };
+  content: { ko: string; en: string };
   date: string;
   isImportant: boolean;
 }
@@ -89,40 +92,22 @@ interface InquiryPost {
   title: string;
   content: string;
   date: string;
-  status: 'pending' | 'answered';
+  status: 'waiting' | 'answered';
   answer?: string;
 }
 
-// 언어 타입
-type Language = 'ko' | 'en';
-
-// 상수
-const LANGUAGES = [
-  { code: 'ko' as Language, name: '한국어', flag: '🇰🇷' },
-  { code: 'en' as Language, name: 'English', flag: '🇺🇸' }
-];
-
-// 기본 타로카드 덱 (78장)
-const CLASSIC_TAROT_DECK: TarotCard[] = [
-  // 메이저 아르카나 (22장)
+// 타로 카드 데이터(일부 샘플)
+const TAROT_CARDS: TarotCard[] = [
   {
     id: 'major_00',
     name: { ko: '바보', en: 'The Fool' },
     keywords: [
       { ko: '새로운 시작', en: 'New Beginning' },
       { ko: '순수함', en: 'Innocence' },
-      { ko: '모험', en: 'Adventure' }
     ],
-    description: { 
-      ko: '새로운 여행의 시작을 알리는 카드입니다.',
-      en: 'A card that signals the beginning of a new journey.'
-    },
-    suit: 'Major Arcana',
-    number: 0,
-    type: 'major',
     emoji: '🃏',
-    color: '#FFD700',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_00_fool.jpg'
+    color: '#FF6B6B',
+    imagePath: 'major_00_fool',
   },
   {
     id: 'major_01',
@@ -130,37 +115,21 @@ const CLASSIC_TAROT_DECK: TarotCard[] = [
     keywords: [
       { ko: '의지력', en: 'Willpower' },
       { ko: '창조', en: 'Creation' },
-      { ko: '실현', en: 'Manifestation' }
     ],
-    description: { 
-      ko: '강한 의지와 창조력을 나타내는 카드입니다.',
-      en: 'A card representing strong will and creativity.'
-    },
-    suit: 'Major Arcana',
-    number: 1,
-    type: 'major',
-    emoji: '🪄',
-    color: '#FF6B6B',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_01_magician.jpg'
+    emoji: '🎩',
+    color: '#4ECDC4',
+    imagePath: 'major_01_magician',
   },
   {
     id: 'major_02',
-    name: { ko: '여교황', en: 'The High Priestess' },
+    name: { ko: '여사제', en: 'The High Priestess' },
     keywords: [
-      { ko: '직감', en: 'Intuition' },
+      { ko: '직관', en: 'Intuition' },
       { ko: '신비', en: 'Mystery' },
-      { ko: '내면의 지혜', en: 'Inner Wisdom' }
     ],
-    description: { 
-      ko: '직관과 내면의 지혜를 상징하는 카드입니다.',
-      en: 'A card symbolizing intuition and inner wisdom.'
-    },
-    suit: 'Major Arcana',
-    number: 2,
-    type: 'major',
     emoji: '🌙',
-    color: '#4ECDC4',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_02_high_priestess.jpg'
+    color: '#45B7D1',
+    imagePath: 'major_02_high_priestess',
   },
   {
     id: 'major_03',
@@ -168,18 +137,10 @@ const CLASSIC_TAROT_DECK: TarotCard[] = [
     keywords: [
       { ko: '풍요', en: 'Abundance' },
       { ko: '모성', en: 'Motherhood' },
-      { ko: '창조성', en: 'Creativity' }
     ],
-    description: { 
-      ko: '풍요로움과 모성적 사랑을 의미하는 카드입니다.',
-      en: 'A card meaning abundance and maternal love.'
-    },
-    suit: 'Major Arcana',
-    number: 3,
-    type: 'major',
     emoji: '👑',
-    color: '#98D8C8',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_03_empress.jpg'
+    color: '#F7DC6F',
+    imagePath: 'major_03_empress',
   },
   {
     id: 'major_04',
@@ -187,2340 +148,1614 @@ const CLASSIC_TAROT_DECK: TarotCard[] = [
     keywords: [
       { ko: '권위', en: 'Authority' },
       { ko: '안정', en: 'Stability' },
-      { ko: '리더십', en: 'Leadership' }
     ],
-    description: { 
-      ko: '강력한 리더십과 안정성을 나타내는 카드입니다.',
-      en: 'A card representing strong leadership and stability.'
-    },
-    suit: 'Major Arcana',
-    number: 4,
-    type: 'major',
-    emoji: '👨‍👑',
-    color: '#FF8A80',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_04_emperor.jpg'
+    emoji: '🛡️',
+    color: '#E74C3C',
+    imagePath: 'major_04_emperor',
   },
   {
     id: 'major_05',
     name: { ko: '교황', en: 'The Hierophant' },
     keywords: [
       { ko: '전통', en: 'Tradition' },
-      { ko: '영성', en: 'Spirituality' },
-      { ko: '지도', en: 'Guidance' }
+      { ko: '지혜', en: 'Wisdom' },
     ],
-    description: { 
-      ko: '전통적 가치와 영적 지도를 의미하는 카드입니다.',
-      en: 'A card meaning traditional values and spiritual guidance.'
-    },
-    suit: 'Major Arcana',
-    number: 5,
-    type: 'major',
-    emoji: '🕊️',
-    color: '#B39DDB',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_05_hierophant.jpg'
+    emoji: '⛪',
+    color: '#9B59B6',
+    imagePath: 'major_05_hierophant',
   },
   {
     id: 'major_06',
-    name: { ko: '연인', en: 'The Lovers' },
+    name: { ko: '연인들', en: 'The Lovers' },
     keywords: [
       { ko: '사랑', en: 'Love' },
       { ko: '선택', en: 'Choice' },
-      { ko: '조화', en: 'Harmony' }
     ],
-    description: { 
-      ko: '사랑과 중요한 선택을 상징하는 카드입니다.',
-      en: 'A card symbolizing love and important choices.'
-    },
-    suit: 'Major Arcana',
-    number: 6,
-    type: 'major',
     emoji: '💕',
-    color: '#F48FB1',
-    classicImage: 'assets/tarot-cards/classic-tarot/major_06_lovers.jpg'
+    color: '#FF69B4',
+    imagePath: 'major_06_lovers',
   },
-  // 간단히 몇 개만 더 추가하고 나머지는 생성 함수로 처리
-  ...generateRemainingMajorArcana(),
-  ...generateMinorArcana()
+  {
+    id: 'major_07',
+    name: { ko: '전차', en: 'The Chariot' },
+    keywords: [
+      { ko: '승리', en: 'Victory' },
+      { ko: '의지', en: 'Determination' },
+    ],
+    emoji: '🎯',
+    color: '#32CD32',
+    imagePath: 'major_07_chariot',
+  },
+  {
+    id: 'major_08',
+    name: { ko: '은둔자', en: 'The Hermit' },
+    keywords: [
+      { ko: '성찰', en: 'Reflection' },
+      { ko: '지혜', en: 'Wisdom' },
+    ],
+    emoji: '🕯️',
+    color: '#90A4AE',
+    imagePath: 'major_08_hermit',
+  },
+  {
+    id: 'major_09',
+    name: { ko: '운명의 수레바퀴', en: 'Wheel of Fortune' },
+    keywords: [
+      { ko: '변화', en: 'Change' },
+      { ko: '운명', en: 'Destiny' },
+    ],
+    emoji: '🎡',
+    color: '#FF9800',
+    imagePath: 'major_09_wheel_of_fortune',
+  },
 ];
 
-// 나머지 메이저 아르카나 생성
-function generateRemainingMajorArcana(): TarotCard[] {
-  const remainingMajor = [
-    { id: 'major_07', name: { ko: '전차', en: 'The Chariot' }, emoji: '🏺', color: '#81C784' },
-    { id: 'major_08', name: { ko: '힘', en: 'Strength' }, emoji: '🦁', color: '#FFB74D' },
-    { id: 'major_09', name: { ko: '은둔자', en: 'The Hermit' }, emoji: '🏮', color: '#90A4AE' },
-    { id: 'major_10', name: { ko: '운명의 수레바퀴', en: 'Wheel of Fortune' }, emoji: '☸️', color: '#A1887F' },
-    { id: 'major_11', name: { ko: '정의', en: 'Justice' }, emoji: '⚖️', color: '#7986CB' },
-    { id: 'major_12', name: { ko: '매달린 남자', en: 'The Hanged Man' }, emoji: '🙃', color: '#4DD0E1' },
-    { id: 'major_13', name: { ko: '죽음', en: 'Death' }, emoji: '💀', color: '#616161' },
-    { id: 'major_14', name: { ko: '절제', en: 'Temperance' }, emoji: '⚗️', color: '#AED581' },
-    { id: 'major_15', name: { ko: '악마', en: 'The Devil' }, emoji: '😈', color: '#E57373' },
-    { id: 'major_16', name: { ko: '탑', en: 'The Tower' }, emoji: '🗼', color: '#FF7043' },
-    { id: 'major_17', name: { ko: '별', en: 'The Star' }, emoji: '⭐', color: '#64B5F6' },
-    { id: 'major_18', name: { ko: '달', en: 'The Moon' }, emoji: '🌙', color: '#9575CD' },
-    { id: 'major_19', name: { ko: '태양', en: 'The Sun' }, emoji: '☀️', color: '#FFEB3B' },
-    { id: 'major_20', name: { ko: '심판', en: 'Judgement' }, emoji: '📯', color: '#F06292' },
-    { id: 'major_21', name: { ko: '세계', en: 'The World' }, emoji: '🌍', color: '#26A69A' }
-  ];
+// 로컬 이미지 정적 매핑 (Expo/Metro는 동적 require를 지원하지 않으므로 사전 매핑 필요)
+const CARD_IMAGE_MAP: Record<string, any> = {
+  major_00_fool: require('./assets/tarot-cards/classic-tarot/major_00_fool.jpg'),
+  major_01_magician: require('./assets/tarot-cards/classic-tarot/major_01_magician.jpg'),
+  major_02_high_priestess: require('./assets/tarot-cards/classic-tarot/major_02_high_priestess.jpg'),
+  major_03_empress: require('./assets/tarot-cards/classic-tarot/major_03_empress.jpg'),
+  major_04_emperor: require('./assets/tarot-cards/classic-tarot/major_04_emperor.jpg'),
+  major_05_hierophant: require('./assets/tarot-cards/classic-tarot/major_05_hierophant.jpg'),
+  major_06_lovers: require('./assets/tarot-cards/classic-tarot/major_06_lovers.jpg'),
+  major_07_chariot: require('./assets/tarot-cards/classic-tarot/major_07_chariot.jpg'),
+  // 실제 파일명은 major_09_hermit.jpg 이므로 여기에 매핑
+  major_08_hermit: require('./assets/tarot-cards/classic-tarot/major_09_hermit.jpg'),
+  major_09_wheel_of_fortune: require('./assets/tarot-cards/classic-tarot/major_10_wheel_of_fortune.jpg'),
+  // 필요 시 더 추가 가능 (major_10~21, minor_* 등)
+};
 
-  return remainingMajor.map((card, index) => ({
-    ...card,
-    keywords: [
-      { ko: '키워드1', en: 'Keyword1' },
-      { ko: '키워드2', en: 'Keyword2' },
-      { ko: '키워드3', en: 'Keyword3' }
-    ],
-    description: { 
-      ko: `${card.name.ko}의 의미를 나타내는 카드입니다.`,
-      en: `A card representing the meaning of ${card.name.en}.`
-    },
-    suit: 'Major Arcana',
-    number: index + 7,
-    type: 'major' as const,
-    classicImage: `assets/tarot-cards/classic-tarot/major_${String(index + 7).padStart(2, '0')}_${card.name.en.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z_]/g, '')}.jpg`
-  }));
-}
-
-// 마이너 아르카나 생성
-function generateMinorArcana(): TarotCard[] {
-  const suits = [
-    { name: { ko: '컵', en: 'Cups' }, emoji: '🏆', color: '#2196F3', element: 'Water' },
-    { name: { ko: '완드', en: 'Wands' }, emoji: '🪄', color: '#FF5722', element: 'Fire' },
-    { name: { ko: '검', en: 'Swords' }, emoji: '⚔️', color: '#607D8B', element: 'Air' },
-    { name: { ko: '펜타클', en: 'Pentacles' }, emoji: '🪙', color: '#FF9800', element: 'Earth' }
-  ];
-
-  const cards: TarotCard[] = [];
-
-  suits.forEach((suit, suitIndex) => {
-    for (let i = 1; i <= 14; i++) {
-      let cardName: MultiLanguageText;
-      if (i <= 10) {
-        cardName = { ko: `${suit.name.ko} ${i}`, en: `${i} of ${suit.name.en}` };
-      } else {
-        const courtCards = [
-          { ko: '잭', en: 'Jack' },
-          { ko: '퀸', en: 'Queen' },
-          { ko: '킹', en: 'King' },
-          { ko: '에이스', en: 'Ace' }
-        ];
-        const courtIndex = i - 11;
-        cardName = { ko: `${suit.name.ko} ${courtCards[courtIndex].ko}`, en: `${courtCards[courtIndex].en} of ${suit.name.en}` };
-      }
-
-      cards.push({
-        id: `minor_${suitIndex}_${i}`,
-        name: cardName,
-        keywords: [
-          { ko: '키워드1', en: 'Keyword1' },
-          { ko: '키워드2', en: 'Keyword2' }
-        ],
-        description: { 
-          ko: `${cardName.ko}의 의미를 나타내는 카드입니다.`,
-          en: `A card representing the meaning of ${cardName.en}.`
-        },
-        suit: suit.name.en,
-        number: i,
-        type: 'minor',
-        element: suit.element,
-        emoji: suit.emoji,
-        color: suit.color,
-        classicImage: `assets/tarot-cards/classic-tarot/minor_${suit.name.en.toLowerCase()}_${String(i).padStart(2, '0')}.jpg`
-      });
-    }
-  });
-
-// 카드 테마들
+// 카드 테마 시스템
 const CARD_THEMES: CardTheme[] = [
+  {
+    id: 'classic',
+    name: { ko: '클래식 타로', en: 'Classic Tarot' },
+    description: { ko: '전통적인 타로카드 디자인', en: 'Traditional tarot card design' },
+    price: 0,
+    preview: 'classic-preview.png',
+    folderPath: 'classic-tarot',
+    isPurchased: true,
+    isDefault: true,
+  },
+  {
+    id: 'neon',
+    name: { ko: '네온 타로', en: 'Neon Tarot' },
+    description: { ko: '사이버펑크 스타일의 네온 카드', en: 'Cyberpunk style neon cards' },
+    price: 2000,
+    preview: 'neon-preview.png',
+    folderPath: 'neon-tarot',
+    isPurchased: false,
+    isDefault: false,
+  },
+  {
+    id: 'vintage',
+    name: { ko: '빈티지 타로', en: 'Vintage Tarot' },
+    description: { ko: '고풍스러운 빈티지 스타일', en: 'Elegant vintage style' },
+    price: 1500,
+    preview: 'vintage-preview.png',
+    folderPath: 'vintage-tarot',
+    isPurchased: false,
+    isDefault: false,
+  },
+  {
+    id: 'watercolor',
+    name: { ko: '수채화 타로', en: 'Watercolor Tarot' },
+    description: { ko: '부드러운 수채화 느낌', en: 'Soft watercolor feeling' },
+    price: 2500,
+    preview: 'watercolor-preview.png',
+    folderPath: 'watercolor-tarot',
+    isPurchased: false,
+    isDefault: false,
+  },
+];
 
-// 공지사항 및 문의 데이터
+// 공지사항 데이터
 const NOTICE_POSTS: NoticePost[] = [
   {
     id: 'notice_001',
-    title: { ko: '타로 타이머 앱 출시!', en: 'Tarot Timer App Launch!' },
-    content: { 
-      ko: '24시간 타로 카드와 함께하는 의미있는 하루를 시작하세요. 새로운 기능들을 확인해보세요!',
-      en: 'Start a meaningful day with 24-hour tarot cards. Check out the new features!'
+    title: { ko: '🎉 타로 타이머 앱 정식 출시!', en: '🎉 Tarot Timer App Official Launch!' },
+    content: {
+      ko: '24시간 타로 카드와 함께하는 의미있는 하루를 시작하세요. 반응형 디자인으로 모든 기기에서 완벽한 경험을 제공합니다!',
+      en: 'Start a meaningful day with 24-hour tarot cards. Experience perfect performance on all devices with responsive design!',
     },
-    date: '2025-01-15',
-    isImportant: true
+    date: '2024-01-15',
+    isImportant: true,
   },
   {
     id: 'notice_002',
-    title: { ko: '타로 일기 기능 추가', en: 'Tarot Diary Feature Added' },
-    content: { 
-      ko: '이제 매일의 타로 카드를 일기로 저장하고 메모를 남길 수 있습니다.',
-      en: 'Now you can save daily tarot cards as diary entries and leave memos.'
+    title: { ko: '📖 타로 일기 기능 대폭 개선!', en: '📖 Tarot Diary Feature Major Update!' },
+    content: {
+      ko: '이제 매일의 타로 카드를 일기로 저장하고, 메모와 함께 관리할 수 있습니다. 개인적인 해석과 느낌을 기록해보세요.',
+      en: 'Now you can save daily tarot cards as a diary and manage them with memos. Record your personal interpretations and feelings.',
     },
-    date: '2025-01-10',
-    isImportant: false
-  }
+    date: '2024-01-12',
+    isImportant: false,
+  },
 ];
 
-// 배너 설정
-const BANNER_CONFIG = {
-  imageUrl: 'https://via.placeholder.com/350x100/FF6B9D/FFFFFF?text=타로+타이머+배너',
-  linkUrl: {
-    ios: 'https://your-website.com/ios',
-    android: 'https://your-website.com/android',
-    web: 'https://your-website.com'
-  },
-  title: { ko: '특별 이벤트 진행중!', en: 'Special Event in Progress!' }
-};
-  {
-    id: 'classic',
-    name: { ko: '기본 타로카드', en: 'Classic Tarot' },
-    description: { ko: '전통적인 타로카드 디자인', en: 'Traditional tarot card design' },
-    thumbnail: 'assets/themes/classic_thumb.jpg',
-    isPremium: false,
-    price: 0,
-    previewCards: ['major_00_fool.jpg', 'major_01_magician.jpg', 'major_02_high_priestess.jpg']
-  },
-  {
-    id: 'cosmic',
-    name: { ko: '코스믹 나이트', en: 'Cosmic Night' },
-    description: { ko: '우주의 신비로운 에너지', en: 'Mysterious cosmic energy' },
-    thumbnail: 'assets/themes/cosmic_thumb.jpg',
-    isPremium: true,
-    price: 2000,
-    previewCards: ['cosmic_major_00.jpg', 'cosmic_major_01.jpg', 'cosmic_major_02.jpg']
-  },
-  {
-    id: 'floral',
-    name: { ko: '플로럴 드림', en: 'Floral Dream' },
-    description: { ko: '꽃과 자연의 아름다움', en: 'Beauty of flowers and nature' },
-    thumbnail: 'assets/themes/floral_thumb.jpg',
-    isPremium: true,
-    price: 1500,
-    previewCards: ['floral_major_00.jpg', 'floral_major_01.jpg', 'floral_major_02.jpg']
-  }
-];
-
-// 메인 앱 컴포넌트
 export default function App() {
   // 상태 관리
   const [currentLanguage, setCurrentLanguage] = useState<Language>('ko');
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [zoomedCard, setZoomedCard] = useState<TarotCard | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showThemeStore, setShowThemeStore] = useState(false);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [inquiries, setInquiries] = useState<InquiryPost[]>([]);
+  const [currentTab, setCurrentTab] = useState<'main' | 'spread' | 'timeline' | 'diary' | 'settings'>('main');
+
+  // 테마/포인트 상태
+  const [themes, setThemes] = useState<CardTheme[]>(CARD_THEMES);
   const [currentTheme, setCurrentTheme] = useState<CardTheme>(CARD_THEMES[0]);
   const [userPoints, setUserPoints] = useState(5000);
-  const [lockScreenEnabled, setLockScreenEnabled] = useState(false);
-  const [animationValue] = useState(new Animated.Value(0));
-  
-  // 새로운 상태들
-  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
-  const [showDiary, setShowDiary] = useState(false);
-  const [showMemoModal, setShowMemoModal] = useState(false);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<{ hour: number; memo: string } | null>(null);
+  const [showThemeStore, setShowThemeStore] = useState(false);
+
+  // 모달 상태
+  const [showMemo, setShowMemo] = useState(false);
   const [showNoticeBoard, setShowNoticeBoard] = useState(false);
   const [showInquiryBoard, setShowInquiryBoard] = useState(false);
-  const [inquiries, setInquiries] = useState<InquiryPost[]>([]);
+
+  // 메모 관련 상태
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
+  const [memoText, setMemoText] = useState('');
+
+  // 문의 관련 상태
   const [inquiryTitle, setInquiryTitle] = useState('');
   const [inquiryContent, setInquiryContent] = useState('');
 
-  // 고도M 폰트 스타일
-  const godoFont = {
-    fontFamily: 'GodoM', // 실제 앱에서는 폰트 파일 등록 필요
-  };
-
-  // 초기화
+  // 화면 크기 변경 감지(필요 시 사용)
+  const [screenData, setScreenData] = useState(Dimensions.get('window'));
+  
+  // 스크롤 위치 유지를 위한 상태
+  const [scrollPositions, setScrollPositions] = useState<{[key: string]: number}>({});
+  
   useEffect(() => {
-    initializeTimeSlots();
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    const onChange = (result: any) => {
+      setScreenData(result.window);
+    };
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => subscription?.remove();
+  }, []);
 
-    // 애니메이션 시작
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(animationValue, {
-          toValue: 1,
-          duration: 3000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(animationValue, {
-          toValue: 0,
-          duration: 3000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
+  // 현재 시간 틱업데이트
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // 24시간 슬롯 초기화
-  const initializeTimeSlots = useCallback(() => {
-    const slots: TimeSlot[] = [];
-    for (let hour = 0; hour < 24; hour++) {
-      slots.push({
-        hour,
-        card: null,
-        isActive: false,
-        isDrawn: false
-      });
-    }
-    setTimeSlots(slots);
+  // 초기 타임슬롯 생성
+  useEffect(() => {
+    const initialSlots: TimeSlot[] = Array.from({ length: 24 }, (_, i) => ({
+      hour: i,
+      card: null,
+      isActive: i === currentTime.getHours(),
+      isDrawn: false,
+      memo: '',
+    }));
+    setTimeSlots(initialSlots);
   }, []);
 
-  // 모든 카드 뽑기
-  const drawAllCards = useCallback(() => {
-    const newSlots = timeSlots.map(slot => ({
+  // 현재 시간에 따른 활성화 슬랏 업데이트
+  useEffect(() => {
+    setTimeSlots(prev => prev.map(slot => ({
       ...slot,
-      card: CLASSIC_TAROT_DECK[Math.floor(Math.random() * CLASSIC_TAROT_DECK.length)],
-      isDrawn: true
-    }));
-    setTimeSlots(newSlots);
-  }, [timeSlots]);
+      isActive: slot.hour === currentTime.getHours(),
+    })));
+  }, [currentTime]);
 
-  // 현재 시간 카드 가져오기
-  const getCurrentCard = useMemo(() => {
+  // 다국어 헬퍼
+  const getText = (text: { ko: string; en: string }) => text[currentLanguage];
+
+  // 스크롤 위치 관리 함수들
+  const saveScrollPosition = (key: string, position: number) => {
+    setScrollPositions(prev => ({ ...prev, [key]: position }));
+  };
+
+  const getScrollPosition = (key: string) => scrollPositions[key] || 0;
+
+  // 랜덤 카드
+  const getRandomCard = () => TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)];
+
+  // 현재 시간 카드 뽑기
+  const drawCurrentCard = () => {
     const currentHour = currentTime.getHours();
-    const currentSlot = timeSlots.find(slot => slot.hour === currentHour);
-    return currentSlot?.card || null;
-  }, [currentTime, timeSlots]);
+    const newCard = getRandomCard();
+    setTimeSlots(prev => prev.map(slot => (slot.hour === currentHour ? { ...slot, card: newCard, isDrawn: true } : slot)));
+  };
 
-  // 언어별 텍스트 가져오기
-  const getText = useCallback((text: MultiLanguageText) => {
-    return text[currentLanguage];
-  }, [currentLanguage]);
+  // 24시간 카드 일괄 뽑기
+  const drawAllCards = () => {
+    setTimeSlots(prev => prev.map(slot => ({ ...slot, card: getRandomCard(), isDrawn: true })));
+    Alert.alert(getText({ ko: '✨ 카드 뽑기 완료!', en: '✨ Cards Drawn!' }), getText({ ko: '24시간 모든 카드가 뽑아졌습니다.', en: 'All 24-hour cards have been drawn.' }));
+  };
 
-  // 시간 포맷팅
-  const formatTime = useCallback((hour: number) => {
-    if (currentLanguage === 'ko') {
-      const period = hour < 12 ? '오전' : '오후';
-      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-      return `${period} ${displayHour}시`;
-    } else {
-      const period = hour < 12 ? 'AM' : 'PM';
-      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-      return `${displayHour} ${period}`;
-    }
-  }, [currentLanguage]);
-
-  // 오늘의 타로 일기 저장
-  const saveTodayDiary = useCallback(() => {
+  // 일기 저장
+  const saveTodayDiary = () => {
     const today = new Date().toISOString().split('T')[0];
-    const existingEntry = diaryEntries.find(entry => entry.date === today);
-    
-    if (existingEntry) {
-      Alert.alert(
-        getText({ ko: '이미 저장됨', en: 'Already Saved' }),
-        getText({ ko: '오늘의 일기가 이미 저장되어 있습니다.', en: 'Today\'s diary is already saved.' })
-      );
-      return;
-    }
-
-    const drawnSlots = timeSlots.filter(slot => slot.card !== null);
+    const drawnSlots = timeSlots.filter(s => s.isDrawn);
     if (drawnSlots.length === 0) {
-      Alert.alert(
-        getText({ ko: '카드 없음', en: 'No Cards' }),
-        getText({ ko: '저장할 카드가 없습니다. 먼저 카드를 뽑아주세요.', en: 'No cards to save. Please draw cards first.' })
-      );
+      Alert.alert(getText({ ko: '카드가 없습니다', en: 'No Cards' }), getText({ ko: '먼저 카드를 뽑아주세요.', en: 'Please draw cards first.' }));
       return;
     }
-
     const newEntry: DiaryEntry = {
       id: `diary_${Date.now()}`,
       date: today,
-      timeSlots: [...timeSlots],
-      createdAt: new Date()
+      timeSlots: drawnSlots,
+      createdAt: new Date(),
     };
-
     setDiaryEntries(prev => [newEntry, ...prev]);
-    Alert.alert(
-      getText({ ko: '저장 완료!', en: 'Saved!' }),
-      getText({ ko: '오늘의 타로 일기가 저장되었습니다.', en: 'Today\'s tarot diary has been saved.' })
-    );
-  }, [timeSlots, diaryEntries, getText]);
+    Alert.alert(getText({ ko: '💾 저장 완료!', en: '💾 Saved!' }), getText({ ko: "오늘의 타로 일기가 저장되었습니다.", en: "Today's tarot diary has been saved." }));
+  };
 
   // 일기 삭제
-  const deleteDiaryEntry = useCallback((entryId: string) => {
+  const deleteDiaryEntry = (entryId: string) => {
     Alert.alert(
-      getText({ ko: '삭제 확인', en: 'Confirm Delete' }),
-      getText({ ko: '정말로 삭제하시겠습니까?', en: 'Are you sure you want to delete?' }),
+      getText({ ko: '일기 삭제', en: 'Delete Diary' }),
+      getText({ ko: '정말로 이 일기를 삭제하시겠습니까?', en: 'Are you sure you want to delete this diary?' }),
       [
         { text: getText({ ko: '취소', en: 'Cancel' }), style: 'cancel' },
-        {
-          text: getText({ ko: '삭제', en: 'Delete' }),
-          style: 'destructive',
-          onPress: () => {
-            setDiaryEntries(prev => prev.filter(entry => entry.id !== entryId));
-          }
-        }
-      ]
+        { text: getText({ ko: '삭제', en: 'Delete' }), style: 'destructive', onPress: () => setDiaryEntries(prev => prev.filter(e => e.id !== entryId)) },
+      ],
     );
-  }, [getText]);
+  };
 
   // 메모 저장
-  const saveMemo = useCallback((hour: number, memo: string) => {
-    setTimeSlots(prev => prev.map(slot => 
-      slot.hour === hour ? { ...slot, memo } : slot
-    ));
-    
-    // 일기에도 반영
-    setDiaryEntries(prev => prev.map(entry => {
-      if (entry.date === new Date().toISOString().split('T')[0]) {
-        return {
-          ...entry,
-          timeSlots: entry.timeSlots.map(slot => 
-            slot.hour === hour ? { ...slot, memo } : slot
-          )
-        };
-      }
-      return entry;
-    }));
-  }, []);
+  const saveMemo = () => {
+    if (!selectedTimeSlot) return;
+    setTimeSlots(prev => prev.map(slot => (slot.hour === selectedTimeSlot.hour ? { ...slot, memo: memoText.trim() } : slot)));
+    setShowMemo(false);
+    setMemoText('');
+    setSelectedTimeSlot(null);
+  };
+
+  // 메모 열기
+  const openMemo = (slot: TimeSlot) => {
+    setSelectedTimeSlot(slot);
+    setMemoText(slot.memo || '');
+    setShowMemo(true);
+  };
 
   // 문의 제출
-  const submitInquiry = useCallback(() => {
+  const submitInquiry = () => {
     if (!inquiryTitle.trim() || !inquiryContent.trim()) {
-      Alert.alert(
-        getText({ ko: '입력 오류', en: 'Input Error' }),
-        getText({ ko: '제목과 내용을 모두 입력해주세요.', en: 'Please enter both title and content.' })
-      );
+      Alert.alert(getText({ ko: '입력 오류', en: 'Input Error' }), getText({ ko: '제목과 내용을 모두 입력해주세요.', en: 'Please enter both title and content.' }));
       return;
     }
-
     const newInquiry: InquiryPost = {
       id: `inquiry_${Date.now()}`,
       title: inquiryTitle.trim(),
       content: inquiryContent.trim(),
       date: new Date().toLocaleDateString(),
-      status: 'pending'
+      status: 'waiting',
     };
-
     setInquiries(prev => [newInquiry, ...prev]);
     setInquiryTitle('');
     setInquiryContent('');
-    
-    Alert.alert(
-      getText({ ko: '문의 완료!', en: 'Inquiry Submitted!' }),
-      getText({ ko: '문의가 접수되었습니다. 빠른 시일 내에 답변드리겠습니다.', en: 'Your inquiry has been submitted. We will respond as soon as possible.' })
-    );
-  }, [inquiryTitle, inquiryContent, getText]);
+    Alert.alert(getText({ ko: '💬 문의 접수', en: '💬 Inquiry Submitted' }), getText({ ko: '문의가 접수되었습니다.', en: 'Your inquiry has been submitted.' }));
+  };
 
-  // 배너 클릭 처리
-  const handleBannerPress = useCallback(() => {
-    const url = Platform.OS === 'ios' 
-      ? BANNER_CONFIG.linkUrl.ios 
-      : Platform.OS === 'android' 
-        ? BANNER_CONFIG.linkUrl.android 
-        : BANNER_CONFIG.linkUrl.web;
-    
-    Linking.openURL(url).catch(() => {
-      Alert.alert(
-        getText({ ko: '링크 오류', en: 'Link Error' }),
-        getText({ ko: '링크를 열 수 없습니다.', en: 'Cannot open the link.' })
-      );
-    });
-  }, [getText]);
-    if (userPoints >= theme.price) {
-      setUserPoints(prev => prev - theme.price);
-      setCurrentTheme(theme);
-      Alert.alert(
-        getText({ ko: '구매 완료!', en: 'Purchase Complete!' }),
-        getText({ ko: '새 테마가 적용되었습니다.', en: 'New theme has been applied.' })
-      );
-    } else {
-      Alert.alert(
-        getText({ ko: '포인트 부족', en: 'Insufficient Points' }),
-        getText({ ko: '포인트가 부족합니다.', en: 'You don\'t have enough points.' })
-      );
-    }
   // 테마 구매
-  const purchaseTheme = useCallback((theme: CardTheme) => {
-
-    if (userPoints >= theme.price) {
-      setUserPoints(prev => prev - theme.price);
-      setCurrentTheme(theme);
-      Alert.alert(
-        getText({ ko: '구매 완료!', en: 'Purchase Complete!' }),
-        getText({ ko: '새 테마가 적용되었습니다.', en: 'New theme has been applied.' })
-      );
-    } else {
-      Alert.alert(
-        getText({ ko: '포인트 부족', en: 'Insufficient Points' }),
-        getText({ ko: '포인트가 부족합니다.', en: 'You don\'t have enough points.' })
-      );
+  const purchaseTheme = (theme: CardTheme) => {
+    if (userPoints < theme.price) {
+      Alert.alert(getText({ ko: '포인트 부족', en: 'Insufficient Points' }), getText({ ko: '포인트가 부족합니다.', en: "You don't have enough points." }));
+      return;
     }
-  }, [userPoints, getText]);
-  const TarotCard = React.memo(({ 
-    card, 
-    size = 'medium', 
-    onPress,
-    isCurrentTime = false 
-  }: {
-    card: TarotCard;
-    size?: 'small' | 'medium' | 'large';
-    onPress?: () => void;
-    isCurrentTime?: boolean;
-  }) => {
-    const cardSizes = {
-      small: { width: 60, height: 90 },
-      medium: { width: 80, height: 120 },
-      large: { width: 120, height: 180 }
-    };
+    setUserPoints(prev => prev - theme.price);
+    setThemes(prev => prev.map(t => (t.id === theme.id ? { ...t, isPurchased: true } : t)));
+    setCurrentTheme(theme);
+    Alert.alert(getText({ ko: '구매 완료!', en: 'Purchase Complete!' }), getText({ ko: '새 테마가 적용되었습니다.', en: 'New theme has been applied.' }));
+  };
 
-    const cardSize = cardSizes[size];
+  // 카드 이미지 소스 (정적 require 매핑)
+  const getCardImageSource = (card: TarotCard) => {
+    if (!card.imagePath) return null;
+    // 현재는 classic 테마 자산만 제공되므로 classic 매핑 사용
+    return CARD_IMAGE_MAP[card.imagePath] || null;
+  };
+
+  // 외부 링크 배너
+  const handleBannerPress = () => {
+    const url = 'https://tarot-timer.vercel.app';
+    Linking.openURL(url).catch(() => {
+      Alert.alert(getText({ ko: '링크 오류', en: 'Link Error' }), getText({ ko: '링크를 열 수 없습니다.', en: 'Cannot open the link.' }));
+    });
+  };
+
+  // 현재 시간 카드 가져오기
+  const getCurrentCard = () => {
+    const currentHour = currentTime.getHours();
+    const currentSlot = timeSlots.find(s => s.hour === currentHour);
+    return currentSlot?.card || null;
+  };
+
+  // 타로 카드 컴포넌트
+  const TarotCardView = ({ card, hour, slot, size = 'medium', scale = 1 }: { card: TarotCard; hour: number; slot?: TimeSlot; size?: 'small' | 'medium' | 'large' | 'xlarge'; scale?: number }) => {
+    // 가로 폭에 맞춘 유연한 카드 크기
+    const baseWidth =
+      size === 'small'
+        ? getResponsiveSize(52, 60, 68, 80)
+        : size === 'large'
+        ? getResponsiveSize(110, 128, 144, 168)
+        : size === 'xlarge'
+        ? getResponsiveSize(140, 160, 180, 200)
+        : getResponsiveSize(76, 88, 100, 112);
+    const maxWidth = Math.min(width * 0.85, 420);
+    const cardWidth = Math.min(baseWidth * scale, maxWidth);
+    const cardHeight = Math.round(cardWidth * 1.5);
+    const imageSource = getCardImageSource(card);
 
     return (
-      <TouchableOpacity
-        style={[
-          styles.tarotCard,
-          cardSize,
-          { backgroundColor: card.color + '20', borderColor: card.color },
-          isCurrentTime && styles.currentTimeCard
-        ]}
-        onPress={onPress}
-        activeOpacity={0.8}
-      >
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardEmoji, { fontSize: size === 'small' ? 20 : size === 'medium' ? 24 : 32 }]}>
-            {card.emoji}
-          </Text>
-          <Text style={[styles.cardName, godoFont, { fontSize: size === 'small' ? 10 : size === 'medium' ? 12 : 14 }]}>
-            {getText(card.name)}
-          </Text>
-          <Text style={[styles.cardSuit, { fontSize: size === 'small' ? 8 : 10 }]}>
-            {card.suit}
-          </Text>
-        </View>
-        <TouchableOpacity
-          style={styles.zoomButton}
-          onPress={(e) => {
-            e.stopPropagation();
-            setZoomedCard(card);
-          }}
+      <View style={styles.cardContainer}>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: imageSource ? 'transparent' : card.color,
+              width: cardWidth,
+              height: cardHeight,
+              borderRadius: getResponsiveSpacing(12),
+              padding: getResponsiveSpacing(8),
+              overflow: 'hidden',
+            },
+          ]}
         >
-          <Text style={styles.zoomIcon}>🔍</Text>
-        </TouchableOpacity>
-      </TouchableOpacity>
-    );
-  });
-
-  // 카드 확대 모달
-  const CardZoomModal = () => (
-    <Modal
-      visible={zoomedCard !== null}
-      transparent
-      animationType="fade"
-      onRequestClose={() => setZoomedCard(null)}
-    >
-      <View style={styles.zoomModalOverlay}>
-        <TouchableOpacity
-          style={styles.zoomModalBackground}
-          onPress={() => setZoomedCard(null)}
-        >
-          <View style={styles.zoomModalContent}>
-            {zoomedCard && (
-              <>
-                <View style={[styles.zoomedCard, { backgroundColor: zoomedCard.color + '30', borderColor: zoomedCard.color }]}>
-                  <Text style={[styles.zoomedCardEmoji]}>{zoomedCard.emoji}</Text>
-                  <Text style={[styles.zoomedCardName, godoFont]}>{getText(zoomedCard.name)}</Text>
-                  <Text style={styles.zoomedCardSuit}>{zoomedCard.suit}</Text>
-                </View>
-                <View style={styles.zoomedCardInfo}>
-                  <Text style={[styles.zoomedCardDescription, godoFont]}>
-                    {getText(zoomedCard.description)}
-                  </Text>
-                  <View style={styles.keywordsContainer}>
-                    {zoomedCard.keywords.map((keyword, index) => (
-                      <View key={index} style={[styles.keywordTag, { backgroundColor: zoomedCard.color + '20' }]}>
-                        <Text style={[styles.keywordText, godoFont]}>{getText(keyword)}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-              </>
-            )}
-          </View>
-        </TouchableOpacity>
-      </View>
-    </Modal>
-  );
-
-  // 설정 모달
-  const SettingsModal = () => (
-    <Modal
-      visible={showSettings}
-      transparent
-      animationType="slide"
-      onRequestClose={() => setShowSettings(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={[styles.modalTitle, godoFont]}>
-            {getText({ ko: '설정', en: 'Settings' })}
-          </Text>
-          
-          {/* 배너 */}
-          <TouchableOpacity style={styles.banner} onPress={handleBannerPress}>
-            <View style={styles.bannerContent}>
-              <Text style={[styles.bannerTitle, godoFont]}>
-                {getText(BANNER_CONFIG.title)}
-              </Text>
-              <Text style={styles.bannerSubtitle}>
-                {getText({ ko: '터치하여 자세히 보기', en: 'Tap for more details' })}
-              </Text>
-            </View>
-            <Text style={styles.bannerIcon}>🔗</Text>
-          </TouchableOpacity>
-          
-          {/* 언어 설정 */}
-          <View style={styles.settingSection}>
-            <Text style={[styles.settingSectionTitle, godoFont]}>
-              {getText({ ko: '언어 설정', en: 'Language Settings' })}
-            </Text>
-            <View style={styles.languageSelector}>
-              {LANGUAGES.map((lang) => (
-                <TouchableOpacity
-                  key={lang.code}
-                  style={[
-                    styles.languageButton,
-                    currentLanguage === lang.code && styles.languageButtonActive
-                  ]}
-                  onPress={() => setCurrentLanguage(lang.code)}
-                >
-                  <Text style={styles.languageFlag}>{lang.flag}</Text>
-                  <Text style={[styles.languageText, godoFont]}>{lang.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-          
-          {/* 잠금화면 설정 */}
-          <View style={styles.settingItem}>
-            <Text style={[styles.settingLabel, godoFont]}>
-              {getText({ ko: '잠금화면 카드 표시', en: 'Lock Screen Card Display' })}
-            </Text>
-            <Switch
-              value={lockScreenEnabled}
-              onValueChange={setLockScreenEnabled}
-              trackColor={{ false: '#767577', true: '#FF6B9D' }}
-            />
-          </View>
-
-          {/* 게시판 버튼들 */}
-          <View style={styles.boardButtons}>
-            <TouchableOpacity
-              style={styles.boardButton}
-              onPress={() => setShowNoticeBoard(true)}
-            >
-              <Text style={[styles.boardButtonText, godoFont]}>
-                📢 {getText({ ko: '공지사항', en: 'Notices' })}
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.boardButton}
-              onPress={() => setShowInquiryBoard(true)}
-            >
-              <Text style={[styles.boardButtonText, godoFont]}>
-                💬 {getText({ ko: '문의하기', en: 'Inquiries' })}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowSettings(false)}
-          >
-            <Text style={[styles.closeButtonText, godoFont]}>
-              {getText({ ko: '닫기', en: 'Close' })}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  ); ko: '닫기', en: 'Close' })}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  // 타로 일기 모달
-  const DiaryModal = () => (
-    <Modal
-      visible={showDiary}
-      transparent
-      animationType="slide"
-      onRequestClose={() => setShowDiary(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={[styles.modalTitle, godoFont]}>
-            📖 {getText({ ko: '타로 일기', en: 'Tarot Diary' })}
-          </Text>
-          
-          <ScrollView style={styles.diaryList} showsVerticalScrollIndicator={false}>
-            {diaryEntries.length === 0 ? (
-              <View style={styles.emptyDiary}>
-                <Text style={[styles.emptyDiaryText, godoFont]}>
-                  {getText({ ko: '저장된 일기가 없습니다.', en: 'No diary entries saved.' })}
-                </Text>
-                <Text style={styles.emptyDiarySubtext}>
-                  {getText({ ko: '카드를 뽑고 "오늘 일기 저장"을 눌러보세요!', en: 'Draw cards and tap "Save Today\'s Diary"!' })}
-                </Text>
-              </View>
-            ) : (
-              diaryEntries.map((entry) => (
-                <View key={entry.id} style={styles.diaryEntry}>
-                  <View style={styles.diaryEntryHeader}>
-                    <Text style={[styles.diaryEntryDate, godoFont]}>
-                      📅 {new Date(entry.date).toLocaleDateString(currentLanguage === 'ko' ? 'ko-KR' : 'en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        weekday: 'long'
-                      })}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={() => deleteDiaryEntry(entry.id)}
-                    >
-                      <Text style={styles.deleteButtonText}>🗑️</Text>
-                    </TouchableOpacity>
-                  </View>
-                  
-                  <ScrollView horizontal style={styles.diaryCards} showsHorizontalScrollIndicator={false}>
-                    {entry.timeSlots.filter(slot => slot.card).map((slot) => (
-                      <View key={slot.hour} style={styles.diaryCardItem}>
-                        <Text style={styles.diaryCardTime}>{formatTime(slot.hour)}</Text>
-                        <TarotCard 
-                          card={slot.card!} 
-                          size="small"
-                          onPress={() => setZoomedCard(slot.card)}
-                        />
-                        {slot.memo && (
-                          <Text style={styles.diaryCardMemo}>
-                            📝 {slot.memo.substring(0, 15)}{slot.memo.length > 15 ? '...' : ''}
-                          </Text>
-                        )}
-                      </View>
-                    ))}
-                  </ScrollView>
-                </View>
-              ))
-            )}
-          </ScrollView>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowDiary(false)}
-          >
-            <Text style={[styles.closeButtonText, godoFont]}>
-              {getText({ ko: '닫기', en: 'Close' })}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  // 메모 작성 모달
-  const MemoModal = () => (
-    <Modal
-      visible={showMemoModal}
-      transparent
-      animationType="fade"
-      onRequestClose={() => setShowMemoModal(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.memoModalContent}>
-          <Text style={[styles.modalTitle, godoFont]}>
-            ✏️ {getText({ ko: '메모 작성', en: 'Write Memo' })}
-          </Text>
-          
-          {selectedTimeSlot && (
+          {imageSource ? (
             <>
-              <Text style={[styles.memoTimeText, godoFont]}>
-                {formatTime(selectedTimeSlot.hour)}
-              </Text>
-              
-              <TextInput
-                style={[styles.memoInput, godoFont]}
-                placeholder={getText({ ko: '이 시간의 타로카드에 대한 메모를 작성해보세요...', en: 'Write a memo about this hour\'s tarot card...' })}
-                placeholderTextColor="#888"
-                value={selectedTimeSlot.memo}
-                onChangeText={(text) => setSelectedTimeSlot(prev => prev ? {...prev, memo: text} : null)}
-                multiline
-                numberOfLines={4}
-                maxLength={200}
+              <Image
+                source={imageSource}
+                style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, borderRadius: getResponsiveSpacing(12) }}
+                resizeMode="cover"
+                onError={() => {
+                  // 로컬 이미지 동적 로딩 실패 시 이모지로 폴백
+                }}
               />
-              
-              <View style={styles.memoActions}>
-                <TouchableOpacity
-                  style={[styles.memoActionButton, styles.memoCancelButton]}
-                  onPress={() => {
-                    setShowMemoModal(false);
-                    setSelectedTimeSlot(null);
-                  }}
+              <View style={styles.cardImageOverlay}>
+                <Text
+                  style={[
+                    styles.cardName,
+                    {
+                      fontSize: getResponsiveFontSize(size === 'small' ? 8 : size === 'large' ? 14 : size === 'xlarge' ? 16 : 10),
+                      color: '#fff',
+                      textShadowColor: 'rgba(0, 0, 0, 0.8)',
+                      textShadowOffset: { width: 1, height: 1 },
+                      textShadowRadius: 2,
+                    },
+                  ]}
                 >
-                  <Text style={[styles.memoActionText, godoFont]}>
-                    {getText({ ko: '취소', en: 'Cancel' })}
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.memoActionButton, styles.memoSaveButton]}
-                  onPress={() => {
-                    if (selectedTimeSlot) {
-                      saveMemo(selectedTimeSlot.hour, selectedTimeSlot.memo);
-                      setShowMemoModal(false);
-                      setSelectedTimeSlot(null);
-                    }
-                  }}
-                >
-                  <Text style={[styles.memoActionText, godoFont]}>
-                    {getText({ ko: '저장', en: 'Save' })}
-                  </Text>
-                </TouchableOpacity>
+                  {getText(card.name)}
+                </Text>
               </View>
+            </>
+          ) : (
+            <>
+              <Text style={[styles.cardEmoji, { fontSize: getResponsiveFontSize(size === 'small' ? 18 : size === 'large' ? 32 : size === 'xlarge' ? 40 : 24) }]}>{card.emoji}</Text>
+              <Text style={[styles.cardName, { fontSize: getResponsiveFontSize(size === 'small' ? 8 : size === 'large' ? 14 : size === 'xlarge' ? 16 : 10) }]}>{getText(card.name)}</Text>
             </>
           )}
         </View>
+        {slot && (
+          <TouchableOpacity
+            style={[
+              styles.memoButton,
+              {
+                width: getResponsiveSize(20, 24, 28, 32),
+                height: getResponsiveSize(20, 24, 28, 32),
+                borderRadius: getResponsiveSize(10, 12, 14, 16),
+              },
+            ]}
+            onPress={() => openMemo(slot)}
+          >
+            <Text style={[styles.memoButtonText, { fontSize: getResponsiveFontSize(slot.memo ? 14 : 12) }]}>{slot.memo ? '📝' : '✏️'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    </Modal>
-  );
+    );
+  };
 
-  // 공지사항 모달
-  const NoticeBoardModal = () => (
-    <Modal
-      visible={showNoticeBoard}
-      transparent
-      animationType="slide"
-      onRequestClose={() => setShowNoticeBoard(false)}
+  // 메인 페이지
+  const MainPage = () => (
+    <ScrollView 
+      style={styles.pageContainer}
+      onScroll={(event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        saveScrollPosition('main', offsetY);
+      }}
+      scrollEventThrottle={16}
+      contentOffset={{ x: 0, y: getScrollPosition('main') }}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={[styles.modalTitle, godoFont]}>
-            📢 {getText({ ko: '공지사항', en: 'Notices' })}
-          </Text>
-          
-          <ScrollView style={styles.noticeList} showsVerticalScrollIndicator={false}>
-            {NOTICE_POSTS.map((notice) => (
-              <View key={notice.id} style={[styles.noticeItem, notice.isImportant && styles.importantNotice]}>
-                <View style={styles.noticeHeader}>
-                  {notice.isImportant && <Text style={styles.importantBadge}>🔥 중요</Text>}
-                  <Text style={styles.noticeDate}>{notice.date}</Text>
-                </View>
-                <Text style={[styles.noticeTitle, godoFont]}>
-                  {getText(notice.title)}
-                </Text>
-                <Text style={styles.noticeContent}>
-                  {getText(notice.content)}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowNoticeBoard(false)}
-          >
-            <Text style={[styles.closeButtonText, godoFont]}>
-              {getText({ ko: '닫기', en: 'Close' })}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  // 문의 게시판 모달
-  const InquiryBoardModal = () => (
-    <Modal
-      visible={showInquiryBoard}
-      transparent
-      animationType="slide"
-      onRequestClose={() => setShowInquiryBoard(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={[styles.modalTitle, godoFont]}>
-            💬 {getText({ ko: '문의하기', en: 'Inquiries' })}
-          </Text>
-          
-          {/* 문의 작성 폼 */}
-          <View style={styles.inquiryForm}>
-            <TextInput
-              style={[styles.inquiryTitleInput, godoFont]}
-              placeholder={getText({ ko: '문의 제목을 입력하세요', en: 'Enter inquiry title' })}
-              placeholderTextColor="#888"
-              value={inquiryTitle}
-              onChangeText={setInquiryTitle}
-              maxLength={50}
-            />
-            
-            <TextInput
-              style={[styles.inquiryContentInput, godoFont]}
-              placeholder={getText({ ko: '문의 내용을 자세히 작성해주세요...', en: 'Please write your inquiry in detail...' })}
-              placeholderTextColor="#888"
-              value={inquiryContent}
-              onChangeText={setInquiryContent}
-              multiline
-              numberOfLines={5}
-              maxLength={500}
-            />
-            
-            <TouchableOpacity
-              style={styles.submitInquiryButton}
-              onPress={submitInquiry}
-            >
-              <Text style={[styles.submitInquiryText, godoFont]}>
-                ✉️ {getText({ ko: '문의 접수', en: 'Submit Inquiry' })}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          
-          {/* 내 문의 목록 */}
-          <View style={styles.myInquiries}>
-            <Text style={[styles.myInquiriesTitle, godoFont]}>
-              {getText({ ko: '내 문의 내역', en: 'My Inquiries' })}
-            </Text>
-            
-            <ScrollView style={styles.inquiryList} showsVerticalScrollIndicator={false}>
-              {inquiries.length === 0 ? (
-                <Text style={styles.emptyInquiryText}>
-                  {getText({ ko: '문의 내역이 없습니다.', en: 'No inquiries found.' })}
-                </Text>
-              ) : (
-                inquiries.map((inquiry) => (
-                  <View key={inquiry.id} style={styles.inquiryItem}>
-                    <View style={styles.inquiryItemHeader}>
-                      <Text style={[styles.inquiryItemTitle, godoFont]}>{inquiry.title}</Text>
-                      <View style={[
-                        styles.inquiryStatus,
-                        inquiry.status === 'answered' ? styles.answeredStatus : styles.pendingStatus
-                      ]}>
-                        <Text style={styles.inquiryStatusText}>
-                          {inquiry.status === 'answered' 
-                            ? getText({ ko: '답변완료', en: 'Answered' })
-                            : getText({ ko: '대기중', en: 'Pending' })
-                          }
-                        </Text>
-                      </View>
-                    </View>
-                    <Text style={styles.inquiryItemDate}>{inquiry.date}</Text>
-                    <Text style={styles.inquiryItemContent}>{inquiry.content}</Text>
-                    {inquiry.answer && (
-                      <View style={styles.inquiryAnswer}>
-                        <Text style={[styles.inquiryAnswerLabel, godoFont]}>
-                          💬 {getText({ ko: '답변', en: 'Answer' })}:
-                        </Text>
-                        <Text style={styles.inquiryAnswerText}>{inquiry.answer}</Text>
-                      </View>
-                    )}
-                  </View>
-                ))
-              )}
-            </ScrollView>
-          </View>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowInquiryBoard(false)}
-          >
-            <Text style={[styles.closeButtonText, godoFont]}>
-              {getText({ ko: '닫기', en: 'Close' })}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-    <Modal
-      visible={showThemeStore}
-      transparent
-      animationType="slide"
-      onRequestClose={() => setShowThemeStore(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={[styles.modalTitle, godoFont]}>
-            {getText({ ko: '테마 상점', en: 'Theme Store' })}
-          </Text>
-          
-          <View style={styles.pointsDisplay}>
-            <Text style={[styles.pointsText, godoFont]}>
-              {getText({ ko: '보유 포인트', en: 'Your Points' })}: {userPoints}P
-            </Text>
-          </View>
-
-          <ScrollView style={styles.themeList}>
-            {CARD_THEMES.map((theme) => (
-              <View key={theme.id} style={styles.themeItem}>
-                <View style={styles.themeInfo}>
-                  <Text style={[styles.themeName, godoFont]}>{getText(theme.name)}</Text>
-                  <Text style={styles.themeDescription}>{getText(theme.description)}</Text>
-                  <Text style={[styles.themePrice, godoFont]}>
-                    {theme.isPremium ? `${theme.price}P` : getText({ ko: '무료', en: 'Free' })}
-                  </Text>
-                </View>
-                <TouchableOpacity
-                  style={[
-                    styles.themeButton,
-                    currentTheme.id === theme.id && styles.themeButtonActive
-                  ]}
-                  onPress={() => theme.isPremium ? purchaseTheme(theme) : setCurrentTheme(theme)}
-                >
-                  <Text style={[styles.themeButtonText, godoFont]}>
-                    {currentTheme.id === theme.id 
-                      ? getText({ ko: '사용중', en: 'Using' })
-                      : theme.isPremium 
-                        ? getText({ ko: '구매', en: 'Buy' })
-                        : getText({ ko: '사용', en: 'Use' })
-                    }
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </ScrollView>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowThemeStore(false)}
-          >
-            <Text style={[styles.closeButtonText, godoFont]}>
-              {getText({ ko: '닫기', en: 'Close' })}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#1a1a2e" />
-      
-      {/* 배경 그라데이션 */}
-      <View style={styles.backgroundGradient} />
-      
-      {/* 홀로그램 효과 */}
-      <Animated.View
-        style={[
-          styles.hologramEffect,
-          {
-            opacity: animationValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.1, 0.3],
-            }),
-          },
-        ]}
-      />
-
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <View style={styles.languageSelector}>
-          {LANGUAGES.map((lang) => (
-            <TouchableOpacity
-              key={lang.code}
-              style={[
-                styles.languageButton,
-                currentLanguage === lang.code && styles.languageButtonActive
-              ]}
-              onPress={() => setCurrentLanguage(lang.code)}
-            >
-              <Text style={styles.languageFlag}>{lang.flag}</Text>
-              <Text style={[styles.languageText, godoFont]}>{lang.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Text style={[styles.appTitle, godoFont]}>
-          🔮 {getText({ ko: '타로 타이머', en: 'Tarot Timer' })}
+      <View style={styles.timeDisplay}>
+        <Text style={[styles.currentTime, { fontSize: getResponsiveFontSize(36) }]}>
+          {currentTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </Text>
-
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => setShowThemeStore(true)}
-          >
-            <Text style={styles.headerButtonText}>🎨</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => setShowSettings(true)}
-          >
-            <Text style={styles.headerButtonText}>⚙️</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={[styles.currentDate, { fontSize: getResponsiveFontSize(16) }]}>
+          {currentTime.toLocaleDateString(currentLanguage === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
+        </Text>
       </View>
 
-      {/* 현재 시간 및 카드 */}
-      <View style={styles.currentTimeSection}>
-        <Text style={[styles.currentTimeText, godoFont]}>
-          {formatTime(currentTime.getHours())}
-        </Text>
-        <Text style={[styles.currentDateText, godoFont]}>
-          {currentTime.toLocaleDateString(currentLanguage === 'ko' ? 'ko-KR' : 'en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            weekday: 'long'
-          })}
-        </Text>
-        
-        {getCurrentCard ? (
-          <View style={styles.currentCardContainer}>
-            <Text style={[styles.currentCardLabel, godoFont]}>
-              {getText({ ko: '현재 시간의 카드', en: 'Current Time Card' })}
-            </Text>
-            <TarotCard 
-              card={getCurrentCard} 
-              size="large" 
-              isCurrentTime={true}
-              onPress={() => setZoomedCard(getCurrentCard)}
-            />
-            <View style={styles.currentCardInfo}>
-              <Text style={[styles.currentCardName, godoFont]}>
-                {getText(getCurrentCard.name)}
-              </Text>
-              <View style={styles.currentCardKeywords}>
-                {getCurrentCard.keywords.slice(0, 2).map((keyword, index) => (
-                  <Text key={index} style={[styles.currentCardKeyword, godoFont]}>
-                    {getText(keyword)}
-                  </Text>
-                ))}
-              </View>
-            </View>
-          </View>
+      <View style={styles.currentCardSection}>
+        <Text style={[styles.sectionTitle, { fontSize: getResponsiveFontSize(18) }]}>✨ {getText({ ko: '현재 시간 카드', en: 'Current Hour Card' })}</Text>
+        {getCurrentCard() ? (
+          <TarotCardView card={getCurrentCard() as TarotCard} hour={currentTime.getHours()} slot={timeSlots.find(s => s.hour === currentTime.getHours())} size="xlarge" scale={1.5} />
         ) : (
-          <View style={styles.noCardContainer}>
-            <Text style={[styles.noCardText, godoFont]}>
-              {getText({ ko: '카드를 뽑아주세요', en: 'Please draw cards' })}
-            </Text>
+          <View
+            style={[
+              styles.noCardContainer,
+              { width: getResponsiveSize(140, 160, 180, 200), height: getResponsiveSize(210, 240, 270, 300) },
+            ]}
+          >
+            <Text style={[styles.noCardText, { fontSize: getResponsiveFontSize(14) }]}>{getText({ ko: '카드를 뽑아보세요!', en: 'Draw a card!' })}</Text>
+            <TouchableOpacity
+              style={[styles.drawCardButton, { paddingHorizontal: getResponsiveSpacing(20), paddingVertical: getResponsiveSpacing(10), borderRadius: getResponsiveSpacing(20) }]}
+              onPress={drawCurrentCard}
+            >
+              <Text style={[styles.drawCardButtonText, { fontSize: getResponsiveFontSize(14) }]}>✨ {getText({ ko: '카드 뽑기', en: 'Draw Card' })}</Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
 
-      <View style={styles.controlButtons}>
+      <View style={[styles.controlButtons, { paddingHorizontal: getResponsiveSpacing(15), marginBottom: getResponsiveSpacing(20) }]}>
         <TouchableOpacity
-          style={[styles.controlButton, styles.drawAllButton]}
+          style={[styles.controlButton, styles.currentCardButton, { paddingVertical: getResponsiveSpacing(12), paddingHorizontal: getResponsiveSpacing(16), borderRadius: getResponsiveSpacing(20), minWidth: width * (isTablet ? 0.2 : 0.4) }]}
+          onPress={drawCurrentCard}
+        >
+          <Text style={[styles.controlButtonText, { fontSize: getResponsiveFontSize(14) }]}>✨ {getText({ ko: '현재 카드', en: 'Current Card' })}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.controlButton, styles.allCardsButton, { paddingVertical: getResponsiveSpacing(12), paddingHorizontal: getResponsiveSpacing(16), borderRadius: getResponsiveSpacing(20), minWidth: width * (isTablet ? 0.2 : 0.4) }]}
           onPress={drawAllCards}
         >
-          <Text style={[styles.controlButtonText, godoFont]}>
-            🎴 {getText({ ko: '24시간 카드 뽑기', en: 'Draw 24 Hour Cards' })}
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.controlButton, styles.saveButton]}
-          onPress={saveTodayDiary}
-        >
-          <Text style={[styles.controlButtonText, godoFont]}>
-            💾 {getText({ ko: '오늘 일기 저장', en: 'Save Today\'s Diary' })}
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[styles.controlButton, styles.diaryButton]}
-          onPress={() => setShowDiary(true)}
-        >
-          <Text style={[styles.controlButtonText, godoFont]}>
-            📖 {getText({ ko: '일기 보기', en: 'View Diary' })}
-          </Text>
+          <Text style={[styles.controlButtonText, { fontSize: getResponsiveFontSize(14) }]}>🎴 {getText({ ko: '24시간', en: '24 Hours' })}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 24시간 타임라인 */}
-      <ScrollView style={styles.timelineContainer} showsVerticalScrollIndicator={false}>
-        <Text style={[styles.timelineTitle, godoFont]}>
-          {getText({ ko: '24시간 타로 타임라인', en: '24-Hour Tarot Timeline' })}
-        </Text>
-        
-        <View style={styles.timeline}>
-          {timeSlots.map((slot) => {
-            const isCurrentHour = slot.hour === currentTime.getHours();
-            const isPastHour = slot.hour < currentTime.getHours();
-            const isFutureHour = slot.hour > currentTime.getHours();
-            
-            return (
-              <View 
-                key={slot.hour} 
-                style={[
-                  styles.timeSlot,
-                  isCurrentHour && styles.currentTimeSlot,
-                  isPastHour && styles.pastTimeSlot,
-                  isFutureHour && styles.futureTimeSlot
-                ]}
-              >
-                <View style={styles.timeSlotHeader}>
-                  <Text style={[styles.timeSlotTime, godoFont]}>
-                    {formatTime(slot.hour)}
-                  </Text>
-                  <View style={[
-                    styles.timeSlotIndicator,
-                    isCurrentHour && styles.currentTimeIndicator,
-                    isPastHour && styles.pastTimeIndicator,
-                    isFutureHour && styles.futureTimeIndicator
-                  ]} />
+      <View style={[styles.horizontalTimelineSection, { paddingHorizontal: getResponsiveSpacing(20) }]}>
+        <Text style={[styles.sectionTitle, { fontSize: getResponsiveFontSize(18), marginBottom: getResponsiveSpacing(15) }]}>🕐 {getText({ ko: '24시간 타임라인', en: '24-Hour Timeline' })}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: getResponsiveSpacing(10) }}>
+          {timeSlots.map(slot => (
+            <View
+              key={slot.hour}
+              style={[
+                styles.horizontalTimeSlot,
+                {
+                  padding: getResponsiveSpacing(10),
+                  marginHorizontal: getResponsiveSpacing(5),
+                  minWidth: getResponsiveSize(70, 80, 90, 100),
+                  borderRadius: getResponsiveSpacing(12),
+                },
+                slot.isActive && styles.currentHorizontalTimeSlot,
+              ]}
+            >
+              <Text style={[styles.horizontalTimeSlotHour, { fontSize: getResponsiveFontSize(12), marginBottom: getResponsiveSpacing(8) }, slot.isActive && styles.currentTimeSlotText]}>
+                {slot.hour.toString().padStart(2, '0')}:00
+              </Text>
+              {slot.card ? (
+                <TarotCardView card={slot.card} hour={slot.hour} slot={slot} size="small" />
+              ) : (
+                <View
+                  style={[
+                    styles.horizontalEmptyCard,
+                    { width: getResponsiveSize(40, 50, 60, 70), height: getResponsiveSize(60, 75, 90, 105), borderRadius: getResponsiveSpacing(8) },
+                  ]}
+                >
+                  <Text style={[styles.horizontalEmptyCardText, { fontSize: getResponsiveFontSize(18) }]}>?</Text>
                 </View>
-                
-                {slot.card ? (
-                  <View style={styles.timeSlotCard}>
-                    <TarotCard 
-                      card={slot.card} 
-                      size="small"
-                      hour={slot.hour}
-                      showMemoButton={true}
-                      onPress={() => setZoomedCard(slot.card)}
-                    />
-                    <View style={styles.timeSlotCardInfo}>
-                      <Text style={[styles.timeSlotCardName, godoFont]}>
-                        {getText(slot.card.name)}
-                      </Text>
-                      <Text style={styles.timeSlotCardKeyword}>
-                        {getText(slot.card.keywords[0])}
-                      </Text>
-                      {slot.memo && (
-                        <Text style={styles.timeSlotMemo}>
-                          📝 {slot.memo.substring(0, 20)}{slot.memo.length > 20 ? '...' : ''}
-                        </Text>
-                      )}
-                    </View>
-                  </View>
-                ) : (
-                  <View style={styles.emptyTimeSlot}>
-                    <Text style={styles.emptySlotText}>
-                      {isFutureHour 
-                        ? getText({ ko: '미래', en: 'Future' })
-                        : getText({ ko: '카드 없음', en: 'No Card' })
-                      }
-                    </Text>
-                  </View>
-                )}
-              </View>
-            );
-          })}
-        </View>
-      </ScrollView>
+              )}
+              {slot.memo && <Text style={[styles.horizontalMemoIndicator, { fontSize: getResponsiveFontSize(10), marginTop: getResponsiveSpacing(4) }]}>📝</Text>}
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </ScrollView>
+  );
 
-      {/* 잠금화면 미리보기 (설정이 켜져있을 때) */}
-      {lockScreenEnabled && getCurrentCard && (
-        <View style={styles.lockScreenPreview}>
-          <Text style={[styles.lockScreenTitle, godoFont]}>
-            {getText({ ko: '잠금화면 미리보기', en: 'Lock Screen Preview' })}
-          </Text>
-          <View style={styles.lockScreenCard}>
-            <Text style={[styles.lockScreenCardName, godoFont]}>
-              🔮 {getText(getCurrentCard.name)}
-            </Text>
-            <Text style={styles.lockScreenCardTime}>
-              {formatTime(currentTime.getHours())}
-            </Text>
+  // 스프레드 페이지(Coming Soon)
+  const SpreadPage = () => (
+    <View style={styles.comingSoonContainer}>
+      <Text style={styles.comingSoonTitle}>🔮 스프레드</Text>
+      <Text style={styles.comingSoonText}>{getText({ ko: '곧 추가될 예정입니다!', en: 'Coming Soon!' })}</Text>
+    </View>
+  );
+
+  // 타임라인 페이지
+  const TimelinePage = () => (
+    <ScrollView 
+      style={styles.pageContainer}
+      onScroll={(event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        saveScrollPosition('timeline', offsetY);
+      }}
+      scrollEventThrottle={16}
+      contentOffset={{ x: 0, y: getScrollPosition('timeline') }}
+    >
+      <Text style={styles.pageTitle}>🕐 {getText({ ko: '24시간 타로 타임라인', en: '24-Hour Tarot Timeline' })}</Text>
+      <View style={styles.controlButtons}>
+        <TouchableOpacity style={[styles.controlButton, styles.currentCardButton]} onPress={drawCurrentCard}>
+          <Text style={styles.controlButtonText}>✨ {getText({ ko: '현재 카드', en: 'Current Card' })}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.controlButton, styles.allCardsButton]} onPress={drawAllCards}>
+          <Text style={styles.controlButtonText}>🎴 {getText({ ko: '24시간', en: '24 Hours' })}</Text>
+        </TouchableOpacity>
+      </View>
+      {timeSlots.map(slot => (
+        <View key={slot.hour} style={[styles.timeSlot, slot.isActive && styles.currentTimeSlot]}>
+          <Text style={[styles.timeSlotHour, slot.isActive && styles.currentTimeSlotText]}>{slot.hour.toString().padStart(2, '0')}:00</Text>
+          <View style={styles.timeSlotContent}>
+            {slot.card ? (
+              <TarotCardView card={slot.card} hour={slot.hour} slot={slot} size="small" />
+            ) : (
+              <View style={styles.emptyCard}>
+                <Text style={styles.emptyCardText}>?</Text>
+              </View>
+            )}
+            {slot.memo && (
+              <Text style={styles.timeSlotMemo} numberOfLines={1}>
+                📝 {slot.memo}
+              </Text>
+            )}
           </View>
         </View>
+      ))}
+    </ScrollView>
+  );
+
+  // 일기 페이지
+  const DiaryPage = () => (
+    <ScrollView 
+      style={styles.pageContainer}
+      onScroll={(event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        saveScrollPosition('diary', offsetY);
+      }}
+      scrollEventThrottle={16}
+      contentOffset={{ x: 0, y: getScrollPosition('diary') }}
+    >
+      <Text style={styles.pageTitle}>📖 {getText({ ko: '타로 일기', en: 'Tarot Diary' })}</Text>
+      <TouchableOpacity style={[styles.controlButton, styles.saveButton]} onPress={saveTodayDiary}>
+        <Text style={styles.controlButtonText}>💾 {getText({ ko: "오늘 일기 저장", en: "Save Today's Diary" })}</Text>
+      </TouchableOpacity>
+      {diaryEntries.length === 0 ? (
+        <Text style={styles.emptyText}>{getText({ ko: '저장된 일기가 없습니다.\n카드를 뽑고 일기를 저장해보세요!', en: 'No saved diary entries.\nDraw cards and save your diary!' })}</Text>
+      ) : (
+        diaryEntries.map(entry => (
+          <View key={entry.id} style={styles.diaryItem}>
+            <View style={styles.diaryItemHeader}>
+              <Text style={styles.diaryDate}>{entry.date}</Text>
+              <TouchableOpacity onPress={() => deleteDiaryEntry(entry.id)}>
+                <Text style={styles.deleteButtonText}>🗑️</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {entry.timeSlots.map(slot => (
+                <View key={slot.hour} style={styles.diaryCardItem}>
+                  <Text style={styles.diaryCardTime}>{slot.hour.toString().padStart(2, '0')}:00</Text>
+                  {slot.card && <TarotCardView card={slot.card} hour={slot.hour} size="small" />}
+                  {slot.memo && (
+                    <Text style={styles.diaryMemo} numberOfLines={2}>
+                      📝 {slot.memo}
+                    </Text>
+                  )}
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ))
+      )}
+    </ScrollView>
+  );
+
+  // 설정 페이지
+  const SettingsPage = () => (
+    <ScrollView 
+      style={styles.pageContainer}
+      onScroll={(event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        saveScrollPosition('settings', offsetY);
+      }}
+      scrollEventThrottle={16}
+      contentOffset={{ x: 0, y: getScrollPosition('settings') }}
+    >
+      <Text style={styles.pageTitle}>⚙️ {getText({ ko: '설정', en: 'Settings' })}</Text>
+      {/* 포인트 표시 */}
+      <View style={styles.pointsContainer}>
+        <Text style={styles.pointsText}>💎 {getText({ ko: '보유 포인트', en: 'Points' })} : {userPoints.toLocaleString()}</Text>
+      </View>
+
+      <TouchableOpacity style={styles.banner} onPress={handleBannerPress}>
+        <Text style={styles.bannerText}>🎨 {getText({ ko: '앱스토어에서 더 많은 테마 확인하기', en: 'Check more themes in App Store' })}</Text>
+      </TouchableOpacity>
+      <View style={styles.settingSection}>
+        <Text style={styles.settingSectionTitle}>🎨 {getText({ ko: '테마 상점', en: 'Theme Store' })}</Text>
+        <TouchableOpacity style={styles.settingButton} onPress={() => setShowThemeStore(true)}>
+          <Text style={styles.settingButtonText}>🛍️ {getText({ ko: '테마 상점 열기', en: 'Open Theme Store' })}</Text>
+        </TouchableOpacity>
+        <View style={styles.currentThemeInfo}>
+          <Text style={styles.currentThemeLabel}>{getText({ ko: '현재 테마:', en: 'Current Theme:' })}</Text>
+          <Text style={styles.currentThemeName}>{getText(currentTheme.name)}</Text>
+        </View>
+      </View>
+      <View style={styles.settingSection}>
+        <Text style={styles.settingSectionTitle}>🌍 {getText({ ko: '언어 설정', en: 'Language Settings' })}</Text>
+        <View style={styles.languageButtons}>
+          <TouchableOpacity style={[styles.languageButton, currentLanguage === 'ko' && styles.activeLanguageButton]} onPress={() => setCurrentLanguage('ko')}>
+            <Text style={styles.languageButtonText}>🇰🇷 한국어</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.languageButton, currentLanguage === 'en' && styles.activeLanguageButton]} onPress={() => setCurrentLanguage('en')}>
+            <Text style={styles.languageButtonText}>🇺🇸 English</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.settingSection}>
+        <Text style={styles.settingSectionTitle}>📋 {getText({ ko: '게시판', en: 'Board' })}</Text>
+        <TouchableOpacity style={styles.settingButton} onPress={() => setShowNoticeBoard(true)}>
+          <Text style={styles.settingButtonText}>📢 {getText({ ko: '공지사항', en: 'Notice' })}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.settingButton} onPress={() => setShowInquiryBoard(true)}>
+          <Text style={styles.settingButtonText}>💬 {getText({ ko: '문의하기', en: 'Inquiry' })}</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+
+  // 현재 탭 페이지 렌더링
+  const renderCurrentPage = () => {
+    switch (currentTab) {
+      case 'main':
+        return <MainPage />;
+      case 'spread':
+        return <SpreadPage />;
+      case 'timeline':
+        return <TimelinePage />;
+      case 'diary':
+        return <DiaryPage />;
+      case 'settings':
+        return <SettingsPage />;
+      default:
+        return <MainPage />;
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      <View style={[styles.header, { paddingTop: Platform.OS === 'ios' ? 50 : 25 }]}>
+        <Text style={styles.appTitle}>🔮 타로 타이머</Text>
+      </View>
+      <View style={styles.pageContent}>{renderCurrentPage()}</View>
+      <View style={[styles.tabBar, { minHeight: Platform.OS === 'ios' ? 85 : 65 }]}>
+        <TouchableOpacity style={[styles.tabButton, currentTab === 'spread' && styles.activeTab]} onPress={() => setCurrentTab('spread')}>
+          <Text style={[styles.tabButtonText, currentTab === 'spread' && styles.activeTabText]}>{getText({ ko: '스프\n레드', en: 'Sprea\nd' })}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.tabButton, currentTab === 'timeline' && styles.activeTab]} onPress={() => setCurrentTab('timeline')}>
+          <Text style={[styles.tabButtonText, currentTab === 'timeline' && styles.activeTabText]}>{getText({ ko: '타임\n라인', en: 'Time\nline' })}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.tabButton, currentTab === 'main' && styles.activeTab]} onPress={() => setCurrentTab('main')}>
+          <Text style={[styles.tabButtonText, currentTab === 'main' && styles.activeTabText]}>{getText({ ko: '홈\n(메인)', en: 'Home\n(Main)' })}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.tabButton, currentTab === 'diary' && styles.activeTab]} onPress={() => setCurrentTab('diary')}>
+          <Text style={[styles.tabButtonText, currentTab === 'diary' && styles.activeTabText]}>{getText({ ko: '타로\n일기', en: 'Tarot\nDiary' })}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.tabButton, currentTab === 'settings' && styles.activeTab]} onPress={() => setCurrentTab('settings')}>
+          <Text style={[styles.tabButtonText, currentTab === 'settings' && styles.activeTabText]}>{getText({ ko: '타로\n설정', en: 'Tarot\nSettings' })}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 메모 모달 */}
+      {showMemo && (
+        <Modal visible={showMemo} transparent animationType="slide" onRequestClose={() => setShowMemo(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>✏️ {selectedTimeSlot?.hour.toString().padStart(2, '0')}:00 {getText({ ko: '메모', en: 'Memo' })}</Text>
+              <TextInput
+                style={styles.memoInput}
+                value={memoText}
+                onChangeText={setMemoText}
+                placeholder={getText({ ko: '이 시간의 카드에 대한 메모를 작성하세요...', en: "Write a memo about this hour's card..." })}
+                placeholderTextColor="#999"
+                multiline
+                numberOfLines={4}
+              />
+              <View style={styles.modalActions}>
+                <TouchableOpacity style={[styles.modalActionButton, styles.cancelButton]} onPress={() => setShowMemo(false)}>
+                  <Text style={styles.memoActionText}>{getText({ ko: '취소', en: 'Cancel' })}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalActionButton, styles.saveButton]} onPress={saveMemo}>
+                  <Text style={styles.memoActionText}>{getText({ ko: '저장', en: 'Save' })}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       )}
 
-      {/* 모달들 */}
-      <CardZoomModal />
-      <SettingsModal />
-      <ThemeStoreModal />
-      <DiaryModal />
-      <MemoModal />
-      <NoticeBoardModal />
-      <InquiryBoardModal />
-    </SafeAreaView>
+      {/* 공지사항 모달 */}
+      {showNoticeBoard && (
+        <Modal visible={showNoticeBoard} transparent animationType="slide" onRequestClose={() => setShowNoticeBoard(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>📢 {getText({ ko: '공지사항', en: 'Notice' })}</Text>
+              <ScrollView style={styles.noticeList}>
+                {NOTICE_POSTS.map(notice => (
+                  <View key={notice.id} style={[styles.noticeItem, notice.isImportant && styles.importantNotice]}>
+                    <View style={styles.noticeHeader}>
+                      <Text style={[styles.noticeTitle, notice.isImportant && styles.importantNoticeTitle]}>{notice.isImportant && '🔥 '} {getText(notice.title)}</Text>
+                      <Text style={styles.noticeDate}>{notice.date}</Text>
+                    </View>
+                    <Text style={styles.noticeContent}>{getText(notice.content)}</Text>
+                  </View>
+                ))}
+              </ScrollView>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setShowNoticeBoard(false)}>
+                <Text style={styles.closeButtonText}>{getText({ ko: '닫기', en: 'Close' })}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* 테마 상점 모달 */}
+      {showThemeStore && (
+        <Modal visible={showThemeStore} transparent animationType="slide" onRequestClose={() => setShowThemeStore(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>🛍️ {getText({ ko: '테마 상점', en: 'Theme Store' })}</Text>
+              <View style={styles.pointsDisplay}>
+                <Text style={styles.pointsDisplayText}>💎 {userPoints.toLocaleString()} {getText({ ko: '포인트', en: 'Points' })}</Text>
+              </View>
+              <ScrollView style={styles.themeList}>
+                {themes.map(theme => (
+                  <View key={theme.id} style={[styles.themeItem, currentTheme.id === theme.id && styles.currentThemeItem]}>
+                    <View style={styles.themeInfo}>
+                      <Text style={styles.themeName}>
+                        {getText(theme.name)}
+                        {theme.isDefault ? ' (기본)' : ''}
+                        {currentTheme.id === theme.id ? ' ✓' : ''}
+                      </Text>
+                      <Text style={styles.themeDescription}>{getText(theme.description)}</Text>
+                      <Text style={styles.themePrice}>
+                        {theme.price === 0 ? getText({ ko: '무료', en: 'Free' }) : `${theme.price.toLocaleString()} ${getText({ ko: '포인트', en: 'pts' })}`}
+                      </Text>
+                    </View>
+                    {theme.isPurchased ? (
+                      currentTheme.id === theme.id ? (
+                        <View style={[styles.themeButton, styles.currentThemeButton]}>
+                          <Text style={styles.themeButtonText}>{getText({ ko: '사용 중', en: 'In Use' })}</Text>
+                        </View>
+                      ) : (
+                        <TouchableOpacity style={[styles.themeButton, styles.useThemeButton]} onPress={() => setCurrentTheme(theme)}>
+                          <Text style={styles.themeButtonText}>{getText({ ko: '사용하기', en: 'Use' })}</Text>
+                        </TouchableOpacity>
+                      )
+                    ) : (
+                      <TouchableOpacity style={[styles.themeButton, styles.buyThemeButton]} onPress={() => purchaseTheme(theme)}>
+                        <Text style={styles.themeButtonText}>{getText({ ko: '구매하기', en: 'Buy' })}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </ScrollView>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setShowThemeStore(false)}>
+                <Text style={styles.closeButtonText}>{getText({ ko: '닫기', en: 'Close' })}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* 문의 모달 */}
+      {showInquiryBoard && (
+        <Modal visible={showInquiryBoard} transparent animationType="slide" onRequestClose={() => setShowInquiryBoard(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>💬 {getText({ ko: '문의하기', en: 'Inquiry' })}</Text>
+              <ScrollView>
+                <View style={styles.inquiryForm}>
+                  <TextInput
+                    style={styles.inquiryTitleInput}
+                    value={inquiryTitle}
+                    onChangeText={setInquiryTitle}
+                    placeholder={getText({ ko: '문의 제목을 입력하세요', en: 'Enter inquiry title' })}
+                    placeholderTextColor="#999"
+                  />
+                  <TextInput
+                    style={styles.inquiryContentInput}
+                    value={inquiryContent}
+                    onChangeText={setInquiryContent}
+                    placeholder={getText({ ko: '문의 내용을 입력하세요', en: 'Enter inquiry content' })}
+                    placeholderTextColor="#999"
+                    multiline
+                    numberOfLines={4}
+                  />
+                  <TouchableOpacity style={styles.submitButton} onPress={submitInquiry}>
+                    <Text style={styles.submitButtonText}>{getText({ ko: '문의 제출', en: 'Submit Inquiry' })}</Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.inquiryListTitle}>{getText({ ko: '내 문의 내역', en: 'My Inquiries' })}</Text>
+                {inquiries.length === 0 ? (
+                  <Text style={styles.emptyText}>{getText({ ko: '문의 내역이 없습니다.', en: 'No inquiry history.' })}</Text>
+                ) : (
+                  inquiries.map(inquiry => (
+                    <View key={inquiry.id} style={styles.inquiryItem}>
+                      <View style={styles.inquiryItemHeader}>
+                        <Text style={styles.inquiryItemTitle}>{inquiry.title}</Text>
+                        <Text style={[styles.inquiryStatus, inquiry.status === 'answered' ? styles.answeredStatus : styles.waitingStatus]}>
+                          {inquiry.status === 'answered' ? getText({ ko: '답변완료', en: 'Answered' }) : getText({ ko: '대기중', en: 'Waiting' })}
+                        </Text>
+                      </View>
+                      <Text style={styles.inquiryItemContent}>{inquiry.content}</Text>
+                      <Text style={styles.inquiryItemDate}>{inquiry.date}</Text>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setShowInquiryBoard(false)}>
+                <Text style={styles.closeButtonText}>{getText({ ko: '닫기', en: 'Close' })}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+    </View>
   );
 }
 
-// 스타일 정의
+// 스타일
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f23',
+    backgroundColor: '#1a1a2e',
   },
-  
-  backgroundGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-    opacity: 0.1,
-  },
-  
-  hologramEffect: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'linear-gradient(45deg, transparent, rgba(255, 107, 157, 0.1), transparent)',
-  },
-
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    backdropFilter: 'blur(10px)',
   },
-
   appTitle: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: getResponsiveFontSize(24),
     fontWeight: 'bold',
     textAlign: 'center',
-    textShadowColor: 'rgba(255, 107, 157, 0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 10,
+  },
+  pageContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a2e',
+  },
+  pageContent: {
     flex: 1,
   },
-
-  headerActions: {
-    flexDirection: 'row',
-  },
-
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 10,
-  },
-
-  headerButtonText: {
-    fontSize: 20,
-  },
-
-  currentTimeSection: {
-    alignItems: 'center',
-    paddingVertical: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    margin: 20,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.2)',
-  },
-
-  currentTimeText: {
+  pageTitle: {
     color: '#fff',
-    fontSize: 36,
+    fontSize: getResponsiveFontSize(24),
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: getResponsiveSpacing(20),
+    marginTop: getResponsiveSpacing(20),
+    paddingHorizontal: getResponsiveSpacing(20),
+  },
+  timeDisplay: {
+    alignItems: 'center',
+    paddingVertical: getResponsiveSpacing(20),
+  },
+  currentTime: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(36),
     fontWeight: 'bold',
     marginBottom: 5,
-    textShadowColor: 'rgba(255, 107, 157, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 15,
   },
-
-  currentDateText: {
+  currentDate: {
     color: '#ccc',
-    fontSize: 16,
-    marginBottom: 20,
-  },
-
-  currentCardContainer: {
-    alignItems: 'center',
-  },
-
-  currentCardLabel: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 15,
-    fontWeight: '600',
-  },
-
-  currentCardInfo: {
-    alignItems: 'center',
-    marginTop: 15,
-  },
-
-  currentCardName: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-
-  currentCardKeywords: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-
-  currentCardKeyword: {
-    color: '#FF6B9D',
-    fontSize: 14,
-    marginHorizontal: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: 'rgba(255, 107, 157, 0.2)',
-    borderRadius: 15,
-    overflow: 'hidden',
-  },
-
-  noCardContainer: {
-    paddingVertical: 40,
-  },
-
-  noCardText: {
-    color: '#888',
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16),
     textAlign: 'center',
+    paddingHorizontal: getResponsiveSpacing(20),
   },
-
-  controlButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: getResponsiveSize(10, 15, 20),
-    marginBottom: 20,
-    flexWrap: 'wrap',
+  currentCardSection: {
+    alignItems: 'center',
+    paddingHorizontal: getResponsiveSpacing(20),
+    marginBottom: getResponsiveSpacing(20),
   },
-
-  controlButton: {
-    flex: 1,
-    paddingVertical: getResponsiveSize(12, 15, 18),
-    borderRadius: 25,
-    marginHorizontal: getResponsiveSize(5, 8, 10),
-    marginVertical: 5,
+  sectionTitle: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: getResponsiveSpacing(15),
+  },
+  noCardContainer: {
+    width: getResponsiveSize(140, 160, 180, 200),
+    height: getResponsiveSize(210, 240, 270, 300),
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: getResponsiveSpacing(15),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    minWidth: getResponsiveSize(100, 120, 140),
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderStyle: 'dashed',
   },
-
-  drawAllButton: {
-    backgroundColor: 'rgba(255, 107, 157, 0.2)',
-    borderColor: '#FF6B9D',
+  noCardText: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(14),
+    textAlign: 'center',
+    marginBottom: 15,
+    paddingHorizontal: getResponsiveSpacing(10),
   },
-
-  saveButton: {
-    backgroundColor: 'rgba(103, 126, 234, 0.2)',
-    borderColor: '#677EEA',
+  drawCardButton: {
+    backgroundColor: '#FF6B9D',
+    paddingHorizontal: getResponsiveSpacing(20),
+    paddingVertical: getResponsiveSpacing(10),
+    borderRadius: getResponsiveSpacing(20),
   },
-
-  diaryButton: {
-    backgroundColor: 'rgba(76, 175, 80, 0.2)',
-    borderColor: '#4CAF50',
-  },
-
-  controlButtonText: {
+  drawCardButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-
-  timelineContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-
-  timelineTitle: {
-    color: '#fff',
-    fontSize: 20,
+    fontSize: getResponsiveFontSize(14),
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
   },
-
-  timeline: {
-    paddingBottom: 50,
+  horizontalTimelineSection: {
+    paddingHorizontal: getResponsiveSpacing(20),
+    paddingBottom: getResponsiveSpacing(20),
   },
-
+  horizontalTimeSlot: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: getResponsiveSpacing(12),
+    padding: getResponsiveSpacing(10),
+    marginHorizontal: getResponsiveSpacing(5),
+    minWidth: getResponsiveSize(70, 80, 90, 100),
+  },
+  currentHorizontalTimeSlot: {
+    backgroundColor: 'rgba(255, 107, 157, 0.2)',
+    borderWidth: 2,
+    borderColor: '#FF6B9D',
+  },
+  horizontalTimeSlotHour: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: 'bold',
+    marginBottom: getResponsiveSpacing(8),
+    textAlign: 'center',
+  },
+  horizontalEmptyCard: {
+    width: getResponsiveSize(40, 50, 60, 70),
+    height: getResponsiveSize(60, 75, 90, 105),
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: getResponsiveSpacing(8),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderStyle: 'dashed',
+  },
+  horizontalEmptyCardText: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: 'bold',
+  },
+  horizontalMemoIndicator: {
+    fontSize: getResponsiveFontSize(10),
+    marginTop: getResponsiveSpacing(4),
+  },
+  comingSoonContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: getResponsiveSpacing(40),
+  },
+  comingSoonTitle: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(32),
+    fontWeight: 'bold',
+    marginBottom: getResponsiveSpacing(20),
+    textAlign: 'center',
+  },
+  comingSoonText: {
+    color: '#ccc',
+    fontSize: getResponsiveFontSize(18),
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  controlButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    paddingHorizontal: getResponsiveSpacing(15),
+    marginBottom: getResponsiveSpacing(20),
+    gap: getResponsiveSpacing(10),
+  },
+  controlButton: {
+    paddingVertical: getResponsiveSpacing(12),
+    paddingHorizontal: getResponsiveSpacing(16),
+    borderRadius: getResponsiveSpacing(20),
+    marginVertical: 5,
+    minWidth: width * 0.4,
+    maxWidth: width * 0.45,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  currentCardButton: {
+    backgroundColor: '#FF6B9D',
+  },
+  allCardsButton: {
+    backgroundColor: '#4ECDC4',
+  },
+  saveButton: {
+    backgroundColor: '#45B7D1',
+    alignSelf: 'center',
+    marginHorizontal: getResponsiveSpacing(20),
+    marginBottom: getResponsiveSpacing(20),
+  },
+  controlButtonText: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   timeSlot: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: getResponsiveSpacing(15),
+    padding: getResponsiveSpacing(15),
+    marginBottom: getResponsiveSpacing(10),
+    marginHorizontal: getResponsiveSpacing(20),
   },
-
   currentTimeSlot: {
-    backgroundColor: 'rgba(255, 107, 157, 0.1)',
-    borderColor: '#FF6B9D',
-    shadowColor: '#FF6B9D',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-
-  pastTimeSlot: {
-    backgroundColor: 'rgba(103, 126, 234, 0.1)',
-    borderColor: 'rgba(103, 126, 234, 0.3)',
-  },
-
-  futureTimeSlot: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-
-  timeSlotHeader: {
-    alignItems: 'center',
-    marginRight: 15,
-    minWidth: 80,
-  },
-
-  timeSlotTime: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-
-  timeSlotIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
-
-  currentTimeIndicator: {
-    backgroundColor: '#FF6B9D',
-    shadowColor: '#FF6B9D',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 5,
-  },
-
-  pastTimeIndicator: {
-    backgroundColor: '#677EEA',
-  },
-
-  futureTimeIndicator: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-  },
-
-  timeSlotCard: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  timeSlotCardInfo: {
-    marginLeft: 15,
-    flex: 1,
-  },
-
-  timeSlotCardName: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-
-  timeSlotCardKeyword: {
-    color: '#ccc',
-    fontSize: 12,
-  },
-
-  emptyTimeSlot: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: 20,
-  },
-
-  emptySlotText: {
-    color: '#666',
-    fontSize: 12,
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-
-  tarotCard: {
-    borderRadius: 12,
+    backgroundColor: 'rgba(255, 107, 157, 0.2)',
     borderWidth: 2,
-    padding: 8,
+    borderColor: '#FF6B9D',
+  },
+  timeSlotHour: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+    width: getResponsiveSize(60, 70, 80, 90),
+  },
+  currentTimeSlotText: {
+    color: '#FF6B9D',
+  },
+  timeSlotContent: {
+    flex: 1,
+    marginLeft: getResponsiveSpacing(15),
+  },
+  timeSlotMemo: {
+    color: '#4CAF50',
+    fontSize: getResponsiveFontSize(12),
+    fontStyle: 'italic',
+    marginTop: 5,
+  },
+  cardContainer: {
+    alignItems: 'center',
+    position: 'relative',
+  },
+  card: {
+    borderRadius: getResponsiveSpacing(12),
+    padding: getResponsiveSpacing(8),
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+    overflow: 'hidden',
   },
-
-  currentTimeCard: {
-    shadowColor: '#FF6B9D',
-    shadowOpacity: 0.6,
-    shadowRadius: 15,
-    elevation: 10,
-  },
-
-  cardContent: {
-    alignItems: 'center',
-  },
-
   cardEmoji: {
     marginBottom: 4,
   },
-
   cardName: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 2,
   },
-
-  cardSuit: {
-    color: '#ccc',
-    textAlign: 'center',
-  },
-
-  zoomButton: {
+  cardImageOverlay: {
     position: 'absolute',
-    top: 2,
-    right: 2,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: 4,
+    borderBottomLeftRadius: getResponsiveSpacing(12),
+    borderBottomRightRadius: getResponsiveSpacing(12),
+  },
+  memoButton: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: getResponsiveSize(10, 12, 14, 16),
+    width: getResponsiveSize(20, 24, 28, 32),
+    height: getResponsiveSize(20, 24, 28, 32),
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  zoomIcon: {
-    fontSize: 10,
-  },
-
-  lockScreenPreview: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    margin: 20,
-    borderRadius: 15,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.3)',
-  },
-
-  lockScreenTitle: {
+  memoButtonText: {
+    fontSize: getResponsiveFontSize(12),
     color: '#fff',
-    fontSize: 14,
+  },
+  emptyCard: {
+    width: getResponsiveSize(50, 60, 70, 80),
+    height: getResponsiveSize(75, 90, 105, 120),
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: getResponsiveSpacing(12),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderStyle: 'dashed',
+  },
+  emptyCardText: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(24),
     fontWeight: 'bold',
-    marginBottom: 10,
+  },
+  diaryItem: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: getResponsiveSpacing(15),
+    padding: getResponsiveSpacing(15),
+    marginBottom: getResponsiveSpacing(15),
+    marginHorizontal: getResponsiveSpacing(20),
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  diaryItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: getResponsiveSpacing(10),
+  },
+  diaryDate: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+  },
+  deleteButtonText: {
+    fontSize: getResponsiveFontSize(18),
+    opacity: 0.7,
+  },
+  diaryCardItem: {
+    alignItems: 'center',
+    marginRight: getResponsiveSpacing(15),
+  },
+  diaryCardTime: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(12),
+    marginBottom: 5,
     textAlign: 'center',
   },
-
-  lockScreenCard: {
+  diaryMemo: {
+    color: '#4CAF50',
+    fontSize: getResponsiveFontSize(10),
+    textAlign: 'center',
+    marginTop: 5,
+    width: getResponsiveSize(60, 70, 80, 90),
+  },
+  emptyText: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(16),
+    textAlign: 'center',
+    marginVertical: getResponsiveSpacing(20),
+    lineHeight: 24,
+    marginHorizontal: getResponsiveSpacing(20),
+  },
+  banner: {
+    backgroundColor: '#FF6B9D',
+    borderRadius: getResponsiveSpacing(15),
+    padding: getResponsiveSpacing(15),
+    marginBottom: getResponsiveSpacing(20),
+    marginHorizontal: getResponsiveSpacing(20),
     alignItems: 'center',
   },
-
-  lockScreenCardName: {
+  bannerText: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  settingSection: {
+    marginBottom: getResponsiveSpacing(20),
+    paddingBottom: getResponsiveSpacing(15),
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    marginHorizontal: getResponsiveSpacing(20),
+  },
+  settingSectionTitle: {
     color: '#FF6B9D',
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: 'bold',
+    marginBottom: getResponsiveSpacing(15),
+  },
+  languageButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    gap: getResponsiveSpacing(10),
+  },
+  languageButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: getResponsiveSpacing(10),
+    paddingHorizontal: getResponsiveSpacing(20),
+    borderRadius: getResponsiveSpacing(15),
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  activeLanguageButton: {
+    backgroundColor: '#FF6B9D',
+    borderColor: '#FF6B9D',
+  },
+  languageButtonText: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  settingButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: getResponsiveSpacing(15),
+    paddingHorizontal: getResponsiveSpacing(20),
+    borderRadius: getResponsiveSpacing(15),
+    marginBottom: getResponsiveSpacing(10),
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  settingButtonText: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+  },
+  // 포인트/테마 관련
+  pointsContainer: {
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    borderRadius: 15,
+    padding: 15,
+    marginHorizontal: getResponsiveSpacing(20),
+    marginBottom: getResponsiveSpacing(20),
+    borderWidth: 1,
+    borderColor: '#FF6B9D',
+    alignItems: 'center',
+  },
+  pointsText: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(18),
+    fontWeight: 'bold',
+  },
+  pointsDisplay: {
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  pointsDisplayText: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+  },
+  currentThemeInfo: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 10,
+    padding: 15,
+    marginTop: 10,
+  },
+  currentThemeLabel: {
+    color: '#ccc',
+    fontSize: getResponsiveFontSize(14),
+    marginBottom: 5,
+  },
+  currentThemeName: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(16),
+    fontWeight: 'bold',
+  },
+  // 테마 상점 스타일
+  themeList: {
+    maxHeight: height * 0.5,
+  },
+  themeItem: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  currentThemeItem: {
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    borderColor: '#FF6B9D',
+  },
+  themeInfo: {
+    flex: 1,
+    marginRight: 15,
+  },
+  themeName: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(16),
     fontWeight: 'bold',
     marginBottom: 5,
   },
-
-  lockScreenCardTime: {
+  themeDescription: {
     color: '#ccc',
-    fontSize: 14,
+    fontSize: getResponsiveFontSize(14),
+    marginBottom: 8,
+    lineHeight: 18,
   },
-
-  // 모달 스타일들
+  themePrice: {
+    color: '#FF6B9D',
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: 'bold',
+  },
+  themeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 80,
+    height: 36,
+  },
+  buyThemeButton: {
+    backgroundColor: '#4CAF50',
+  },
+  useThemeButton: {
+    backgroundColor: '#2196F3',
+  },
+  currentThemeButton: {
+    backgroundColor: '#999',
+  },
+  themeButtonText: {
+    color: '#fff',
+    fontSize: getResponsiveFontSize(14),
+    fontWeight: 'bold',
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: '#2a2a4a',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    paddingBottom: Platform.OS === 'ios' ? 20 : 0,
+    paddingTop: 5,
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: getResponsiveSpacing(8),
+    paddingHorizontal: getResponsiveSpacing(4),
+  },
+  activeTab: {
+    backgroundColor: 'rgba(255, 107, 157, 0.1)',
+  },
+  tabButtonText: {
+    color: '#999',
+    fontSize: getResponsiveFontSize(12),
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 14,
+  },
+  activeTabText: {
+    color: '#FF6B9D',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   modalContent: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 20,
-    padding: 20,
-    width: width * 0.9,
+    backgroundColor: '#2a2a4a',
+    borderRadius: getResponsiveSpacing(20),
+    padding: getResponsiveSpacing(20),
+    width: getResponsiveSize(width * 0.85, width * 0.9, width * 0.9, width * 0.8),
     maxHeight: height * 0.8,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 107, 157, 0.3)',
+    marginHorizontal: getResponsiveSpacing(10),
   },
-
   modalTitle: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: getResponsiveFontSize(20),
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: getResponsiveSpacing(20),
   },
-
-  settingSection: {
-    marginBottom: 20,
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-
-  settingSectionTitle: {
-    color: '#FF6B9D',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-
-  languageSelector: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    padding: 5,
-  },
-
-  languageButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 15,
-    flex: 1,
-    justifyContent: 'center',
-  },
-
-  languageButtonActive: {
-    backgroundColor: 'rgba(255, 107, 157, 0.3)',
-  },
-
-  languageFlag: {
-    fontSize: 16,
-    marginRight: 5,
-  },
-
-  languageText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-
-  settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-
-  settingLabel: {
-    color: '#fff',
-    fontSize: 16,
-    flex: 1,
-  },
-    backgroundColor: 'rgba(255, 107, 157, 0.1)',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-
-  pointsText: {
-    color: '#FF6B9D',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  themeList: {
-    maxHeight: 300,
-  },
-
-  themeItem: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 10,
-    alignItems: 'center',
-  },
-
-  themeInfo: {
-    flex: 1,
-  },
-
-  themeName: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-
-  themeDescription: {
-    color: '#ccc',
-    fontSize: 14,
-    marginBottom: 5,
-  },
-
-  themePrice: {
-    color: '#FF6B9D',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-
-  themeButton: {
-    backgroundColor: 'rgba(255, 107, 157, 0.2)',
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderWidth: 1,
-    borderColor: '#FF6B9D',
-  },
-
-  themeButtonActive: {
-    backgroundColor: 'rgba(103, 126, 234, 0.2)',
-    borderColor: '#677EEA',
-  },
-
-  themeButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-
   closeButton: {
-    backgroundColor: 'rgba(255, 107, 157, 0.2)',
-    borderRadius: 25,
-    paddingVertical: 15,
-    marginTop: 20,
+    backgroundColor: '#FF6B9D',
+    paddingVertical: 12,
+    borderRadius: 15,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FF6B9D',
+    marginTop: 15,
   },
-
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
-
-  // 카드 확대 모달 스타일들
-  zoomModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  zoomModalBackground: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  zoomModalContent: {
-    alignItems: 'center',
-    padding: 20,
-  },
-
-  zoomedCard: {
-    width: 280,
-    height: 420,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 15,
-  },
-
-  zoomedCardEmoji: {
-    fontSize: 60,
-    marginBottom: 15,
-  },
-
-  zoomedCardName: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-
-  zoomedCardSuit: {
-    color: '#ccc',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-
-  zoomedCardInfo: {
-    width: width * 0.8,
-    alignItems: 'center',
-  },
-
-  zoomedCardDescription: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 24,
-  },
-
-  keywordsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-
-  keywordTag: {
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    margin: 5,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-
-  timeSlotMemo: {
-    color: '#4CAF50',
-    fontSize: getResponsiveSize(10, 11, 12),
-    fontStyle: 'italic',
-    marginTop: 2,
-  },
-
-  cardContainer: {
-    alignItems: 'center',
-    position: 'relative',
-  },
-
-  memoButton: {
-    position: 'absolute',
-    bottom: -8,
-    right: -8,
-    width: getResponsiveSize(24, 28, 32),
-    height: getResponsiveSize(24, 28, 32),
-    borderRadius: getResponsiveSize(12, 14, 16),
-    backgroundColor: 'rgba(76, 175, 80, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-
-  memoIcon: {
-    fontSize: getResponsiveSize(12, 14, 16),
-  },
-
-  // 배너 스타일
-  banner: {
-    backgroundColor: 'linear-gradient(135deg, #FF6B9D, #677EEA)',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.3)',
-    shadowColor: '#FF6B9D',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-
-  bannerContent: {
-    flex: 1,
-  },
-
-  bannerTitle: {
-    color: '#fff',
-    fontSize: getResponsiveSize(16, 18, 20),
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-
-  bannerSubtitle: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: getResponsiveSize(12, 14, 16),
-  },
-
-  bannerIcon: {
-    fontSize: getResponsiveSize(24, 28, 32),
-    marginLeft: 10,
-  },
-
-  // 게시판 버튼들
-  boardButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 15,
-  },
-
-  boardButton: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 107, 157, 0.1)',
-    borderRadius: 12,
-    padding: 15,
-    marginHorizontal: 5,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 107, 157, 0.3)',
-  },
-
-  boardButtonText: {
-    color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
-    fontWeight: '600',
-  },
-
-  // 일기 모달 스타일
-  diaryList: {
-    maxHeight: height * 0.6,
-    marginBottom: 20,
-  },
-
-  emptyDiary: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-
-  emptyDiaryText: {
-    color: '#fff',
-    fontSize: getResponsiveSize(16, 18, 20),
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-
-  emptyDiarySubtext: {
-    color: '#888',
-    fontSize: getResponsiveSize(12, 14, 16),
-    textAlign: 'center',
-  },
-
-  diaryEntry: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-
-  diaryEntryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-
-  diaryEntryDate: {
-    color: '#FF6B9D',
-    fontSize: getResponsiveSize(14, 16, 18),
-    fontWeight: 'bold',
-  },
-
-  deleteButton: {
-    padding: 5,
-  },
-
-  deleteButtonText: {
-    fontSize: getResponsiveSize(18, 20, 22),
-  },
-
-  diaryCards: {
-    flexDirection: 'row',
-  },
-
-  diaryCardItem: {
-    alignItems: 'center',
-    marginRight: 15,
-    minWidth: getResponsiveSize(70, 80, 90),
-  },
-
-  diaryCardTime: {
-    color: '#ccc',
-    fontSize: getResponsiveSize(10, 12, 14),
-    marginBottom: 5,
-    textAlign: 'center',
-  },
-
-  diaryCardMemo: {
-    color: '#4CAF50',
-    fontSize: getResponsiveSize(8, 10, 12),
-    textAlign: 'center',
-    marginTop: 5,
-    maxWidth: getResponsiveSize(60, 70, 80),
-  },
-
-  // 메모 모달 스타일
-  memoModalContent: {
-    backgroundColor: '#1a1a2e',
-    borderRadius: 20,
-    padding: 20,
-    width: width * 0.9,
-    maxWidth: 400,
-    borderWidth: 2,
-    borderColor: 'rgba(76, 175, 80, 0.3)',
-  },
-
-  memoTimeText: {
-    color: '#4CAF50',
-    fontSize: getResponsiveSize(18, 20, 22),
-    textAlign: 'center',
-    marginBottom: 15,
-    fontWeight: 'bold',
-  },
-
   memoInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
-    padding: 15,
+    borderRadius: 15,
+    padding: getResponsiveSpacing(15),
     color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
-    minHeight: 100,
+    fontSize: getResponsiveFontSize(16),
+    minHeight: getResponsiveSize(80, 100, 120, 140),
+    maxHeight: getResponsiveSize(200, 250, 300, 350),
     textAlignVertical: 'top',
-    marginBottom: 20,
+    marginBottom: getResponsiveSpacing(20),
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+    width: '100%',
   },
-
-  memoActions: {
+  modalActions: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    gap: getResponsiveSpacing(10),
   },
-
-  memoActionButton: {
-    flex: 1,
-    padding: 15,
-    borderRadius: 12,
-    marginHorizontal: 5,
+  modalActionButton: {
+    paddingVertical: getResponsiveSpacing(12),
+    paddingHorizontal: getResponsiveSpacing(20),
+    borderRadius: getResponsiveSpacing(15),
+    minWidth: getResponsiveSize(70, 80, 90, 100),
     alignItems: 'center',
+    flex: 1,
   },
-
-  memoCancelButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+  cancelButton: {
+    backgroundColor: '#999',
   },
-
-  memoSaveButton: {
-    backgroundColor: 'rgba(76, 175, 80, 0.2)',
-    borderWidth: 1,
-    borderColor: '#4CAF50',
-  },
-
   memoActionText: {
     color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
+    fontSize: getResponsiveFontSize(16),
     fontWeight: 'bold',
   },
-
-  // 공지사항 스타일
   noticeList: {
-    maxHeight: height * 0.6,
-    marginBottom: 20,
+    maxHeight: height * 0.5,
   },
-
   noticeItem: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
+    borderRadius: 15,
     padding: 15,
-    marginBottom: 10,
+    marginBottom: 15,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-
   importantNotice: {
-    borderColor: '#FF6B9D',
     backgroundColor: 'rgba(255, 107, 157, 0.1)',
+    borderWidth: 1,
+    borderColor: '#FF6B9D',
   },
-
   noticeHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginBottom: 10,
   },
-
-  importantBadge: {
-    backgroundColor: '#FF6B9D',
-    color: '#fff',
-    fontSize: getResponsiveSize(10, 12, 14),
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-    fontWeight: 'bold',
-  },
-
-  noticeDate: {
-    color: '#888',
-    fontSize: getResponsiveSize(10, 12, 14),
-  },
-
   noticeTitle: {
     color: '#fff',
-    fontSize: getResponsiveSize(16, 18, 20),
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
+    flex: 1,
+    marginRight: 10,
   },
-
+  importantNoticeTitle: {
+    color: '#FF6B9D',
+  },
+  noticeDate: {
+    color: '#999',
+    fontSize: 12,
+  },
   noticeContent: {
     color: '#ccc',
-    fontSize: getResponsiveSize(12, 14, 16),
-    lineHeight: getResponsiveSize(18, 20, 22),
+    fontSize: 14,
+    lineHeight: 20,
   },
-
-  // 문의 게시판 스타일
   inquiryForm: {
     marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
-
   inquiryTitleInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
+    borderRadius: 15,
     padding: 15,
     color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
-    marginBottom: 15,
+    fontSize: 16,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-
   inquiryContentInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 12,
+    borderRadius: 15,
     padding: 15,
     color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
-    minHeight: 120,
+    fontSize: 16,
+    minHeight: 100,
     textAlignVertical: 'top',
     marginBottom: 15,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-
-  submitInquiryButton: {
-    backgroundColor: 'rgba(255, 107, 157, 0.2)',
-    borderRadius: 12,
-    padding: 15,
+  submitButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    borderRadius: 15,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FF6B9D',
   },
-
-  submitInquiryText: {
+  submitButtonText: {
     color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
+    fontSize: 16,
     fontWeight: 'bold',
   },
-
-  myInquiries: {
-    flex: 1,
-  },
-
-  myInquiriesTitle: {
+  inquiryListTitle: {
     color: '#FF6B9D',
-    fontSize: getResponsiveSize(16, 18, 20),
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 10,
   },
-
-  inquiryList: {
-    maxHeight: height * 0.3,
-  },
-
-  emptyInquiryText: {
-    color: '#888',
-    fontSize: getResponsiveSize(12, 14, 16),
-    textAlign: 'center',
-    fontStyle: 'italic',
-    paddingVertical: 20,
-  },
-
   inquiryItem: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
+    borderRadius: 15,
     padding: 15,
     marginBottom: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-
   inquiryItemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 5,
   },
-
   inquiryItemTitle: {
     color: '#fff',
-    fontSize: getResponsiveSize(14, 16, 18),
+    fontSize: 14,
     fontWeight: 'bold',
     flex: 1,
   },
-
   inquiryStatus: {
+    fontSize: 12,
+    paddingVertical: 4,
     paddingHorizontal: 8,
-    paddingVertical: 2,
     borderRadius: 10,
-    marginLeft: 10,
-  },
-
-  pendingStatus: {
-    backgroundColor: 'rgba(255, 193, 7, 0.2)',
-    borderWidth: 1,
-    borderColor: '#FFC107',
-  },
-
-  answeredStatus: {
-    backgroundColor: 'rgba(76, 175, 80, 0.2)',
-    borderWidth: 1,
-    borderColor: '#4CAF50',
-  },
-
-  inquiryStatusText: {
-    color: '#fff',
-    fontSize: getResponsiveSize(10, 12, 14),
     fontWeight: 'bold',
   },
-
-  inquiryItemDate: {
-    color: '#888',
-    fontSize: getResponsiveSize(10, 12, 14),
-    marginBottom: 8,
+  waitingStatus: {
+    backgroundColor: '#FF9800',
+    color: '#fff',
   },
-
+  answeredStatus: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+  },
   inquiryItemContent: {
     color: '#ccc',
-    fontSize: getResponsiveSize(12, 14, 16),
-    lineHeight: getResponsiveSize(16, 18, 20),
-    marginBottom: 10,
-  },
-
-  inquiryAnswer: {
-    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-    borderRadius: 8,
-    padding: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#4CAF50',
-  },
-
-  inquiryAnswerLabel: {
-    color: '#4CAF50',
-    fontSize: getResponsiveSize(12, 14, 16),
-    fontWeight: 'bold',
+    fontSize: 12,
     marginBottom: 5,
   },
-
-  keywordText: {
-    color: '#fff',
-    fontSize: getResponsiveSize(12, 14, 16),
-    fontWeight: '600',
+  inquiryItemDate: {
+    color: '#999',
+    fontSize: 10,
   },
 });
