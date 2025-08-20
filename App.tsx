@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Alert,
   Dimensions,
@@ -473,23 +473,24 @@ export default function App() {
     setTimeSlots(initialSlots);
   }, []);
 
-  // 현재 시간에 따른 활성화 슬랏 업데이트
+  // 현재 시간에 따른 활성화 슬랏 업데이트 (시간만 변경될 때만)
   useEffect(() => {
+    const currentHour = currentTime.getHours();
     setTimeSlots(prev => prev.map(slot => ({
       ...slot,
-      isActive: slot.hour === currentTime.getHours(),
+      isActive: slot.hour === currentHour,
     })));
-  }, [currentTime]);
+  }, [currentTime.getHours()]); // 시간만 변경될 때만 업데이트
 
   // 다국어 헬퍼
   const getText = (text: { ko: string; en: string }) => text[currentLanguage];
 
   // 스크롤 위치 관리 함수들
-  const saveScrollPosition = (key: string, position: number) => {
+  const saveScrollPosition = useCallback((key: string, position: number) => {
     setScrollPositions(prev => ({ ...prev, [key]: position }));
-  };
+  }, []);
 
-  const getScrollPosition = (key: string) => scrollPositions[key] || 0;
+  const getScrollPosition = useCallback((key: string) => scrollPositions[key] || 0, [scrollPositions]);
 
   // 랜덤 카드
   const getRandomCard = () => TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)];
@@ -815,30 +816,38 @@ export default function App() {
     );
   };
 
-  // 메인 페이지
-  const MainPage = () => (
-    <ScrollView 
-      style={styles.pageContainer}
-      onScroll={(event) => {
-        const offsetY = event.nativeEvent.contentOffset.y;
-        saveScrollPosition('main', offsetY);
-      }}
-      scrollEventThrottle={16}
-      contentOffset={{ x: 0, y: getScrollPosition('main') }}
-    >
+  // 시간 표시 컴포넌트 (별도로 분리하여 시간 업데이트가 전체 리렌더링을 유발하지 않도록)
+  const TimeDisplay = React.memo(() => {
+    const [time, setTime] = useState(new Date());
+    
+    useEffect(() => {
+      const timer = setInterval(() => setTime(new Date()), 1000);
+      return () => clearInterval(timer);
+    }, []);
+    
+    return (
       <View style={styles.timeDisplay}>
         <Text style={[styles.currentTime, { fontSize: getResponsiveFontSize(36) }]}>
-          {currentTime.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          {time.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </Text>
         <Text style={[styles.currentDate, { fontSize: getResponsiveFontSize(16) }]}>
-          {currentTime.toLocaleDateString(currentLanguage === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
+          {time.toLocaleDateString(currentLanguage === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
         </Text>
       </View>
+    );
+  });
 
+  // 현재 시간 카드 섹션 컴포넌트 (시간 업데이트로 인한 리렌더링 방지)
+  const CurrentCardSection = React.memo(() => {
+    const currentHour = currentTime.getHours();
+    const currentSlot = timeSlots.find(s => s.hour === currentHour);
+    const currentCard = currentSlot?.card;
+    
+    return (
       <View style={styles.currentCardSection}>
         <Text style={[styles.sectionTitle, { fontSize: getResponsiveFontSize(18) }]}>✨ {getText({ ko: '현재 시간 카드', en: 'Current Hour Card' })}</Text>
-        {getCurrentCard() ? (
-          <TarotCardView card={getCurrentCard() as TarotCard} hour={currentTime.getHours()} slot={timeSlots.find(s => s.hour === currentTime.getHours())} size="xlarge" scale={1.5} />
+        {currentCard ? (
+          <TarotCardView card={currentCard} hour={currentHour} slot={currentSlot} size="xlarge" scale={1.5} />
         ) : (
           <View
             style={[
@@ -856,6 +865,25 @@ export default function App() {
           </View>
         )}
       </View>
+    );
+  });
+
+  // 메인 페이지
+  const MainPage = () => {
+    const handleMainScroll = useCallback((event: any) => {
+      const offsetY = event.nativeEvent.contentOffset.y;
+      saveScrollPosition('main', offsetY);
+    }, [saveScrollPosition]);
+
+    return (
+      <ScrollView 
+        style={styles.pageContainer}
+        onScroll={handleMainScroll}
+        scrollEventThrottle={16}
+        contentOffset={{ x: 0, y: getScrollPosition('main') }}
+      >
+      <TimeDisplay />
+      <CurrentCardSection />
 
       <View style={[styles.controlButtons, { paddingHorizontal: getResponsiveSpacing(15), marginBottom: getResponsiveSpacing(20) }]}>
         <TouchableOpacity
@@ -911,7 +939,8 @@ export default function App() {
         </ScrollView>
       </View>
     </ScrollView>
-  );
+    );
+  };
 
   // 스프레드 목록 페이지
   const SpreadListPage = () => (
