@@ -13,46 +13,48 @@
 import type {
   NamedShape,
   NativeModuleAliasMap,
-  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
+  NativeModuleEnumMap,
   NativeModuleTypeAnnotation,
   Nullable,
 } from '../../../CodegenSchema';
-
 import type {Parser} from '../../parser';
 import type {
   ParserErrorCapturer,
-  TypeResolutionStatus,
   TypeDeclarationMap,
+  TypeResolutionStatus,
 } from '../../utils';
-const {flattenIntersectionType} = require('../parseTopLevelType');
-const {flattenProperties} = require('../components/componentsUtils');
-
-const {parseObjectProperty} = require('../../parsers-commons');
 
 const {
-  emitArrayType,
-  emitFunction,
-  emitDictionary,
-  emitPromise,
-  emitRootTag,
-  emitUnion,
-  emitCommonTypes,
-  typeAliasResolution,
-  typeEnumResolution,
-  translateArrayTypeAnnotation,
-} = require('../../parsers-primitives');
-
-const {
+  UnsupportedEnumDeclarationParserError,
   UnsupportedGenericParserError,
+  UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
+const {parseObjectProperty} = require('../../parsers-commons');
+const {
+  emitArrayType,
+  emitCommonTypes,
+  emitDictionary,
+  emitFunction,
+  emitNumberLiteral,
+  emitPromise,
+  emitRootTag,
+  emitStringLiteral,
+  emitUnion,
+  translateArrayTypeAnnotation,
+  typeAliasResolution,
+  typeEnumResolution,
+} = require('../../parsers-primitives');
+const {flattenProperties} = require('../components/componentsUtils');
+const {flattenIntersectionType} = require('../parseTopLevelType');
 
 function translateObjectTypeAnnotation(
   hasteModuleName: string,
   /**
    * TODO(T108222691): Use flow-types for @babel/parser
    */
+  typeScriptTypeAnnotation: $FlowFixMe,
   nullable: boolean,
   objectMembers: $ReadOnlyArray<$FlowFixMe>,
   typeResolutionStatus: TypeResolutionStatus,
@@ -69,6 +71,7 @@ function translateObjectTypeAnnotation(
     .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(property => {
       return tryParse(() => {
         return parseObjectProperty(
+          typeScriptTypeAnnotation,
           property,
           hasteModuleName,
           types,
@@ -269,6 +272,7 @@ function translateTypeAnnotation(
 
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         flattenProperties([typeAnnotation], types, parser),
         typeResolutionStatus,
@@ -284,6 +288,7 @@ function translateTypeAnnotation(
     case 'TSIntersectionType': {
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
@@ -306,6 +311,18 @@ function translateTypeAnnotation(
         const indexSignatures = typeAnnotation.members.filter(
           member => member.type === 'TSIndexSignature',
         );
+
+        const properties = typeAnnotation.members.filter(
+          member => member.type === 'TSPropertySignature',
+        );
+
+        if (indexSignatures.length > 0 && properties.length > 0) {
+          throw new UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+          );
+        }
+
         if (indexSignatures.length > 0) {
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
@@ -327,6 +344,7 @@ function translateTypeAnnotation(
 
       return translateObjectTypeAnnotation(
         hasteModuleName,
+        typeScriptTypeAnnotation,
         nullable,
         typeAnnotation.members,
         typeResolutionStatus,
@@ -340,6 +358,20 @@ function translateTypeAnnotation(
       );
     }
     case 'TSEnumDeclaration': {
+      if (
+        typeAnnotation.members.some(
+          m =>
+            m.initializer &&
+            m.initializer.type === 'NumericLiteral' &&
+            !Number.isInteger(m.initializer.value),
+        )
+      ) {
+        throw new UnsupportedEnumDeclarationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
       return typeEnumResolution(
         typeAnnotation,
         typeResolutionStatus,
@@ -365,6 +397,24 @@ function translateTypeAnnotation(
     }
     case 'TSUnionType': {
       return emitUnion(nullable, hasteModuleName, typeAnnotation, parser);
+    }
+    case 'TSLiteralType': {
+      const literal = typeAnnotation.literal;
+      switch (literal.type) {
+        case 'StringLiteral': {
+          return emitStringLiteral(nullable, literal.value);
+        }
+        case 'NumericLiteral': {
+          return emitNumberLiteral(nullable, literal.value);
+        }
+        default: {
+          throw new UnsupportedTypeAnnotationParserError(
+            hasteModuleName,
+            typeAnnotation,
+            parser.language(),
+          );
+        }
+      }
     }
     default: {
       const commonType = emitCommonTypes(

@@ -7,7 +7,10 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.therearenorules.tarottimer"
+      "bundleIdentifier": "com.therearenorules.tarottimer",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.therearenorules.tarottimer",
@@ -15,6 +18,16 @@
         "backgroundColor": "#1a1a2e"
       }
     },
-    "web": {}
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "268f44c1-406f-4387-8589-e62144024eaa"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

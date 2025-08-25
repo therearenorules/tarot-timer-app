@@ -11,35 +11,36 @@
 'use strict';
 
 import type {
+  EventTypeAnnotation,
   EventTypeShape,
   NamedShape,
-  EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../../utils';
 import type {Parser} from '../../parser';
-const {flattenProperties} = require('./componentsUtils');
-const {parseTopLevelType} = require('../parseTopLevelType');
+import type {TypeDeclarationMap} from '../../utils';
+
 const {
-  throwIfEventHasNoName,
-  throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
+  throwIfBubblingTypeIsNull,
+  throwIfEventHasNoName,
 } = require('../../error-utils');
 const {
-  getEventArgument,
   buildPropertiesForEvent,
-  handleEventHandler,
   emitBuildEventSchema,
+  getEventArgument,
+  handleEventHandler,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
   emitDoubleProp,
   emitFloatProp,
-  emitMixedProp,
-  emitStringProp,
   emitInt32Prop,
+  emitMixedProp,
   emitObjectProp,
+  emitStringProp,
   emitUnionProp,
 } = require('../../parsers-primitives');
+const {parseTopLevelType} = require('../parseTopLevelType');
+const {flattenProperties} = require('./componentsUtils');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -125,10 +126,11 @@ function extractArrayElementType(
       };
     case 'TSUnionType':
       return {
-        type: 'StringEnumTypeAnnotation',
-        options: typeAnnotation.types.map(option =>
-          parser.getLiteralValue(option),
-        ),
+        type: 'StringLiteralUnionTypeAnnotation',
+        types: typeAnnotation.types.map(option => ({
+          type: 'StringLiteralTypeAnnotation',
+          value: parser.getLiteralValue(option),
+        })),
       };
     case 'TSTypeLiteral':
       return {

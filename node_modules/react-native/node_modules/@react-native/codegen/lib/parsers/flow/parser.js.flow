@@ -11,17 +11,17 @@
 'use strict';
 
 import type {
-  UnionTypeAnnotationMemberType,
-  SchemaType,
+  ExtendsPropsShape,
   NamedShape,
-  Nullable,
-  NativeModuleParamTypeAnnotation,
-  NativeModuleEnumMemberType,
-  NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  NativeModuleEnumMember,
+  NativeModuleEnumMemberType,
+  NativeModuleParamTypeAnnotation,
+  Nullable,
   PropTypeAnnotation,
-  ExtendsPropsShape,
+  SchemaType,
+  UnionTypeAnnotationMemberType,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -32,44 +32,37 @@ import type {
 } from '../parser';
 import type {
   ParserErrorCapturer,
-  TypeDeclarationMap,
   PropAST,
+  TypeDeclarationMap,
   TypeResolutionStatus,
 } from '../utils';
+
+const {
+  UnsupportedObjectPropertyTypeAnnotationParserError,
+} = require('../errors');
+const {
+  buildModuleSchema,
+  buildPropSchema,
+  buildSchema,
+  handleGenericTypeAnnotation,
+} = require('../parsers-commons');
+const {Visitor} = require('../parsers-primitives');
+const {wrapComponentSchema} = require('../schema.js');
+const {buildComponentSchema} = require('./components');
+const {
+  flattenProperties,
+  getSchemaInfo,
+  getTypeAnnotation,
+} = require('./components/componentsUtils');
+const {flowTranslateTypeAnnotation} = require('./modules');
+const {parseFlowAndThrowErrors} = require('./parseFlowAndThrowErrors');
+const fs = require('fs');
+const invariant = require('invariant');
 
 type ExtendsForProp = null | {
   type: 'ReactNativeBuiltInType',
   knownTypeName: 'ReactNativeCoreViewProps',
 };
-
-const invariant = require('invariant');
-
-const {
-  getSchemaInfo,
-  getTypeAnnotation,
-  flattenProperties,
-} = require('./components/componentsUtils');
-
-const {flowTranslateTypeAnnotation} = require('./modules');
-
-// $FlowFixMe[untyped-import] there's no flowtype flow-parser
-const flowParser = require('flow-parser');
-
-const {
-  buildSchema,
-  buildPropSchema,
-  buildModuleSchema,
-  handleGenericTypeAnnotation,
-} = require('../parsers-commons');
-const {Visitor} = require('../parsers-primitives');
-const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('../schema.js');
-
-const fs = require('fs');
-
-const {
-  UnsupportedObjectPropertyTypeAnnotationParserError,
-} = require('../errors');
 
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
@@ -124,6 +117,12 @@ class FlowParser implements Parser {
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
+  getStringLiteralUnionTypeAnnotationStringLiterals(
+    membersTypes: $FlowFixMe[],
+  ): string[] {
+    return membersTypes.map((item: $FlowFixMe) => item.value);
+  }
+
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 
@@ -149,10 +148,8 @@ class FlowParser implements Parser {
     return this.parseString(contents, 'path/NativeSampleTurboModule.js');
   }
 
-  getAst(contents: string): $FlowFixMe {
-    return flowParser.parse(contents, {
-      enums: true,
-    });
+  getAst(contents: string, filename?: ?string): $FlowFixMe {
+    return parseFlowAndThrowErrors(contents, {filename});
   }
 
   getFunctionTypeAnnotationParameters(
@@ -230,11 +227,31 @@ class FlowParser implements Parser {
     });
   }
 
-  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
-    return typeAnnotation.members.map(member => ({
-      name: member.id.name,
-      value: member.init?.value ?? member.id.name,
-    }));
+  parseEnumMembers(
+    typeAnnotation: $FlowFixMe,
+  ): $ReadOnlyArray<NativeModuleEnumMember> {
+    return typeAnnotation.members.map(member => {
+      const value =
+        typeof member.init?.value === 'number'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: member.init.value,
+            }
+          : typeof member.init?.value === 'string'
+          ? {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.init.value,
+            }
+          : {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.id.name,
+            };
+
+      return {
+        name: member.id.name,
+        value: value,
+      };
+    });
   }
 
   isModuleInterface(node: $FlowFixMe): boolean {
