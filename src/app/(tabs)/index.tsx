@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useMemo, useCallback, useRef } from 'react';
+import { View, StyleSheet, ScrollView, Alert, InteractionManager } from 'react-native';
 import { Screen, Text, HourCard } from '@/components';
 import { theme } from '@/constants';
 import { getCurrentHour, getTimeBasedGreeting, getHourRangeDescription } from '@/lib/timeManager';
@@ -31,15 +31,27 @@ export default function HomeScreen() {
     [currentSession?.cards, currentHour]
   );
 
-  // Update time every minute with stable reference
+  // Update time every minute with stable reference and performance optimization
+  const timeUpdateRef = useRef<NodeJS.Timeout | null>(null);
+  
   const handleTimeUpdate = useCallback(() => {
-    updateCurrentTime();
-    refreshIfNewDay();
+    // Use InteractionManager to defer non-critical updates
+    InteractionManager.runAfterInteractions(() => {
+      updateCurrentTime();
+      refreshIfNewDay();
+    });
   }, [updateCurrentTime, refreshIfNewDay]);
 
   useEffect(() => {
-    const interval = setInterval(handleTimeUpdate, 60000); // Update every minute
-    return () => clearInterval(interval);
+    // Improved timer management with better cleanup
+    timeUpdateRef.current = setInterval(handleTimeUpdate, 60000); // Update every minute
+    
+    return () => {
+      if (timeUpdateRef.current) {
+        clearInterval(timeUpdateRef.current);
+        timeUpdateRef.current = null;
+      }
+    };
   }, [handleTimeUpdate]);
 
   const handleHourPress = useCallback((hour: number) => {
@@ -120,24 +132,27 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.grid}>
-            {Array.from({ length: 24 }, (_, i) => {
-              const hourCard = currentSession?.cards.find((card: DailyCard) => card.hour === i);
-              const hasMemo = getMemoForHour(i).length > 0;
-              const isCurrentHourCard = i === currentHour;
-              const isSelectedHour = i === selectedHour;
-              
-              return (
-                <HourCard
-                  key={i}
-                  hour={i}
-                  hourCard={hourCard}
-                  hasMemo={hasMemo}
-                  isCurrentHour={isCurrentHourCard}
-                  isSelected={isSelectedHour}
-                  onPress={handleHourPress}
-                />
-              );
-            })}
+            {useMemo(() =>
+              Array.from({ length: 24 }, (_, i) => {
+                const hourCard = currentSession?.cards.find((card: DailyCard) => card.hour === i);
+                const hasMemo = getMemoForHour(i).length > 0;
+                const isCurrentHourCard = i === currentHour;
+                const isSelectedHour = i === selectedHour;
+                
+                return (
+                  <HourCard
+                    key={i}
+                    hour={i}
+                    hourCard={hourCard}
+                    hasMemo={hasMemo}
+                    isCurrentHour={isCurrentHourCard}
+                    isSelected={isSelectedHour}
+                    onPress={handleHourPress}
+                  />
+                );
+              }),
+              [currentSession?.cards, getMemoForHour, currentHour, selectedHour, handleHourPress]
+            )}
           </View>
         </View>
 

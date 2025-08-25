@@ -2,8 +2,8 @@
  * CardDrawingAnimation Component - Simple card drawing animation
  */
 
-import React, { useEffect, useCallback, memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useEffect, useCallback, memo, useRef } from 'react';
+import { View, StyleSheet, Animated, InteractionManager } from 'react-native';
 import { Text } from '@/components';
 import { theme } from '@/constants';
 
@@ -18,25 +18,81 @@ export const CardDrawingAnimation = memo<CardDrawingAnimationProps>(({
   cardName,
   onAnimationComplete,
 }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+
   const handleComplete = useCallback(() => {
-    onAnimationComplete?.();
+    // Defer callback to avoid blocking UI
+    InteractionManager.runAfterInteractions(() => {
+      onAnimationComplete?.();
+    });
   }, [onAnimationComplete]);
 
   useEffect(() => {
-    if (isVisible && onAnimationComplete) {
-      const timer = setTimeout(handleComplete, 1500);
+    if (isVisible) {
+      // Start entrance animation
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.loop(
+          Animated.timing(rotateAnim, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true,
+          })
+        ),
+      ]).start();
+
+      const timer = setTimeout(() => {
+        // Exit animation
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start(handleComplete);
+      }, 1300);
+
       return () => clearTimeout(timer);
+    } else {
+      // Reset animations
+      fadeAnim.setValue(0);
+      scaleAnim.setValue(0.8);
+      rotateAnim.setValue(0);
     }
-  }, [isVisible, handleComplete]);
+  }, [isVisible, fadeAnim, scaleAnim, rotateAnim, handleComplete]);
 
   if (!isVisible) {
     return null;
   }
 
+  const rotateInterpolate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
   return (
-    <View style={styles.overlay}>
+    <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
       <View style={styles.cardContainer}>
-        <View style={styles.card}>
+        <Animated.View 
+          style={[
+            styles.card,
+            {
+              transform: [
+                { scale: scaleAnim },
+                { rotate: rotateInterpolate },
+              ],
+            },
+          ]}
+        >
           <Text variant="h3" style={styles.drawingText}>
             Drawing Card...
           </Text>
@@ -45,9 +101,9 @@ export const CardDrawingAnimation = memo<CardDrawingAnimationProps>(({
               {cardName}
             </Text>
           )}
-        </View>
+        </Animated.View>
       </View>
-    </View>
+    </Animated.View>
   );
 });
 
