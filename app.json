@@ -26,8 +26,6 @@
         "projectId": "268f44c1-406f-4387-8589-e62144024eaa"
       }
     },
-    "plugins": [
-      "expo-font"
-    ]
+    "plugins": []
   }
 }

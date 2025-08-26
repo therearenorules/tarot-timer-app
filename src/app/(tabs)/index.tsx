@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useCallback, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Alert, InteractionManager } from 'react-native';
-import { Screen, Text, HourCard } from '@/components';
-import { theme } from '@/constants';
-import { getCurrentHour, getTimeBasedGreeting, getHourRangeDescription } from '@/lib/timeManager';
-import { useDailyTarotStore } from '@/stores/dailyTarotStore';
-import { type DailyCard } from '@/lib/cardGeneration';
+import { Screen, Text, HourCard } from '../../components';
+import { theme } from '../../constants';
+import { getCurrentHour, getTimeBasedGreeting, getHourRangeDescription } from '../../lib/timeManager';
+import { useDailyTarotStore } from '../../stores/dailyTarotStore';
+import { type DailyCard } from '../../lib/cardGeneration';
 
 export default function HomeScreen() {
   const dailyTarotStore = useDailyTarotStore();

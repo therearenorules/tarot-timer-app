@@ -1,6 +1,5 @@
 /**
- * Web entry point with React 18 compatibility
+ * Web entry point - Functional version with working navigation
  */
 
-// Import the main app entry point
-import './App';
+import './App-functional';

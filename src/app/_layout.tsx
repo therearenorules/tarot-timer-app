@@ -1,11 +1,11 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { theme } from '@/constants';
-import { DatabaseProvider } from '@/lib/database/DatabaseProvider';
-import { StoreProvider } from '@/components/providers/StoreProvider';
-import { ErrorBoundary } from '@/components';
-import { handleError, ErrorType, ErrorSeverity, createAppError } from '@/lib/errorHandling';
+import { theme } from '../constants';
+import { DatabaseProvider } from '../lib/database/DatabaseProvider';
+import { StoreProvider } from '../components/providers/StoreProvider';
+import { ErrorBoundary } from '../components';
+import { handleError, ErrorType, ErrorSeverity, createAppError } from '../lib/errorHandling';
 
 export default function RootLayout() {
   const handleGlobalError = (error: Error, errorInfo: React.ErrorInfo) => {
