@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { TouchableOpacity, View, StyleSheet, Image, Alert } from 'react-native';
-import { Text } from '@/components';
+import { TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
+import { Text, ImageWithFallback } from '@/components';
 import { theme } from '@/constants';
 import { formatDate } from '@/lib';
 import { Spread } from '@/lib/database/types';
@@ -38,10 +38,19 @@ export const SpreadThumbnail = memo<Props>(({ spread, onPress, onDelete }) => {
     >
       <View style={styles.imageContainer}>
         {spread.imageUri ? (
-          <Image 
+          <ImageWithFallback
             source={{ uri: spread.imageUri }}
-            style={styles.image}
+            style={styles.imageContainer}
+            imageStyle={styles.image}
             resizeMode="cover"
+            placeholder={
+              <View style={styles.placeholderImage}>
+                <Text style={styles.placeholderIcon}>🔮</Text>
+                <Text variant="caption" color={theme.colors.textSecondary}>
+                  No Image
+                </Text>
+              </View>
+            }
           />
         ) : (
           <View style={styles.placeholderImage}>

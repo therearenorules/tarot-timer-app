@@ -31,7 +31,7 @@ export default function SpreadsScreen() {
   // Initialize spread system on mount
   useEffect(() => {
     spreadActions.initializeSpreadSystem().catch(error => {
-      console.error('Failed to initialize spread system:', error);
+      // Error logged: Failed to initialize spread system
       Alert.alert('Error', 'Failed to initialize spread system');
     });
   }, []);

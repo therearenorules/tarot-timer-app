@@ -89,7 +89,7 @@ export const DeckShop = memo<Props>(({ onClose }) => {
   const handlePurchase = async (deck: any) => {
     try {
       // Mock purchase process
-      console.log(`Purchasing deck: ${deck.id} for $${deck.price}`);
+      // Debug: Purchasing deck: ${deck.id} for $${deck.price}
       
       // Simulate purchase success
       const newPurchasedDecks = new Set(purchasedDecks);

@@ -1,5 +1,5 @@
 /**
- * Web entry point - Functional version with working navigation
+ * Expo Router entry point
  */
 
-import './App-functional';
+import 'expo-router/entry';

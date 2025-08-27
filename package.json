@@ -2,7 +2,7 @@
   "name": "tarot-timer-app",
   "version": "1.0.0",
   "description": "🔮 시간별 타로 카드와 함께하는 의미있는 하루",
-  "main": "expo/AppEntry.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
