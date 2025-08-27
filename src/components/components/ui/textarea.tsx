@@ -1,15 +1,42 @@
-import * as React from "react";
+import React from 'react';
+import { TextInput, ViewStyle, TextStyle, TextInputProps } from 'react-native';
+import { theme } from '@/constants';
 
-import { cn } from "./utils";
+interface TextareaProps extends Omit<TextInputProps, 'style'> {
+  style?: ViewStyle;
+  inputStyle?: TextStyle;
+}
 
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+function Textarea({
+  style,
+  inputStyle,
+  placeholderTextColor = theme.colors.textSecondary,
+  ...props
+}: TextareaProps) {
+  const containerStyle: ViewStyle = {
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surface,
+    minHeight: 64,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    ...style,
+  };
+
+  const textInputStyle: TextStyle = {
+    color: theme.colors.text,
+    fontSize: 16,
+    textAlignVertical: 'top',
+    ...inputStyle,
+  };
+
   return (
-    <textarea
-      data-slot="textarea"
-      className={cn(
-        "resize-none border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex field-sizing-content min-h-16 w-full rounded-md border bg-input-background px-3 py-2 text-base transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className,
-      )}
+    <TextInput
+      style={textInputStyle}
+      placeholderTextColor={placeholderTextColor}
+      multiline
+      textAlignVertical="top"
       {...props}
     />
   );

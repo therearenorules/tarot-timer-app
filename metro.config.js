@@ -19,6 +19,7 @@ config.resolver = {
     '@': path.resolve(__dirname, 'src'),
   },
   unstable_enablePackageExports: true,
+  sourceExts: ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'],
 };
 
 // Web transformer settings to handle ES modules
@@ -28,5 +29,9 @@ config.transformer.getTransformOptions = async () => ({
     inlineRequires: true,
   },
 });
+
+// Optimize cache settings to reduce rebuilds
+config.cacheVersion = '1.0.0';
+config.resetCache = false;
 
 module.exports = config;

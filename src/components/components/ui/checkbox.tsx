@@ -1,39 +1,61 @@
-"use client";
+import React from 'react';
+import { Pressable, View, ViewStyle } from 'react-native';
+import { theme } from '@/constants';
 
-import * as React from "react";
-import { Check } from "./icons";
-import { cn } from "./utils";
-
-function Checkbox({
-  className,
-  checked,
-  onCheckedChange,
-  ...props
-}: React.ComponentProps<"input"> & {
+interface CheckboxProps {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-}) {
+  disabled?: boolean;
+  style?: ViewStyle;
+}
+
+function Checkbox({
+  checked = false,
+  onCheckedChange,
+  disabled = false,
+  style,
+}: CheckboxProps) {
+  const handlePress = () => {
+    if (!disabled) {
+      onCheckedChange?.(!checked);
+    }
+  };
+
+  const checkboxStyle: ViewStyle = {
+    width: 16,
+    height: 16,
+    borderRadius: 2,
+    borderWidth: 1,
+    borderColor: disabled ? theme.colors.border : theme.colors.primary,
+    backgroundColor: checked ? theme.colors.primary : 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...style,
+  };
+
   return (
-    <label className="inline-flex items-center">
-      <input
-        type="checkbox"
-        className="sr-only"
-        checked={checked}
-        onChange={(e) => onCheckedChange?.(e.target.checked)}
-        {...props}
-      />
-      <div
-        className={cn(
-          "peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-          checked ? "bg-primary text-primary-foreground" : "bg-background",
-          className
-        )}
-      >
+    <Pressable
+      onPress={handlePress}
+      disabled={disabled}
+      style={({ pressed }) => [
+        {
+          opacity: pressed && !disabled ? 0.8 : 1,
+        },
+      ]}
+    >
+      <View style={checkboxStyle}>
         {checked && (
-          <Check className="h-3.5 w-3.5 text-current" />
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              backgroundColor: '#FFFFFF',
+              borderRadius: 1,
+            }}
+          />
         )}
-      </div>
-    </label>
+      </View>
+    </Pressable>
   );
 }
 

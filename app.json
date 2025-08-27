@@ -26,6 +26,9 @@
         "projectId": "268f44c1-406f-4387-8589-e62144024eaa"
       }
     },
-    "plugins": []
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "tarot-timer"
   }
 }

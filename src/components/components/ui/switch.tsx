@@ -1,41 +1,32 @@
-"use client";
+import React from 'react';
+import { Switch as RNSwitch, ViewStyle } from 'react-native';
+import { theme } from '@/constants';
 
-import * as React from "react";
-import { cn } from "./utils";
-
-function Switch({
-  className,
-  checked,
-  onCheckedChange,
-  ...props
-}: React.ComponentProps<"input"> & {
+interface SwitchProps {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-}) {
+  disabled?: boolean;
+  style?: ViewStyle;
+}
+
+function Switch({
+  checked = false,
+  onCheckedChange,
+  disabled = false,
+  style,
+}: SwitchProps) {
   return (
-    <label className="inline-flex items-center">
-      <input
-        type="checkbox"
-        className="sr-only"
-        checked={checked}
-        onChange={(e) => onCheckedChange?.(e.target.checked)}
-        {...props}
-      />
-      <div
-        className={cn(
-          "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
-          checked ? "bg-primary" : "bg-input",
-          className
-        )}
-      >
-        <div
-          className={cn(
-            "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0 transition-transform",
-            checked ? "translate-x-4" : "translate-x-0"
-          )}
-        />
-      </div>
-    </label>
+    <RNSwitch
+      value={checked}
+      onValueChange={onCheckedChange}
+      disabled={disabled}
+      trackColor={{
+        false: theme.colors.border,
+        true: theme.colors.primary,
+      }}
+      thumbColor={checked ? '#FFFFFF' : '#FFFFFF'}
+      style={style}
+    />
   );
 }
 

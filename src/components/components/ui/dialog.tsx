@@ -1,36 +1,41 @@
-"use client";
-
-import * as React from "react";
-import { X } from "./icons";
-import { cn } from "./utils";
+import React, { createContext, useContext, useState } from 'react';
+import {
+  Modal,
+  View,
+  Pressable,
+  ViewStyle,
+  TextStyle,
+  StyleSheet,
+} from 'react-native';
+import { Text } from '@/components';
+import { theme } from '@/constants';
+import { Button } from './button';
 
 interface DialogContextType {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const DialogContext = React.createContext<DialogContextType | undefined>(undefined);
+const DialogContext = createContext<DialogContextType | undefined>(undefined);
 
-function Dialog({
-  open,
-  onOpenChange,
-  children,
-}: {
+interface DialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
-}) {
-  const [internalOpen, setInternalOpen] = React.useState(false);
+}
+
+function Dialog({ open, onOpenChange, children }: DialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined;
   const isOpen = isControlled ? open : internalOpen;
-  
-  const handleOpenChange = React.useCallback((newOpen: boolean) => {
+
+  const handleOpenChange = (newOpen: boolean) => {
     if (isControlled) {
       onOpenChange?.(newOpen);
     } else {
       setInternalOpen(newOpen);
     }
-  }, [isControlled, onOpenChange]);
+  };
 
   return (
     <DialogContext.Provider value={{ open: isOpen, onOpenChange: handleOpenChange }}>
@@ -39,113 +44,151 @@ function Dialog({
   );
 }
 
-function DialogTrigger({
-  children,
-  ...props
-}: React.ComponentProps<"button">) {
-  const context = React.useContext(DialogContext);
-  
+interface DialogTriggerProps {
+  children: React.ReactNode;
+  asChild?: boolean;
+  onPress?: () => void;
+}
+
+function DialogTrigger({ children, asChild = false, onPress }: DialogTriggerProps) {
+  const context = useContext(DialogContext);
+
+  const handlePress = () => {
+    onPress?.();
+    context?.onOpenChange(true);
+  };
+
+  if (asChild && React.isValidElement(children)) {
+    const childElement = children as React.ReactElement;
+    return React.cloneElement(childElement, {
+      onPress: handlePress,
+    } as any);
+  }
+
   return (
-    <button
-      {...props}
-      onClick={(e) => {
-        props.onClick?.(e);
-        context?.onOpenChange(true);
-      }}
-    >
+    <Pressable onPress={handlePress}>
       {children}
-    </button>
+    </Pressable>
   );
 }
 
-function DialogContent({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) {
-  const context = React.useContext(DialogContext);
-  
-  React.useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        context?.onOpenChange(false);
-      }
-    };
-    
-    if (context?.open) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
-    
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
-    };
-  }, [context?.open, context?.onOpenChange]);
-  
+interface DialogContentProps {
+  children: React.ReactNode;
+  style?: ViewStyle;
+}
+
+function DialogContent({ children, style }: DialogContentProps) {
+  const context = useContext(DialogContext);
+
   if (!context?.open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div 
-        className="fixed inset-0 bg-black/50" 
-        onClick={() => context.onOpenChange(false)}
-      />
-      <div
-        className={cn(
-          "relative z-50 grid w-full max-w-lg gap-4 border bg-background p-6 shadow-lg rounded-lg m-4",
-          className
-        )}
-        {...props}
+    <Modal
+      visible={context.open}
+      transparent
+      animationType="fade"
+      onRequestClose={() => context.onOpenChange(false)}
+    >
+      <Pressable
+        style={styles.overlay}
+        onPress={() => context.onOpenChange(false)}
       >
-        {children}
-        <button
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
-          onClick={() => context.onOpenChange(false)}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </button>
-      </div>
-    </div>
+        <Pressable style={[styles.content, style]} onPress={() => {}}>
+          {children}
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+interface DialogHeaderProps {
+  children: React.ReactNode;
+  style?: ViewStyle;
+}
+
+function DialogHeader({ children, style }: DialogHeaderProps) {
   return (
-    <div
-      className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)}
-      {...props}
-    />
+    <View style={[styles.header, style]}>
+      {children}
+    </View>
   );
 }
 
-function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
+interface DialogTitleProps {
+  children: React.ReactNode;
+  style?: TextStyle;
+}
+
+function DialogTitle({ children, style }: DialogTitleProps) {
   return (
-    <div
-      className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
-      {...props}
-    />
+    <Text variant="h4" style={[styles.title, style]}>
+      {children}
+    </Text>
   );
 }
 
-function DialogTitle({ className, ...props }: React.ComponentProps<"h2">) {
+interface DialogDescriptionProps {
+  children: React.ReactNode;
+  style?: TextStyle;
+}
+
+function DialogDescription({ children, style }: DialogDescriptionProps) {
   return (
-    <h2
-      className={cn("text-lg font-semibold leading-none tracking-tight", className)}
-      {...props}
-    />
+    <Text
+      variant="body"
+      color={theme.colors.textSecondary}
+      style={[styles.description, style]}
+    >
+      {children}
+    </Text>
   );
 }
 
-function DialogDescription({ className, ...props }: React.ComponentProps<"p">) {
+interface DialogFooterProps {
+  children: React.ReactNode;
+  style?: ViewStyle;
+}
+
+function DialogFooter({ children, style }: DialogFooterProps) {
   return (
-    <p
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props}
-    />
+    <View style={[styles.footer, style]}>
+      {children}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing.xl,
+  },
+  content: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.xl,
+    width: '90%',
+    maxWidth: 400,
+    maxHeight: '80%',
+  },
+  header: {
+    marginBottom: theme.spacing.lg,
+  },
+  title: {
+    marginBottom: theme.spacing.sm,
+  },
+  description: {
+    marginBottom: theme.spacing.md,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.lg,
+  },
+});
 
 export {
   Dialog,
