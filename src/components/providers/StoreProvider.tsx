@@ -7,6 +7,8 @@ import { View, Text } from 'react-native';
 import { theme } from '@/constants';
 import { useAppLifecycle } from '@/services/appLifecycleService';
 import { useDailyTarotStore } from '@/stores/dailyTarotStore';
+import { useSettingsStore } from '@/stores/settingsStore';
+import * as notificationService from '@/services/notificationService';
 
 interface StoreContextValue {
   isInitialized: boolean;
@@ -23,6 +25,7 @@ interface StoreProviderProps {
 
 export function StoreProvider({ children }: StoreProviderProps) {
   const dailyTarotStore = useDailyTarotStore();
+  const settingsStore = useSettingsStore();
   const [initializationAttempted, setInitializationAttempted] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
@@ -41,13 +44,22 @@ export function StoreProvider({ children }: StoreProviderProps) {
       setInitializationAttempted(true);
 
       try {
-        console.log('🏪 StoreProvider: Initializing daily tarot system...');
-        
+        console.log('🏪 StoreProvider: Initializing app systems...');
+
+        // Initialize notification system first
+        await notificationService.initializeNotifications();
+        console.log('✅ StoreProvider: Notification system initialized');
+
+        // Load settings (this will also schedule notifications based on settings)
+        await settingsStore.loadSettings();
+        console.log('✅ StoreProvider: Settings loaded');
+
         // Initialize the daily tarot system
         await dailyTarotStore.initializeToday();
-        
+        console.log('✅ StoreProvider: Daily tarot system initialized');
+
         if (isMounted) {
-          console.log('✅ StoreProvider: Daily tarot system initialized');
+          console.log('✅ StoreProvider: All systems initialized successfully');
         }
       } catch (error) {
         if (isMounted) {

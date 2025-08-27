@@ -9,6 +9,7 @@ import { persist } from './middleware/persistence';
 import { databaseSync, DatabaseSyncStrategies } from './middleware/database';
 import { SettingsState, StoreError } from './types';
 import { databaseService } from '@/lib/database';
+import * as notificationService from '@/services/notificationService';
 
 /**
  * Default settings values
@@ -64,6 +65,34 @@ const createSettingsStore = () => create<SettingsState>()(
                 (state as any)[key] = value;
               });
 
+              // Handle notification settings changes
+              if (key === 'hourlyNotifications') {
+                if (value) {
+                  await notificationService.scheduleHourlyNotifications();
+                } else {
+                  await notificationService.cancelHourlyNotifications();
+                }
+              } else if (key === 'dailyReminder') {
+                if (value) {
+                  await notificationService.scheduleDailyNotification();
+                } else {
+                  await notificationService.cancelDailyNotifications();
+                }
+              } else if (key === 'notificationsEnabled') {
+                if (!value) {
+                  await notificationService.cancelAllNotifications();
+                } else {
+                  // Re-enable based on current settings
+                  const currentState = get();
+                  if (currentState.hourlyNotifications) {
+                    await notificationService.scheduleHourlyNotifications();
+                  }
+                  if (currentState.dailyReminder) {
+                    await notificationService.scheduleDailyNotification();
+                  }
+                }
+              }
+
               // Sync to database
               if (databaseService.isReady()) {
                 await syncSettingToDatabase(key as string, value);
@@ -76,12 +105,12 @@ const createSettingsStore = () => create<SettingsState>()(
             } catch (error) {
               const message = error instanceof Error ? error.message : `Failed to update ${String(key)}`;
               console.error(`Failed to update setting ${String(key)}:`, message);
-              
+
               set((state) => {
                 state.error = message;
                 state.isLoading = false;
               });
-              
+
               throw error;
             }
           },
