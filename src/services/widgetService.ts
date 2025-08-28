@@ -14,6 +14,7 @@ export interface WidgetService {
   scheduleHourlyUpdates: () => Promise<void>;
   clearWidgetData: () => Promise<void>;
   isWidgetSupported: () => boolean;
+  initialize: () => Promise<void>;
 }
 
 class WidgetServiceImpl implements WidgetService {
@@ -49,11 +50,11 @@ class WidgetServiceImpl implements WidgetService {
    */
   getCurrentCardData(): WidgetCardData | null {
     try {
-      const dailyCardState = useDailyCardStore.getState();
+      const dailyCardState = useDailyTarotStore.getState();
       const deckState = useDeckStore.getState();
       
       const currentHour = new Date().getHours();
-      const currentCard = dailyCardState.hourlyCards.find(card => card.hour === currentHour);
+      const currentCard = dailyCardState.currentCards.find((card: any) => card.hour === currentHour);
       
       if (!currentCard) {
         console.warn('⚠️ No card found for current hour:', currentHour);
@@ -76,7 +77,7 @@ class WidgetServiceImpl implements WidgetService {
           month: 'short', 
           day: 'numeric'
         }),
-        deckName: deckState.currentDeck?.name || 'Classic Tarot',
+        deckName: deckState.selectedDeck?.info?.name || 'Classic Tarot',
         isUpright: currentCard.isUpright,
         meanings: currentCard.isUpright ? currentCard.card.upright : currentCard.card.reversed
       };

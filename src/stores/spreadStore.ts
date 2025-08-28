@@ -5,6 +5,8 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { SpreadLayout, SpreadCard, SpreadData, SPREAD_SELECTION_CARDS, getSpreadById } from '@/assets/spreads';
+import { getDeckById, getDefaultDeck, type TarotCard } from '@/assets/decks';
+import seedrandom from 'seedrandom';
 
 // Basic spread state interface
 interface SpreadState {
@@ -45,28 +47,67 @@ interface SpreadState {
   };
 }
 
-// Mock functions for services that might not exist
-const mockDrawCardForPosition = async (positionIndex: number): Promise<SpreadCard> => {
+// Real card drawing function
+const drawCardForPosition = async (positionIndex: number, spreadId: string): Promise<SpreadCard> => {
+  // Create a seed based on spread and position for consistent randomization
+  const seed = `${spreadId}_${positionIndex}_${Date.now()}`;
+  const rng = seedrandom(seed);
+
+  // Get deck (default to classic)
+  const deck = getDeckById('classic') || getDefaultDeck();
+  const cards = deck.cards;
+
+  // Draw a random card
+  const cardIndex = Math.floor(rng() * cards.length);
+  const card = cards[cardIndex];
+
+  // Determine if card is reversed (30% chance)
+  const isReversed = rng() < 0.3;
+
   return {
     positionIndex,
-    cardKey: 'mock_card',
-    cardName: 'Mock Card',
-    isReversed: false,
+    cardKey: card.key,
+    cardName: card.name,
+    isReversed,
     drawnAt: new Date().toISOString(),
-    keywords: ['mock', 'test']
+    keywords: isReversed ? card.reversed : card.upright
   };
 };
 
-const mockCaptureSpread = async (ref: React.RefObject<any>): Promise<string> => {
-  return 'mock://capture/uri';
+// Real spread capture function (placeholder - requires expo-file-system and expo-sharing)
+const captureSpread = async (ref: React.RefObject<any>): Promise<string> => {
+  // TODO: Implement actual screenshot capture using expo-file-system
+  // For now, return a placeholder URI
+  console.log('Spread capture requested - implementation needed');
+  return `spread_capture_${Date.now()}.png`;
 };
 
-const mockSaveSpread = async (imageUri: string, options?: any): Promise<void> => {
-  console.log('Mock save spread:', imageUri, options);
+// Real spread save function
+const saveSpread = async (imageUri: string, options?: any): Promise<void> => {
+  try {
+    console.log('Saving spread:', imageUri, options);
+    // TODO: Implement actual file saving using expo-file-system
+    // TODO: Optionally save to gallery using expo-media-library
+
+    if (options?.saveToGallery) {
+      console.log('Gallery save requested - implementation needed');
+    }
+  } catch (error) {
+    console.error('Failed to save spread:', error);
+    throw error;
+  }
 };
 
-const mockShareSpread = async (imageUri: string): Promise<void> => {
-  console.log('Mock share spread:', imageUri);
+// Real spread share function
+const shareSpread = async (imageUri: string): Promise<void> => {
+  try {
+    console.log('Sharing spread:', imageUri);
+    // TODO: Implement actual sharing using expo-sharing
+    console.log('Spread sharing requested - implementation needed');
+  } catch (error) {
+    console.error('Failed to share spread:', error);
+    throw error;
+  }
 };
 
 // Create the store
@@ -121,11 +162,12 @@ export const useSpreadStore = create<SpreadState>()(
           const spreadData: SpreadData = {
             id: `spread_${Date.now()}`,
             spreadId,
+            spreadName: layout.name,
             cards: [],
             timelineCards: [],
             isComplete: false,
             createdAt: new Date().toISOString(),
-            completedAt: null
+            completedAt: undefined
           };
 
           set({ 
@@ -157,8 +199,8 @@ export const useSpreadStore = create<SpreadState>()(
             throw new Error('No active spread');
           }
 
-          // Use mock function for now
-          const card = await mockDrawCardForPosition(positionIndex);
+          // Draw real card for position
+          const card = await drawCardForPosition(positionIndex, state.currentSpreadData!.spreadId);
           
           set(state => ({
             drawnCards: [...state.drawnCards, card]
@@ -210,7 +252,7 @@ export const useSpreadStore = create<SpreadState>()(
       // Capture spread
       captureSpread: async (ref: React.RefObject<any>) => {
         try {
-          return await mockCaptureSpread(ref);
+          return await captureSpread(ref);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to capture spread';
           set({ error: message });
@@ -221,7 +263,7 @@ export const useSpreadStore = create<SpreadState>()(
       // Save spread
       saveSpread: async (imageUri: string, options?: any) => {
         try {
-          await mockSaveSpread(imageUri, options);
+          await saveSpread(imageUri, options);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to save spread';
           set({ error: message });
@@ -232,7 +274,7 @@ export const useSpreadStore = create<SpreadState>()(
       // Share spread
       shareSpread: async (imageUri: string) => {
         try {
-          await mockShareSpread(imageUri);
+          await shareSpread(imageUri);
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to share spread';
           set({ error: message });

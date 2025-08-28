@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, memo } from 'react';
 import { FlatList, View, StyleSheet, Dimensions } from 'react-native';
 import { HourCard } from './HourCard';
 import { theme } from '@/constants';
-import { type DailyCard } from '@/lib/cardGeneration';
+import { type DailyCard } from '@/lib/database/types';
 
 interface VirtualizedHourGridProps {
   currentSession: any;

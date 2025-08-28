@@ -1,15 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DatabaseService, { TarotCard, DailyCard } from './databaseService';
+import { databaseService } from '../lib/database';
 import { ALL_TAROT_CARDS } from '../data/tarotCards';
 import * as Notifications from 'expo-notifications';
+import { DailySession, DailyCard } from '../lib/database/types';
 
-export interface DailyCardWithDetails extends DailyCard {
-  card: TarotCard;
+// 기존 타로 카드 형식 타입 정의
+interface LegacyTarotCard {
+  id: number;
+  name: string;
+  nameKo: string;
+  suit: string;
+  type: 'major' | 'minor';
+  uprightMeaning: string;
+  reversedMeaning: string;
+  keywords: string[];
+  imageUrl: string;
+}
+
+export interface DailyCardWithDetails {
+  id: number;
+  sessionId: number;
+  hour: number;
+  cardKey: string;
+  memo?: string;
+  createdAt: string;
+  updatedAt: string;
+  card: LegacyTarotCard;
+  session: DailySession;
 }
 
 class DailyCardService {
   private static instance: DailyCardService;
-  private dbService: DatabaseService;
 
   static getInstance(): DailyCardService {
     if (!DailyCardService.instance) {
@@ -19,7 +40,7 @@ class DailyCardService {
   }
 
   constructor() {
-    this.dbService = DatabaseService.getInstance();
+    // Modern database service initialization handled by databaseService
   }
 
   // 오늘의 날짜를 YYYY-MM-DD 형식으로 반환
@@ -47,18 +68,44 @@ class DailyCardService {
     return random;
   }
 
-  // 날짜 기반으로 카드 선택 (같은 날에는 항상 같은 카드)
-  private selectCardForDate(date: string): { cardId: number; isReversed: boolean } {
-    const seed = `${date}_card`;
-    const reversedSeed = `${date}_reversed`;
+  // 날짜용 시드 생성
+  private generateSeedForDate(date: string): string {
+    return `${date}_${Math.random().toString(36).substring(2)}`;
+  }
+
+  // 세션에 대한 24개 카드 생성
+  private async generateCardsForSession(sessionId: number, date: string): Promise<void> {
+    const cards: string[] = [];
     
-    const cardRandom = this.seededRandom(seed);
-    const reversedRandom = this.seededRandom(reversedSeed);
+    for (let hour = 0; hour < 24; hour++) {
+      const seed = `${date}_${hour}`;
+      const cardRandom = this.seededRandom(seed);
+      const cardIndex = Math.floor(cardRandom * ALL_TAROT_CARDS.length);
+      const card = ALL_TAROT_CARDS[cardIndex];
+      // 카드 키 생성 (id 기반으로)
+      cards.push(this.generateCardKey(card));
+    }
     
-    const cardId = Math.floor(cardRandom * ALL_TAROT_CARDS.length);
-    const isReversed = reversedRandom > 0.5;
+    await databaseService.dailyTarot.generateSessionCards(sessionId, cards);
+  }
+
+  // 카드 키 생성 (기존 카드 데이터에서)
+  private generateCardKey(card: LegacyTarotCard): string {
+    if (card.type === 'major') {
+      return `major_${card.id.toString().padStart(2, '0')}`;
+    } else {
+      return `${card.suit.toLowerCase()}_${card.id.toString().padStart(2, '0')}`;
+    }
+  }
+
+  // 카드 키로 타로 카드 정보 가져오기
+  private getCardByKey(cardKey: string): LegacyTarotCard | null {
+    // 카드 키에서 id 추출
+    const parts = cardKey.split('_');
+    if (parts.length !== 2) return null;
     
-    return { cardId, isReversed };
+    const cardId = parseInt(parts[1]);
+    return ALL_TAROT_CARDS.find(card => card.id === cardId) || null;
   }
 
   // 오늘의 카드 가져오기
@@ -66,25 +113,29 @@ class DailyCardService {
     const today = this.getTodayString();
     
     try {
-      // 데이터베이스에서 기존 카드 확인
-      let dailyCard = await this.dbService.getDailyCard(today);
+      // 오늘의 세션 가져오기 또는 생성
+      const session = await databaseService.dailyTarot.getTodaySession('classic');
       
-      // 없으면 새로 생성
+      // 현재 시간의 카드 가져오기
+      const currentHour = new Date().getHours();
+      let dailyCard = await databaseService.dailyTarot.getCardBySessionHour(session.id, currentHour);
+      
+      // 없으면 새로 생성 (24개 전체 카드 생성)
       if (!dailyCard) {
-        const { cardId, isReversed } = this.selectCardForDate(today);
-        await this.dbService.createDailyCard(today, cardId, isReversed);
-        dailyCard = await this.dbService.getDailyCard(today);
+        await this.generateCardsForSession(session.id, today);
+        dailyCard = await databaseService.dailyTarot.getCardBySessionHour(session.id, currentHour);
       }
       
       if (!dailyCard) return null;
       
       // 카드 세부 정보 가져오기
-      const card = await this.dbService.getTarotCard(dailyCard.cardId);
+      const card = this.getCardByKey(dailyCard.cardKey);
       if (!card) return null;
       
       return {
         ...dailyCard,
-        card
+        card,
+        session
       };
     } catch (error) {
       console.error('Error getting today card:', error);
@@ -93,25 +144,27 @@ class DailyCardService {
   }
 
   // 특정 날짜의 카드 가져오기
-  async getCardForDate(date: string): Promise<DailyCardWithDetails | null> {
+  async getCardForDate(date: string, hour: number = 0): Promise<DailyCardWithDetails | null> {
     try {
-      let dailyCard = await this.dbService.getDailyCard(date);
-      
-      // 없으면 생성
-      if (!dailyCard) {
-        const { cardId, isReversed } = this.selectCardForDate(date);
-        await this.dbService.createDailyCard(date, cardId, isReversed);
-        dailyCard = await this.dbService.getDailyCard(date);
+      // 해당 날짜의 세션 가져오기 또는 생성
+      let session = await databaseService.dailyTarot.getSessionByDate(date);
+      if (!session) {
+        const seed = this.generateSeedForDate(date);
+        session = await databaseService.dailyTarot.createSession({ date, seed, deckId: 'classic' });
+        await this.generateCardsForSession(session.id, date);
       }
       
+      // 특정 시간의 카드 가져오기
+      const dailyCard = await databaseService.dailyTarot.getCardBySessionHour(session.id, hour);
       if (!dailyCard) return null;
       
-      const card = await this.dbService.getTarotCard(dailyCard.cardId);
+      const card = this.getCardByKey(dailyCard.cardKey);
       if (!card) return null;
       
       return {
         ...dailyCard,
-        card
+        card,
+        session
       };
     } catch (error) {
       console.error('Error getting card for date:', error);
@@ -121,18 +174,21 @@ class DailyCardService {
 
   // 과거 카드들 가져오기 (최근 30일)
   async getRecentCards(days: number = 30): Promise<DailyCardWithDetails[]> {
-    const cards: DailyCardWithDetails[] = [];
-    const today = new Date();
-    
     try {
-      for (let i = 0; i < days; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const dateString = date.toISOString().split('T')[0];
-        
-        const dailyCard = await this.getCardForDate(dateString);
-        if (dailyCard) {
-          cards.push(dailyCard);
+      const sessions = await databaseService.dailyTarot.getRecentSessions(days);
+      const cards: DailyCardWithDetails[] = [];
+      
+      for (const session of sessions) {
+        const sessionCards = await databaseService.dailyTarot.getCardsBySession(session.id);
+        for (const card of sessionCards) {
+          const tarotCard = this.getCardByKey(card.cardKey);
+          if (tarotCard) {
+            cards.push({
+              ...card,
+              card: tarotCard,
+              session
+            });
+          }
         }
       }
       
@@ -144,7 +200,7 @@ class DailyCardService {
   }
 
   // 카드 뽑기 애니메이션용 랜덤 카드들 생성
-  generateShuffleCards(count: number = 10): TarotCard[] {
+  generateShuffleCards(count: number = 10): LegacyTarotCard[] {
     const shuffled = [...ALL_TAROT_CARDS];
     
     // Fisher-Yates shuffle
@@ -167,9 +223,17 @@ class DailyCardService {
         date.setDate(today.getDate() - i);
         const dateString = date.toISOString().split('T')[0];
         
-        const dailyCard = await this.dbService.getDailyCard(dateString);
-        if (dailyCard) {
-          streak++;
+        const session = await databaseService.dailyTarot.getSessionByDate(dateString);
+        if (session) {
+          // 해당 날짜에 메모가 있는 카드가 있는지 확인 (참여 여부)
+          const cards = await databaseService.dailyTarot.getCardsBySession(session.id);
+          const hasParticipation = cards.some(card => card.memo && card.memo.trim().length > 0);
+          
+          if (hasParticipation || await this.isCardRead(dateString)) {
+            streak++;
+          } else {
+            break;
+          }
         } else {
           break;
         }
@@ -315,6 +379,7 @@ class DailyCardService {
           sound: true,
         },
         trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
           hour: hours,
           minute: minutes,
           repeats: true,
@@ -335,7 +400,7 @@ class DailyCardService {
   }
 
   // 카드 해석 생성 (AI 스타일 해석)
-  generateCardInterpretation(card: TarotCard, isReversed: boolean): {
+  generateCardInterpretation(card: LegacyTarotCard, isReversed: boolean): {
     todayMessage: string;
     advice: string;
     focus: string;
@@ -348,7 +413,7 @@ class DailyCardService {
       {
         todayMessage: `${card.nameKo}(${position})이 오늘 당신에게 전하는 메시지입니다. ${meaning}의 에너지가 하루를 가득 채울 것입니다.`,
         advice: `${card.keywords[0]}을 마음에 새기며 하루를 시작해보세요. 작은 변화가 큰 기적을 만들 수 있습니다.`,
-        focus: `오늘은 ${card.keywords[1]}에 특별히 주의를 기울여보세요.`
+        focus: `오늘은 ${card.keywords[1] || card.keywords[0]}에 특별히 주의를 기울여보세요.`
       },
       {
         todayMessage: `오늘의 카드 ${card.nameKo}는 ${meaning}을 상징합니다. 이는 당신의 현재 상황과 깊이 연결되어 있습니다.`,
@@ -385,26 +450,40 @@ class DailyCardService {
 
     try {
       const daysInMonth = new Date(year, month, 0).getDate();
+      const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+      const endDate = `${year}-${month.toString().padStart(2, '0')}-${daysInMonth.toString().padStart(2, '0')}`;
+      
+      // 해당 월의 카드들을 가져오기
+      const cardsWithMemos = await databaseService.dailyTarot.getCardsWithMemos(startDate, endDate);
       
       for (let day = 1; day <= daysInMonth; day++) {
-        const date = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         stats.totalDays++;
+        const date = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         
-        const dailyCard = await this.dbService.getDailyCard(date);
-        if (dailyCard) {
-          const card = await this.dbService.getTarotCard(dailyCard.cardId);
-          if (card) {
-            if (await this.isCardRead(date)) {
-              stats.readDays++;
+        const session = await databaseService.dailyTarot.getSessionByDate(date);
+        if (session) {
+          const sessionCards = await databaseService.dailyTarot.getCardsBySession(session.id);
+          
+          if (await this.isCardRead(date) || sessionCards.some(card => card.memo)) {
+            stats.readDays++;
+          }
+          
+          // 카드 타입별 통계
+          for (const dailyCard of sessionCards) {
+            const card = this.getCardByKey(dailyCard.cardKey);
+            if (card) {
+              if (card.type === 'major') {
+                stats.majorArcana++;
+                stats.suitCounts.Major++;
+              } else {
+                stats.minorArcana++;
+                // suit 값을 올바른 키로 매핑
+                const suitKey = card.suit as keyof typeof stats.suitCounts;
+                if (suitKey in stats.suitCounts) {
+                  stats.suitCounts[suitKey]++;
+                }
+              }
             }
-            
-            if (card.type === 'major') {
-              stats.majorArcana++;
-            } else {
-              stats.minorArcana++;
-            }
-            
-            stats.suitCounts[card.suit]++;
           }
         }
       }

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { databaseService } from './index';
 import { LoadingScreen } from '@/components';
+import { handleError, createDatabaseError, ErrorType, ErrorSeverity } from '@/lib/errorHandling';
 
 /**
  * Database Provider Context
@@ -52,7 +53,14 @@ export function DatabaseProvider({ children, enableSampleData = false }: Databas
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown database error';
       console.error('❌ Database initialization failed:', errorMessage);
-      
+
+      const dbInitError = createDatabaseError(
+        '데이터베이스 초기화 중 오류가 발생했습니다.',
+        err as Error,
+        { action: 'initializeDatabase', enableSampleData }
+      );
+      handleError(dbInitError);
+
       setError(errorMessage);
       setIsReady(false);
       setIsLoading(false);

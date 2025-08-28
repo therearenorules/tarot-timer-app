@@ -135,7 +135,7 @@ export const SpreadDetailModal = memo<Props>(({ spread, onClose, onShare, onDele
         <Button
           title="🗑️ Delete"
           onPress={handleDelete}
-          style={[styles.actionButton, styles.deleteActionButton]}
+          style={styles.actionButton}
           variant="outline"
         />
       </View>

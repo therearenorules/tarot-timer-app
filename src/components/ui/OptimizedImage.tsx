@@ -106,7 +106,6 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
         // Performance optimizations
         fadeDuration={0}
         progressiveRenderingEnabled={true}
-        removeClippedSubviews={true}
       />
     </View>
   );

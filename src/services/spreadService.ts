@@ -27,7 +27,7 @@ export interface SpreadCard {
 }
 
 export interface DetailedSpreadResult extends SpreadResult {
-  spreadType: SpreadType;
+  spreadType: string;
   spreadCards: SpreadCard[];
   detailedInterpretation: {
     overall: string;
@@ -438,7 +438,6 @@ class SpreadService {
         cards,
         interpretation: interpretation.overall,
         createdAt: new Date().toISOString(),
-        spreadType: spreadType,
         spreadCards,
         detailedInterpretation: interpretation
       };

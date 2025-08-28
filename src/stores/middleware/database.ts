@@ -104,7 +104,7 @@ export const databaseSync: DatabaseSync = (config, options) => (set, get, store)
         ? (partial as (state: any) => any)(get()) 
         : partial;
       
-      set(nextState);
+      (set as any)(nextState);
       
       // Detect changes and sync
       if (enabled && databaseService.isReady()) {

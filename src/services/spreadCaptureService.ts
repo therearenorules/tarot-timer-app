@@ -1,6 +1,7 @@
 /**
  * Spread Capture Service - Screen capture and sharing functionality
  */
+// @ts-ignore - Web APIs for React Native compatibility
 
 import { RefObject } from 'react';
 import { View, Alert, Platform } from 'react-native';
@@ -154,8 +155,9 @@ export const saveToGallery = async (imageUri: string, title: string): Promise<bo
     if (Platform.OS === 'web') {
       try {
         // @ts-ignore - Web-only code with platform check
-        if (typeof window !== 'undefined' && window.document) {
-          const document = window.document;
+        if (typeof window !== 'undefined' && (window as any).document) {
+          // @ts-ignore
+          const document = (window as any).document;
           const link = document.createElement('a');
           link.href = imageUri;
           link.download = `${title.replace(/[^a-z0-9]/gi, '_')}.png`;

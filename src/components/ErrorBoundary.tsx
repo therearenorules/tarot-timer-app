@@ -47,7 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
     const reportId = errorReportingService.reportError(
       error,
       'global',
-      { componentStack: errorInfo.componentStack },
+      { componentStack: errorInfo.componentStack || '' },
       { retryCount: this.retryCount }
     );
     

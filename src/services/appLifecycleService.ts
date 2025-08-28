@@ -6,7 +6,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { dailyResetService } from './dailyResetService';
-import { notificationService } from './notificationService';
+import notificationService from './notificationService';
 import { useDailyTarotStore } from '@/stores';
 
 export interface AppLifecycleService {

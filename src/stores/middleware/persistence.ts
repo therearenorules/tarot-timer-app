@@ -96,7 +96,7 @@ export const persist: Persist = (config, options) => (set, get, store) => {
         ? (partial as (state: any) => any)(get()) 
         : partial;
       
-      set(nextState);
+      (set as any)(nextState);
       
       // Persist the state after each update
       try {

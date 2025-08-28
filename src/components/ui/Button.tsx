@@ -14,6 +14,8 @@ interface ButtonProps extends Omit<PressableProps, 'style'> {
   disabled?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export function Button({
@@ -24,6 +26,8 @@ export function Button({
   disabled = false,
   style,
   textStyle,
+  accessibilityLabel,
+  accessibilityHint,
   onPress,
   ...props
 }: ButtonProps) {
@@ -120,6 +124,10 @@ export function Button({
       ]}
       onPress={isDisabled ? undefined : onPress}
       disabled={isDisabled}
+      accessibilityLabel={accessibilityLabel || title}
+      accessibilityHint={accessibilityHint}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled }}
       {...props}
     >
       {loading && (

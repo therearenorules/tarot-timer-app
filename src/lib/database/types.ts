@@ -9,6 +9,8 @@ export interface DailySession {
   seed: string;           // Random seed for card generation
   deckId: string;         // ID of the deck used
   createdAt: string;      // ISO datetime string
+  generatedAt?: string;   // When cards were generated
+  cards?: DailyCard[];    // Associated cards
 }
 
 export interface CreateDailySession {
@@ -23,6 +25,8 @@ export interface DailyCard {
   sessionId: number;
   hour: number;           // 0-23
   cardKey: string;        // e.g., 'fool', 'magician'
+  cardName?: string;      // Display name of the card
+  keywords?: string[];    // Card keywords
   memo?: string;          // User's notes
   createdAt: string;
   updatedAt: string;

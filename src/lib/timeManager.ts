@@ -174,3 +174,11 @@ export const getDayProgress = (): number => {
   const minutesSinceMidnight = getMinutesSinceMidnight();
   return Math.round((minutesSinceMidnight / 1440) * 100); // 1440 minutes in a day
 };
+
+/**
+ * Format date for display
+ */
+export const formatDate = (date: string | Date, formatStr: string = 'MMM dd, yyyy'): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return format(dateObj, formatStr);
+};
