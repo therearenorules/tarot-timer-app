@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text as RNText, TextStyle, StyleSheet } from 'react-native';
+import { Text as RNText, TextStyle, StyleSheet, AccessibilityRole } from 'react-native';
 import { theme } from '@/constants';
 
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'title1' | 'title2' | 'title3' | 'body' | 'caption' | 'tiny';
@@ -10,23 +10,39 @@ interface TextProps {
   color?: string;
   style?: TextStyle;
   numberOfLines?: number;
+  accessibilityRole?: AccessibilityRole;
+  accessibilityLabel?: string;
 }
 
-export function Text({ 
-  children, 
-  variant = 'body', 
+export function Text({
+  children,
+  variant = 'body',
   color = theme.colors.text,
   style,
-  numberOfLines
+  numberOfLines,
+  accessibilityRole,
+  accessibilityLabel
 }: TextProps) {
+  const getAccessibilityRole = (): AccessibilityRole | undefined => {
+    if (accessibilityRole) return accessibilityRole;
+
+    // Auto-assign roles based on variant
+    if (variant.startsWith('h') || variant === 'title1' || variant === 'title2' || variant === 'title3') {
+      return 'header';
+    }
+    return undefined;
+  };
+
   return (
-    <RNText 
+    <RNText
       style={[
         styles[variant],
         { color },
         style
       ]}
       numberOfLines={numberOfLines}
+      accessibilityRole={getAccessibilityRole()}
+      accessibilityLabel={accessibilityLabel}
     >
       {children}
     </RNText>

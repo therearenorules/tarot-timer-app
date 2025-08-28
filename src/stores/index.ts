@@ -9,7 +9,7 @@ import { RootStore } from './types';
 // Import all individual stores
 import { useDailyTarotStore, dailyTarotActions } from './dailyTarotStore';
 import { useSpreadStore, spreadActions } from './spreadStore';
-import { useDiaryStore, diaryActions } from './diaryStore';
+import { useDiaryStore, diaryStoreActions as diaryActions } from './diaryStore';
 import { useSettingsStore, settingsActions } from './settingsStore';
 import { useDeckStore, deckActions } from './deckStore';
 
@@ -74,8 +74,8 @@ const createRootStore = () => create<RootStore>()(
           // 3. Initialize stores that depend on deck/settings
           await Promise.all([
             dailyTarotActions.initializeToday(),
-            spreadActions.loadAvailableLayouts(),
-            diaryActions.loadReadings(),
+            spreadActions.initializeSpreadSystem(),
+            diaryActions.loadDiarySessions(),
           ]);
 
           console.log('✅ All stores initialized successfully');

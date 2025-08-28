@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useMemo, useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert, InteractionManager } from 'react-native';
-import { Screen, Text, HourCard } from '../../components';
+import { Screen, Text, VirtualizedHourGrid, CurrentCardHeader, MemoSheet } from '../../components';
 import { theme } from '../../constants';
 import { getCurrentHour, getTimeBasedGreeting, getHourRangeDescription } from '../../lib/timeManager';
 import { useDailyTarotStore } from '../../stores/dailyTarotStore';
-import { type DailyCard } from '../../lib/cardGeneration';
+import { type DailyCard } from '../../lib/database/types';
 
 export default function HomeScreen() {
   const dailyTarotStore = useDailyTarotStore();
@@ -26,10 +26,13 @@ export default function HomeScreen() {
   // Memoize expensive calculations
   const sessionStats = useMemo(() => getSessionStats(), [currentSession]);
   const greeting = useMemo(() => getTimeBasedGreeting(currentHour), [currentHour]);
-  const currentHourCard = useMemo(() => 
-    currentSession?.cards.find((card: DailyCard) => card.hour === currentHour),
+  const currentHourCard = useMemo(() =>
+    currentSession?.cards?.find((card: DailyCard) => card.hour === currentHour),
     [currentSession?.cards, currentHour]
   );
+
+  const [memoVisible, setMemoVisible] = useState(false);
+  const [draftMemo, setDraftMemo] = useState('');
 
   // Update time every minute with stable reference and performance optimization
   const timeUpdateRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,15 +59,16 @@ export default function HomeScreen() {
 
   const handleHourPress = useCallback((hour: number) => {
     selectHour(hour);
-    const hourCard = currentSession?.cards.find((card: DailyCard) => card.hour === hour);
-    const memo = getMemoForHour(hour);
-    
-    Alert.alert(
-      `${hourCard?.cardName || 'Unknown Card'} - Hour ${hour}`,
-      `Keywords: ${hourCard?.keywords.join(', ') || 'None'}\n\nMemo: ${memo || 'No memo yet'}`,
-      [{ text: 'OK' }]
-    );
-  }, [selectHour, currentSession?.cards, getMemoForHour]);
+    setDraftMemo(getMemoForHour(hour));
+    setMemoVisible(true);
+  }, [selectHour, getMemoForHour]);
+
+  const handleSaveMemo = useCallback(() => {
+    if (typeof selectedHour === 'number') {
+      dailyTarotStore.saveMemo(selectedHour, draftMemo);
+    }
+    setMemoVisible(false);
+  }, [dailyTarotStore, selectedHour, draftMemo]);
 
   if (error) {
     return (
@@ -84,42 +88,14 @@ export default function HomeScreen() {
   return (
     <Screen>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <Text variant="title1" style={styles.title}>
-            {greeting}! ✨
-          </Text>
-          <Text variant="body" color={theme.colors.textSecondary}>
-            Your 24-hour tarot journey continues
-          </Text>
-        </View>
-
-        <View style={styles.currentCard}>
-          <View style={styles.cardPlaceholder}>
-            <Text variant="caption" color={theme.colors.primary} style={styles.hourLabel}>
-              Current Hour: {currentHour} ({getHourRangeDescription(currentHour)})
-            </Text>
-            
-            {currentHourCard ? (
-              <View style={styles.cardInfo}>
-                <Text variant="title3" style={styles.cardName}>
-                  {currentHourCard.cardName}
-                </Text>
-                <Text variant="body" color={theme.colors.textSecondary} style={styles.keywords}>
-                  {currentHourCard.keywords.join(' • ')}
-                </Text>
-                <View style={styles.timeInfo}>
-                  <Text variant="caption" color={theme.colors.textSecondary}>
-                    {timeUntilNextHour} minutes until next hour
-                  </Text>
-                </View>
-              </View>
-            ) : (
-              <Text variant="body" color={theme.colors.textSecondary} style={styles.cardText}>
-                {isLoading ? 'Loading your card for this hour...' : 'Your tarot card will appear here'}
-              </Text>
-            )}
-          </View>
-        </View>
+        <CurrentCardHeader
+          title={`${greeting}!`}
+          subtitle="Your 24-hour tarot journey continues"
+          hourLabel={`Current Hour: ${currentHour} (${getHourRangeDescription(currentHour)})`}
+          cardName={currentHourCard?.cardName}
+          keywords={currentHourCard?.keywords}
+          timeUntilNextHour={timeUntilNextHour}
+        />
 
         <View style={styles.hourGrid}>
           <View style={styles.gridHeader}>
@@ -130,30 +106,13 @@ export default function HomeScreen() {
               {sessionStats.totalCards} cards • {sessionStats.cardsWithMemos} memos • {sessionStats.completionPercentage}% complete
             </Text>
           </View>
-
-          <View style={styles.grid}>
-            {useMemo(() =>
-              Array.from({ length: 24 }, (_, i) => {
-                const hourCard = currentSession?.cards.find((card: DailyCard) => card.hour === i);
-                const hasMemo = getMemoForHour(i).length > 0;
-                const isCurrentHourCard = i === currentHour;
-                const isSelectedHour = i === selectedHour;
-                
-                return (
-                  <HourCard
-                    key={i}
-                    hour={i}
-                    hourCard={hourCard}
-                    hasMemo={hasMemo}
-                    isCurrentHour={isCurrentHourCard}
-                    isSelected={isSelectedHour}
-                    onPress={handleHourPress}
-                  />
-                );
-              }),
-              [currentSession?.cards, getMemoForHour, currentHour, selectedHour, handleHourPress]
-            )}
-          </View>
+          <VirtualizedHourGrid
+            currentSession={currentSession}
+            getMemoForHour={getMemoForHour}
+            currentHour={currentHour}
+            selectedHour={selectedHour}
+            onHourPress={handleHourPress}
+          />
         </View>
 
         {currentSession && (
@@ -162,11 +121,19 @@ export default function HomeScreen() {
               Session: {currentSession.date} • Deck: {currentSession.deckId}
             </Text>
             <Text variant="caption" color={theme.colors.textSecondary}>
-              Generated: {new Date(currentSession.generatedAt).toLocaleTimeString()}
+              Generated: {currentSession.generatedAt ? new Date(currentSession.generatedAt).toLocaleTimeString() : 'Unknown'}
             </Text>
           </View>
         )}
       </ScrollView>
+      <MemoSheet
+        visible={memoVisible}
+        hour={selectedHour}
+        value={draftMemo}
+        onChangeText={setDraftMemo}
+        onSave={handleSaveMemo}
+        onClose={() => setMemoVisible(false)}
+      />
     </Screen>
   );
 }
@@ -181,54 +148,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: theme.spacing.xl,
-  },
-  header: {
-    marginBottom: theme.spacing.xl,
-  },
-  title: {
-    marginBottom: theme.spacing.sm,
-  },
-  currentCard: {
-    marginBottom: theme.spacing.xl,
-  },
-  cardPlaceholder: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.xl,
-    alignItems: 'center',
-    minHeight: 180,
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: theme.colors.border,
-    borderStyle: 'dashed',
-  },
-  hourLabel: {
-    textAlign: 'center',
-    marginBottom: theme.spacing.md,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  cardInfo: {
-    alignItems: 'center',
-  },
-  cardName: {
-    textAlign: 'center',
-    textTransform: 'capitalize',
-    fontWeight: '600',
-    marginBottom: theme.spacing.sm,
-    color: theme.colors.text,
-  },
-  keywords: {
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: theme.spacing.sm,
-  },
-  timeInfo: {
-    marginTop: theme.spacing.xs,
-  },
-  cardText: {
-    textAlign: 'center',
-    marginTop: theme.spacing.sm,
   },
   errorMessage: {
     textAlign: 'center',
@@ -247,11 +166,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     flex: 1,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.sm,
   },
   sessionInfo: {
     padding: theme.spacing.md,

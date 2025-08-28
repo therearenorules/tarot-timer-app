@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { Image, View, StyleSheet, ImageSourcePropType, ViewStyle, Text } from 'react-native';
 import { theme } from '@/constants';
 
@@ -11,9 +11,11 @@ interface ImageWithFallbackProps {
   onError?: () => void;
   onLoad?: () => void;
   resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
+  showLoadingIndicator?: boolean;
+  retryCount?: number;
 }
 
-export function ImageWithFallback({
+export const ImageWithFallback = memo<ImageWithFallbackProps>(({
   source,
   fallbackSource,
   style,
@@ -22,18 +24,35 @@ export function ImageWithFallback({
   onError,
   onLoad,
   resizeMode = 'cover',
-}: ImageWithFallbackProps) {
+  showLoadingIndicator = false,
+  retryCount = 1,
+}) => {
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentRetryCount, setCurrentRetryCount] = useState(0);
 
-  const handleError = () => {
-    setHasError(true);
-    onError?.();
-  };
+  const handleError = useCallback(() => {
+    if (currentRetryCount < retryCount) {
+      // Retry loading the image
+      setCurrentRetryCount(prev => prev + 1);
+      setIsLoading(true);
+      setHasError(false);
+    } else {
+      setHasError(true);
+      onError?.();
+    }
+  }, [currentRetryCount, retryCount, onError]);
 
-  const handleLoad = () => {
+  const handleLoad = useCallback(() => {
     setHasError(false);
+    setIsLoading(false);
+    setCurrentRetryCount(0); // Reset retry count on successful load
     onLoad?.();
-  };
+  }, [onLoad]);
+
+  const handleLoadStart = useCallback(() => {
+    setIsLoading(true);
+  }, []);
 
   const errorSource = fallbackSource || {
     uri: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4K',
@@ -64,10 +83,11 @@ export function ImageWithFallback({
         resizeMode={resizeMode}
         onError={handleError}
         onLoad={handleLoad}
+        onLoadStart={handleLoadStart}
       />
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

@@ -80,8 +80,8 @@ class ErrorReportingService {
       },
       context: {
         sessionId: this.sessionId,
-        userAgent: navigator.userAgent,
-        url: window.location?.href,
+        userAgent: 'React Native',
+        url: undefined,
         ...context,
       },
       recovery: {
@@ -359,25 +359,21 @@ class ErrorReportingService {
 // Export singleton instance
 export const errorReportingService = new ErrorReportingService();
 
-// Global error handler
-if (typeof window !== 'undefined') {
-  window.addEventListener('error', (event) => {
+// Global error handler - React Native에서는 ErrorUtils를 사용
+// 주석 처리: TypeScript 호환성 문제로 인해 비활성화
+/*
+if (typeof global !== 'undefined' && (global as any).ErrorUtils) {
+  const originalHandler = (global as any).ErrorUtils.getGlobalHandler();
+  (global as any).ErrorUtils.setGlobalHandler((error: any, isFatal: any) => {
     errorReportingService.reportError(
-      new Error(event.message),
-      'global',
-      { url: event.filename },
-      { lineno: event.lineno, colno: event.colno }
-    );
-  });
-
-  window.addEventListener('unhandledrejection', (event) => {
-    errorReportingService.reportError(
-      new Error(`Unhandled Promise Rejection: ${event.reason}`),
+      error,
       'global',
       {},
-      { reason: event.reason }
+      { isFatal }
     );
+    originalHandler(error, isFatal);
   });
 }
+*/
 
 export type { ErrorReport, ErrorAnalytics };

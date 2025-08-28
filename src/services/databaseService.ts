@@ -249,7 +249,7 @@ class DatabaseService {
     
     const result = await this.db.runAsync(
       'INSERT INTO diary_entries (date, content, mood, tags, card_id) VALUES (?, ?, ?, ?, ?)',
-      [entry.date, entry.content, entry.mood, JSON.stringify(entry.tags), entry.cardId]
+      [entry.date, entry.content, entry.mood, JSON.stringify(entry.tags), entry.cardId || null]
     );
     
     return result.lastInsertRowId;
@@ -376,7 +376,7 @@ class DatabaseService {
     // Minor Arcana suits
     const suits = ['Cups', 'Wands', 'Swords', 'Pentacles'];
     const suitKorean = ['컵', '완드', '소드', '펜타클'];
-    const minorArcana = [];
+    const minorArcana: TarotCard[] = [];
 
     suits.forEach((suit, suitIndex) => {
       for (let i = 1; i <= 14; i++) {

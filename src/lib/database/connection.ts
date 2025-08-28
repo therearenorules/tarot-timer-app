@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { DatabaseConfig, DatabaseError } from './types';
+import { handleError, createDatabaseError, ErrorType, ErrorSeverity } from '../errorHandling';
 
 /**
  * SQLite Database Connection Manager
@@ -42,6 +43,14 @@ class DatabaseConnection {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('Failed to initialize database:', message);
+
+      const dbError = createDatabaseError(
+        '데이터베이스 초기화에 실패했습니다.',
+        error as Error,
+        { action: 'initialize', config: this.config }
+      );
+      handleError(dbError);
+
       throw new DatabaseError(`Database initialization failed: ${message}`);
     }
   }
@@ -89,6 +98,14 @@ class DatabaseConnection {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('Query failed:', sql, params, message);
+
+      const queryError = createDatabaseError(
+        '데이터베이스 쿼리 실행 중 오류가 발생했습니다.',
+        error as Error,
+        { action: 'query', sql, params }
+      );
+      handleError(queryError);
+
       throw new DatabaseError(`Query failed: ${message}`, sql, params);
     }
   }
@@ -112,6 +129,14 @@ class DatabaseConnection {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       console.error('Transaction failed:', message);
+
+      const transactionError = createDatabaseError(
+        '데이터베이스 트랜잭션 실행 중 오류가 발생했습니다.',
+        error as Error,
+        { action: 'transaction', queryCount: queries.length }
+      );
+      handleError(transactionError);
+
       throw new DatabaseError(`Transaction failed: ${message}`);
     }
   }

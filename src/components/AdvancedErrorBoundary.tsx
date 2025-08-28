@@ -127,9 +127,9 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
       errorType: error.name,
       message: error.message,
       stack: error.stack,
-      componentStack: errorInfo.componentStack,
+      componentStack: errorInfo.componentStack || '',
       retryCount: this.state.retryCount,
-      userAgent: navigator.userAgent,
+      userAgent: 'React Native App',
       recovered: false,
     };
 
@@ -193,12 +193,9 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
         global.gc();
       }
       
-      // Clear any cached data
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => caches.delete(name));
-        });
-      }
+      // Clear any cached data - React Native doesn't use web caches
+      // Instead, we could clear AsyncStorage or other React Native specific caches
+      console.log('🧹 Cache clearing not applicable in React Native');
 
       InteractionManager.runAfterInteractions(() => {
         resolve(true);
@@ -337,9 +334,9 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
       const title = this.getErrorTitle();
 
       return (
-        <View style={[styles.container, styles[`${severity}Container`]]}>
+        <View style={styles.container}>
           <View style={styles.content}>
-            <Text variant="title2" style={[styles.title, styles[`${severity}Title`]]}>
+            <Text variant="title2" style={styles.title}>
               {title}
             </Text>
             

@@ -5,6 +5,7 @@
 
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { handleError, createUserActionError, ErrorType, ErrorSeverity } from '@/lib/errorHandling';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -45,7 +46,12 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
     }
 
     if (finalStatus !== 'granted') {
-      console.log('Notification permissions not granted');
+      const permissionError = createUserActionError(
+        '알림 권한이 거부되었습니다. 설정에서 알림 권한을 허용해 주세요.',
+        undefined,
+        { permissionStatus: finalStatus }
+      );
+      handleError(permissionError);
       return false;
     }
 
@@ -69,7 +75,12 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
     console.log('Notification permissions granted');
     return true;
   } catch (error) {
-    console.error('Error requesting notification permissions:', error);
+    const permissionError = createUserActionError(
+      '알림 권한 요청 중 오류가 발생했습니다.',
+      error as Error,
+      { action: 'requestNotificationPermissions' }
+    );
+    handleError(permissionError);
     return false;
   }
 };
@@ -107,7 +118,12 @@ export const scheduleHourlyNotifications = async (): Promise<void> => {
 
     console.log('Hourly notifications scheduled successfully');
   } catch (error) {
-    console.error('Error scheduling hourly notifications:', error);
+    const schedulingError = createUserActionError(
+      '시간별 알림 스케줄링 중 오류가 발생했습니다.',
+      error as Error,
+      { action: 'scheduleHourlyNotifications' }
+    );
+    handleError(schedulingError);
     throw error;
   }
 };
@@ -122,7 +138,7 @@ export const scheduleDailyNotification = async (hour: number = 9): Promise<void>
 
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) {
-      throw new Error('Notification permissions not granted');
+      throw new Error('알림 권한이 필요합니다. 설정에서 알림 권한을 허용해 주세요.');
     }
 
     await Notifications.scheduleNotificationAsync({
@@ -239,6 +255,39 @@ export const getAllScheduledNotifications = async () => {
 };
 
 /**
+ * Register background task (placeholder for React Native background tasks)
+ */
+export const registerBackgroundTask = async (): Promise<void> => {
+  console.log('Background task registration - placeholder implementation');
+};
+
+/**
+ * Schedule midnight reset task
+ */
+export const scheduleMidnightReset = async (): Promise<void> => {
+  console.log('Midnight reset scheduling - placeholder implementation');
+};
+
+/**
+ * Handle notification received
+ */
+export const handleNotificationReceived = (notification: any): void => {
+  console.log('Notification received:', notification);
+};
+
+/**
+ * Handle notification response
+ */
+export const handleNotificationResponse = (response: any): void => {
+  console.log('Notification response:', response);
+};
+
+/**
+ * Request permissions (alias for compatibility)
+ */
+export const requestPermissions = requestNotificationPermissions;
+
+/**
  * Initialize notification system
  */
 export const initializeNotifications = async (): Promise<void> => {
@@ -270,7 +319,7 @@ export const initializeNotifications = async (): Promise<void> => {
   }
 };
 
-export default {
+export const notificationService = {
   requestNotificationPermissions,
   scheduleHourlyNotifications,
   scheduleDailyNotification,
@@ -281,4 +330,11 @@ export default {
   areNotificationsEnabled,
   getAllScheduledNotifications,
   initializeNotifications,
+  registerBackgroundTask,
+  scheduleMidnightReset,
+  handleNotificationReceived,
+  handleNotificationResponse,
+  requestPermissions,
 };
+
+export default notificationService;

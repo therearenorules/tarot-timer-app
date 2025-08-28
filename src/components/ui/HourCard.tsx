@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components';
 import { theme } from '@/constants';
-import { type DailyCard } from '@/lib/cardGeneration';
+import { type DailyCard } from '@/lib/database/types';
 
 interface HourCardProps {
   hour: number;
@@ -21,8 +21,32 @@ export const HourCard = memo<HourCardProps>(({
   isSelected,
   onPress,
 }) => {
+  const getAccessibilityLabel = () => {
+    let label = `Hour ${hour}`;
+    if (hourCard) {
+      label += `, Card: ${hourCard.cardName}`;
+    }
+    if (hasMemo) {
+      label += ', Has memo';
+    }
+    if (isCurrentHour) {
+      label += ', Current hour';
+    }
+    if (isSelected) {
+      label += ', Selected';
+    }
+    return label;
+  };
+
+  const getAccessibilityHint = () => {
+    if (hourCard) {
+      return `View details for ${hourCard.cardName} card at hour ${hour}`;
+    }
+    return `Select hour ${hour} to view or add card information`;
+  };
+
   return (
-    <Pressable 
+    <Pressable
       style={[
         styles.hourCard,
         isCurrentHour && styles.currentHourCard,
@@ -30,6 +54,13 @@ export const HourCard = memo<HourCardProps>(({
         hasMemo && styles.hasMemoStyle
       ]}
       onPress={() => onPress(hour)}
+      accessibilityLabel={getAccessibilityLabel()}
+      accessibilityHint={getAccessibilityHint()}
+      accessibilityRole="button"
+      accessibilityState={{
+        selected: isSelected,
+        checked: isCurrentHour
+      }}
     >
       <Text 
         variant="caption" 

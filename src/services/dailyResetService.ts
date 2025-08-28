@@ -166,7 +166,7 @@ export const handleAppBackground = async (): Promise<void> => {
 /**
  * Initialize daily reset system
  */
-export const initializeDailyResetSystem = async (): Promise<void> => {
+export const initializeDailyResetSystem = async (): Promise<() => void> => {
   try {
     console.log('🚀 Initializing daily reset system...');
     
@@ -182,13 +182,13 @@ export const initializeDailyResetSystem = async (): Promise<void> => {
       }
     };
 
-    AppState.addEventListener('change', handleAppStateChange);
-    
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
     console.log('✅ Daily reset system initialized');
-    
+
     // Return cleanup function
     return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
+      subscription.remove();
     };
     
   } catch (error) {

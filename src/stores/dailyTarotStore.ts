@@ -6,27 +6,23 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { persist } from './middleware/persistence';
-import { TarotCard } from '@/assets/decks';
-import { 
-  generateDailyCards, 
-  getCurrentHourCard, 
-  type DailyCard, 
-  type DailyCardSet 
-} from '@/lib/cardGeneration';
+import { databaseService } from '../lib/database';
+import { DailySession, DailyCard } from '../lib/database/types';
+import DailyCardService from '../services/dailyCardService';
 import { 
   getCurrentHour, 
   getCurrentDate, 
   isNewDay,
-  getTimeUntilNextHour,
-  getTimeBasedGreeting 
+  getTimeUntilNextHour
 } from '@/lib/timeManager';
 
 // Enhanced state interface for Phase 4
 interface DailyTarotState {
   // Core session data
-  currentSession: DailyCardSet | null;
+  currentSession: DailySession | null;
+  sessionCards: DailyCard[];
   selectedHour: number;
-  selectedCard: TarotCard | null;
+  selectedCard: DailyCard | null;
   
   // Time tracking
   currentHour: number;
@@ -38,9 +34,6 @@ interface DailyTarotState {
   error: string | null;
   isNewSession: boolean;
   
-  // Memos system
-  memos: Record<string, Record<number, string>>; // date -> hour -> memo
-  
   // Actions
   initializeToday: () => Promise<void>;
   selectHour: (hour: number) => void;
@@ -49,9 +42,9 @@ interface DailyTarotState {
   reset: () => Promise<void>;
   
   // Memo actions
-  saveMemo: (hour: number, memo: string) => void;
+  saveMemo: (hour: number, memo: string) => Promise<void>;
   getMemoForHour: (hour: number) => string;
-  clearMemo: (hour: number) => void;
+  clearMemo: (hour: number) => Promise<void>;
   
   // Utility actions
   getSessionStats: () => {
@@ -72,6 +65,7 @@ export const useDailyTarotStore = create<DailyTarotState>()(
       immer((set, get) => ({
         // Initial state
         currentSession: null,
+        sessionCards: [],
         selectedHour: getCurrentHour(),
         selectedCard: null,
         currentHour: getCurrentHour(),
@@ -80,7 +74,6 @@ export const useDailyTarotStore = create<DailyTarotState>()(
         isLoading: false,
         error: null,
         isNewSession: false,
-        memos: {},
 
         // Initialize today's tarot session
         initializeToday: async () => {
@@ -96,29 +89,44 @@ export const useDailyTarotStore = create<DailyTarotState>()(
             const needsNewSession = isNewDay(get().lastGeneratedDate);
 
             if (needsNewSession || !get().currentSession) {
-              console.log('📅 Generating new daily cards for:', today);
+              console.log('📅 Getting daily session for:', today);
               
-              // Generate new cards for today
-              const dailyCardSet = generateDailyCards(today, 'classic');
+              // Get or create today's session
+              const session = await databaseService.dailyTarot.getTodaySession('classic');
+              
+              // Get all cards for the session
+              let sessionCards = await databaseService.dailyTarot.getCardsBySession(session.id);
+              
+              // If no cards exist, generate them using DailyCardService
+              if (sessionCards.length === 0) {
+                const dailyCardService = DailyCardService.getInstance();
+                await dailyCardService.getTodayCard(); // This will generate cards
+                sessionCards = await databaseService.dailyTarot.getCardsBySession(session.id);
+              }
               
               set((state) => {
-                state.currentSession = dailyCardSet;
+                state.currentSession = session;
+                state.sessionCards = sessionCards;
                 state.lastGeneratedDate = today;
                 state.isNewSession = true;
                 state.currentHour = getCurrentHour();
                 state.selectedHour = getCurrentHour();
                 state.timeUntilNextHour = getTimeUntilNextHour();
+                // Set selected card for current hour
+                state.selectedCard = sessionCards.find(card => card.hour === getCurrentHour()) || null;
               });
 
-              console.log('✅ Daily cards generated successfully');
+              console.log('✅ Daily session loaded successfully');
             } else {
-              console.log('📋 Using existing daily cards');
+              console.log('📋 Using existing daily session');
               
               // Update time-based properties
               set((state) => {
                 state.currentHour = getCurrentHour();
                 state.timeUntilNextHour = getTimeUntilNextHour();
                 state.isNewSession = false;
+                // Update selected card for current hour
+                state.selectedCard = state.sessionCards.find(card => card.hour === getCurrentHour()) || null;
               });
             }
 
@@ -145,33 +153,22 @@ export const useDailyTarotStore = create<DailyTarotState>()(
 
           set((state) => {
             state.selectedHour = hour;
-            
-            // Find the selected card
-            const session = state.currentSession;
-            if (session) {
-              const dailyCard = session.cards.find(card => card.hour === hour);
-              if (dailyCard) {
-                // Convert DailyCard to TarotCard format (simplified)
-                state.selectedCard = {
-                  key: dailyCard.cardKey,
-                  name: dailyCard.cardName,
-                  number: '',
-                  suit: 'major',
-                  upright: dailyCard.keywords,
-                  reversed: dailyCard.keywords,
-                  image: `${dailyCard.cardKey}.jpg`,
-                  description: ''
-                } as TarotCard;
-              }
-            }
+            // Find the selected card for this hour
+            state.selectedCard = state.sessionCards.find(card => card.hour === hour) || null;
           });
         },
 
         // Update current time
         updateCurrentTime: () => {
           set((state) => {
-            state.currentHour = getCurrentHour();
+            const newHour = getCurrentHour();
+            state.currentHour = newHour;
             state.timeUntilNextHour = getTimeUntilNextHour();
+            // Auto-select current hour if no specific hour is selected
+            if (state.selectedHour === state.currentHour - 1 || state.selectedHour === newHour) {
+              state.selectedHour = newHour;
+              state.selectedCard = state.sessionCards.find(card => card.hour === newHour) || null;
+            }
           });
         },
 
@@ -192,6 +189,7 @@ export const useDailyTarotStore = create<DailyTarotState>()(
         reset: async () => {
           set((state) => {
             state.currentSession = null;
+            state.sessionCards = [];
             state.selectedHour = getCurrentHour();
             state.selectedCard = null;
             state.currentHour = getCurrentHour();
@@ -200,7 +198,6 @@ export const useDailyTarotStore = create<DailyTarotState>()(
             state.isLoading = false;
             state.error = null;
             state.isNewSession = false;
-            state.memos = {};
           });
 
           // Re-initialize
@@ -208,38 +205,57 @@ export const useDailyTarotStore = create<DailyTarotState>()(
         },
 
         // Save memo for specific hour
-        saveMemo: (hour: number, memo: string) => {
-          const date = get().currentSession?.date || getCurrentDate();
-          
-          set((state) => {
-            if (!state.memos[date]) {
-              state.memos[date] = {};
-            }
-            state.memos[date][hour] = memo;
-          });
+        saveMemo: async (hour: number, memo: string) => {
+          try {
+            const session = get().currentSession;
+            if (!session) return;
+
+            // Update database
+            await databaseService.dailyTarot.upsertCardMemo(session.id, hour, memo);
+            
+            // Update local state
+            set((state) => {
+              const cardIndex = state.sessionCards.findIndex(card => card.hour === hour);
+              if (cardIndex !== -1) {
+                state.sessionCards[cardIndex] = {
+                  ...state.sessionCards[cardIndex],
+                  memo: memo,
+                  updatedAt: new Date().toISOString()
+                };
+              }
+              
+              // Update selected card if it's the same hour
+              if (state.selectedCard && state.selectedCard.hour === hour) {
+                state.selectedCard = {
+                  ...state.selectedCard,
+                  memo: memo,
+                  updatedAt: new Date().toISOString()
+                };
+              }
+            });
+          } catch (error) {
+            console.error('Error saving memo:', error);
+            set((state) => {
+              state.error = 'Failed to save memo';
+            });
+          }
         },
 
         // Get memo for specific hour
         getMemoForHour: (hour: number): string => {
-          const date = get().currentSession?.date || getCurrentDate();
-          return get().memos[date]?.[hour] || '';
+          const card = get().sessionCards.find(card => card.hour === hour);
+          return card?.memo || '';
         },
 
         // Clear memo for specific hour
-        clearMemo: (hour: number) => {
-          const date = get().currentSession?.date || getCurrentDate();
-          
-          set((state) => {
-            if (state.memos[date]) {
-              delete state.memos[date][hour];
-            }
-          });
+        clearMemo: async (hour: number) => {
+          await get().saveMemo(hour, '');
         },
 
         // Get session statistics
         getSessionStats: () => {
-          const session = get().currentSession;
-          if (!session) {
+          const sessionCards = get().sessionCards;
+          if (sessionCards.length === 0) {
             return {
               totalCards: 0,
               cardsWithMemos: 0,
@@ -247,14 +263,12 @@ export const useDailyTarotStore = create<DailyTarotState>()(
             };
           }
 
-          const date = session.date;
-          const memos = get().memos[date] || {};
-          const cardsWithMemos = Object.keys(memos).length;
+          const cardsWithMemos = sessionCards.filter(card => card.memo && card.memo.trim().length > 0).length;
 
           return {
-            totalCards: 24,
+            totalCards: sessionCards.length,
             cardsWithMemos,
-            completionPercentage: Math.round((cardsWithMemos / 24) * 100)
+            completionPercentage: Math.round((cardsWithMemos / sessionCards.length) * 100)
           };
         },
 
@@ -279,8 +293,8 @@ export const useDailyTarotStore = create<DailyTarotState>()(
         name: 'daily-tarot-store',
         partialize: (state) => ({
           currentSession: state.currentSession,
-          lastGeneratedDate: state.lastGeneratedDate,
-          memos: state.memos
+          sessionCards: state.sessionCards,
+          lastGeneratedDate: state.lastGeneratedDate
         })
       }
     ),
@@ -299,6 +313,7 @@ export const dailyTarotActions = {
   reset: () => useDailyTarotStore.getState().reset(),
   saveMemo: (hour: number, memo: string) => useDailyTarotStore.getState().saveMemo(hour, memo),
   getMemoForHour: (hour: number) => useDailyTarotStore.getState().getMemoForHour(hour),
+  clearMemo: (hour: number) => useDailyTarotStore.getState().clearMemo(hour),
   clearError: () => useDailyTarotStore.getState().clearError(),
 };
 

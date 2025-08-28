@@ -346,7 +346,4 @@ export class ErrorRecovery {
 }
 
 // Export commonly used functions
-export {
-  ErrorLogger,
-  errorLogger,
-};
+export { ErrorLogger };
