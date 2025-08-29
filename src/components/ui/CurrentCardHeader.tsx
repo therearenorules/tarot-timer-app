@@ -81,9 +81,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: 180,
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: theme.colors.border,
-    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: theme.colors.divider,
+    // Mystical shadow effect from Figma
+    shadowColor: theme.colors.deepPurple,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
   },
   hourLabel: {
     textAlign: 'center',
@@ -99,7 +104,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     fontWeight: '600',
     marginBottom: theme.spacing.sm,
-    color: theme.colors.text,
+    color: theme.colors.premiumGold, // Mystical gold color from Figma
   },
   keywords: {
     textAlign: 'center',

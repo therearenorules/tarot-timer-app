@@ -166,6 +166,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     flex: 1,
+    color: theme.colors.midnightBlue, // Mystical midnight blue from Figma
+    fontWeight: '600',
   },
   sessionInfo: {
     padding: theme.spacing.md,
@@ -173,5 +175,11 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
     marginBottom: theme.spacing.lg,
+    // Mystical shadow effect
+    shadowColor: theme.colors.deepPurple,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
 });

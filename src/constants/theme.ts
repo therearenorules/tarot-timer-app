@@ -17,6 +17,11 @@ export interface ThemeColors {
   borderSecondary: string;
   shadow: string;
   overlay: string;
+  // Mystical Premium colors from Figma
+  premiumGold: string;
+  deepPurple: string;
+  midnightBlue: string;
+  divider: string;
 }
 
 export interface Theme {
@@ -46,23 +51,28 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   colors: {
-    primary: '#007AFF',
-    secondary: '#5856D6',
-    background: '#FFFFFF',
-    surface: '#F9F9F9',
-    text: '#000000',
-    textSecondary: '#6B7280',
-    border: '#E5E7EB',
-    accent: '#FF6B6B',
-    error: '#FF3B30',
+    primary: '#4a1a4f', // Deep Purple from Figma
+    secondary: '#fafafa', // Light surface from Figma
+    background: '#ffffff', // White background from Figma
+    surface: '#fafafa', // Light surface from Figma
+    text: '#1a1f3a', // Midnight Blue from Figma
+    textSecondary: '#6b7280', // Neutral gray from Figma
+    border: '#e8e1e8', // Light purple tint from Figma
+    accent: '#d4af37', // Gold accent from Figma
+    error: '#dc2626', // Error color from Figma
     success: '#34C759',
     warning: '#FF9500',
     // Extended colors
-    surfaceSecondary: '#F3F4F6',
+    surfaceSecondary: '#f8f6f9', // Very light purple tint from Figma
     textTertiary: '#9CA3AF',
-    borderSecondary: '#D1D5DB',
-    shadow: 'rgba(0, 0, 0, 0.1)',
+    borderSecondary: '#e8e1e8', // Light purple tint from Figma
+    shadow: 'rgba(74, 26, 79, 0.1)', // Mystical shadow with deep purple
     overlay: 'rgba(0, 0, 0, 0.5)',
+    // Mystical Premium colors from Figma
+    premiumGold: '#d4af37',
+    deepPurple: '#4a1a4f',
+    midnightBlue: '#1a1f3a',
+    divider: '#e8e1e8',
   },
   spacing: {
     xs: 4,
@@ -100,32 +110,37 @@ export const lightTheme: Theme = {
     },
   },
   borderRadius: {
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
+    sm: 4, // 8px - 4px for smaller elements
+    md: 6, // 8px - 2px for medium elements
+    lg: 8, // 8px base from Figma
+    xl: 12, // 8px + 4px for larger elements
   },
 };
 
 export const darkTheme: Theme = {
   colors: {
-    primary: '#0A84FF',
-    secondary: '#5E5CE6',
-    background: '#000000',
-    surface: '#1C1C1E',
-    text: '#FFFFFF',
-    textSecondary: '#8E8E93',
-    border: '#38383A',
-    accent: '#FF453A',
-    error: '#FF453A',
+    primary: '#4a1a4f', // Deep Purple from Figma (same as light)
+    secondary: '#1a1f3a', // Midnight Blue surface from Figma
+    background: '#0f0f1a', // Dark background from Figma
+    surface: '#1a1f3a', // Midnight Blue surface from Figma
+    text: '#ffffff', // White text from Figma
+    textSecondary: '#c8b8d4', // Light purple from Figma
+    border: '#2a2f4a', // Dark divider from Figma
+    accent: '#f4d03f', // Lighter gold for dark mode from Figma
+    error: '#ff453a', // Error color from Figma
     success: '#30D158',
     warning: '#FF9F0A',
     // Extended colors
-    surfaceSecondary: '#2C2C2E',
-    textTertiary: '#636366',
-    borderSecondary: '#48484A',
-    shadow: 'rgba(0, 0, 0, 0.3)',
+    surfaceSecondary: '#1a1f3a', // Midnight Blue surface from Figma
+    textTertiary: '#8e8e93', // Muted foreground from Figma
+    borderSecondary: '#2a2f4a', // Dark divider from Figma
+    shadow: 'rgba(74, 26, 79, 0.3)', // Mystical shadow with deep purple
     overlay: 'rgba(0, 0, 0, 0.7)',
+    // Mystical Premium colors from Figma
+    premiumGold: '#f4d03f', // Lighter gold for dark mode
+    deepPurple: '#4a1a4f',
+    midnightBlue: '#1a1f3a',
+    divider: '#2a2f4a',
   },
   spacing: {
     xs: 4,
