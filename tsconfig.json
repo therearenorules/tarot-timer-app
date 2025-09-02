@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
+    // Core TypeScript settings
     "strict": true,
     "module": "esnext",
     "target": "es2020",
-    "lib": ["es2020"],
+    "lib": ["es2020", "dom", "dom.iterable"],
+    
+    // JavaScript & Module handling
     "allowJs": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
@@ -12,13 +15,76 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    
+    // React & JSX
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    
+    // Path mapping (aligned with Metro config)
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@constants/*": ["src/constants/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@store/*": ["src/store/*"],
+      "@types/*": ["src/types/*"],
+      "@utils/*": ["src/utils/*"]
+    },
+    
+    // Enhanced type checking for React Native
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    
+    // Performance optimizations
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "composite": false,
+    
+    // Import/Export handling
+    "verbatimModuleSyntax": false,
+    "allowImportingTsExtensions": false,
+    
+    // Advanced checks for better code quality
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitOverride": true,
+    "useUnknownInCatchVariables": true,
+    
+    // React Native specific
+    "types": ["react-native", "react", "expo"]
   },
   "extends": "expo/tsconfig.base",
-  "include": ["src/**/*", "App.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "App.tsx",
+    "metro.config.js",
+    "babel.config.js",
+    "expo.json",
+    "app.config.js",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".expo",
+    "dist",
+    ".next",
+    "ios",
+    "android",
+    "web-build",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**/*",
+    ".metro-cache",
+    ".tsbuildinfo"
+  ],
+  "ts-node": {
+    "esm": true,
+    "compilerOptions": {
+      "module": "esnext",
+      "moduleResolution": "bundler"
+    }
+  }
 }

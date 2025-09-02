@@ -1,0 +1,181 @@
+{
+  "id": "celtic_cross",
+  "name": "Celtic Cross",
+  "description": "The most comprehensive 10-card spread for deep insight into any situation",
+  "cardCount": 10,
+  "difficulty": "advanced",
+  "estimatedTime": "25-40 minutes",
+  "additionalCards": {
+    "timeline": {
+      "enabled": true,
+      "count": 4,
+      "description": "Optional timeline cards for additional perspective"
+    }
+  },
+  "positions": [
+    {
+      "index": 0,
+      "label": "Present Situation",
+      "x": 0.5,
+      "y": 0.5,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "The heart of your current situation"
+    },
+    {
+      "index": 1,
+      "label": "Challenge/Cross",
+      "x": 0.5,
+      "y": 0.5,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 90,
+      "description": "What crosses you - the challenge or obstacle"
+    },
+    {
+      "index": 2,
+      "label": "Distant Past",
+      "x": 0.35,
+      "y": 0.5,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "Foundation - what this is based on"
+    },
+    {
+      "index": 3,
+      "label": "Possible Outcome",
+      "x": 0.65,
+      "y": 0.5,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "What could happen - possible future"
+    },
+    {
+      "index": 4,
+      "label": "Crown/Higher Self",
+      "x": 0.5,
+      "y": 0.3,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "Crown - what may happen or higher perspective"
+    },
+    {
+      "index": 5,
+      "label": "Recent Past",
+      "x": 0.5,
+      "y": 0.7,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "Recent past - what's behind you"
+    },
+    {
+      "index": 6,
+      "label": "Your Approach",
+      "x": 0.82,
+      "y": 0.75,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "Your approach or next step"
+    },
+    {
+      "index": 7,
+      "label": "External Influences",
+      "x": 0.82,
+      "y": 0.58,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "External influences - environment and others"
+    },
+    {
+      "index": 8,
+      "label": "Inner Self",
+      "x": 0.82,
+      "y": 0.42,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "Inner self - your hopes, fears, and inner thoughts"
+    },
+    {
+      "index": 9,
+      "label": "Final Outcome",
+      "x": 0.82,
+      "y": 0.25,
+      "width": 0.1,
+      "height": 0.16,
+      "rotation": 0,
+      "description": "Final outcome - where this all leads"
+    }
+  ],
+  "timelinePositions": [
+    {
+      "index": 10,
+      "label": "Past Influence",
+      "x": 0.12,
+      "y": 0.25,
+      "width": 0.08,
+      "height": 0.14,
+      "rotation": 0,
+      "description": "Additional past influence"
+    },
+    {
+      "index": 11,
+      "label": "Present Energy",
+      "x": 0.12,
+      "y": 0.45,
+      "width": 0.08,
+      "height": 0.14,
+      "rotation": 0,
+      "description": "Additional present energy"
+    },
+    {
+      "index": 12,
+      "label": "Near Future",
+      "x": 0.12,
+      "y": 0.65,
+      "width": 0.08,
+      "height": 0.14,
+      "rotation": 0,
+      "description": "Additional near future insight"
+    },
+    {
+      "index": 13,
+      "label": "Hidden Factor",
+      "x": 0.12,
+      "y": 0.85,
+      "width": 0.08,
+      "height": 0.14,
+      "rotation": 0,
+      "description": "Hidden factor or surprise element"
+    }
+  ],
+  "instructions": [
+    "Focus deeply on your question or situation",
+    "Draw the Present Situation card first",
+    "Place the Challenge card across it (rotated 90°)",
+    "Continue with the cross: Distant Past (left), Possible Outcome (right)",
+    "Complete the cross: Crown (top), Recent Past (bottom)",
+    "Draw the staff cards on the right: Your Approach, External Influences, Inner Self, Final Outcome",
+    "Optionally, draw the four timeline cards for additional insight"
+  ],
+  "interpretation": {
+    "overview": "The Celtic Cross is the most comprehensive tarot spread, offering deep insight into past, present, and future influences on any situation.",
+    "tips": [
+      "Start by understanding the cross formation in the center",
+      "The crossing card often represents internal conflicts",
+      "Pay special attention to the Final Outcome card",
+      "Look for patterns and connections across all cards",
+      "The staff cards (right side) show the progression of energy",
+      "Timeline cards can reveal hidden influences and timing",
+      "Take time to synthesize all cards into a coherent story",
+      "This spread works best for complex situations requiring deep insight"
+    ]
+  }
+}

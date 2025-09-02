@@ -1,0 +1,232 @@
+{
+  "id": "mystical",
+  "name": "Mystical Dreams",
+  "description": "Ethereal artwork with cosmic themes and dreamy aesthetics",
+  "version": "1.0.0",
+  "type": "major_only",
+  "cardCount": 22,
+  "isPremium": true,
+  "price": 4.99,
+  "cards": [
+    {
+      "key": "fool",
+      "name": "The Dreamer",
+      "number": "0",
+      "suit": "major",
+      "upright": ["New visions", "Cosmic journey", "Ethereal adventure", "Spiritual awakening", "Astral travel"],
+      "reversed": ["Lost in dreams", "Escapism", "Avoiding reality", "Spiritual confusion"],
+      "image": "mystical_00_fool.jpg",
+      "description": "A luminous figure floats through starlit clouds, ready to embark on a cosmic journey. The Dreamer represents new spiritual beginnings and connection to the ethereal realm."
+    },
+    {
+      "key": "magician",
+      "name": "The Mystic",
+      "number": "I",
+      "suit": "major",
+      "upright": ["Spiritual power", "Cosmic manifestation", "Divine connection", "Astral energy", "Sacred ritual"],
+      "reversed": ["Misuse of power", "Dark magic", "Spiritual deception", "Energy drain"],
+      "image": "mystical_01_magician.jpg",
+      "description": "A figure channels cosmic energy through crystal formations, surrounded by swirling galaxies. The Mystic represents the power to manifest through spiritual connection."
+    },
+    {
+      "key": "high_priestess",
+      "name": "The Oracle",
+      "number": "II",
+      "suit": "major",
+      "upright": ["Cosmic wisdom", "Psychic visions", "Lunar connection", "Divine feminine", "Sacred knowledge"],
+      "reversed": ["Blocked intuition", "Ignored messages", "Spiritual disconnection"],
+      "image": "mystical_02_high_priestess.jpg",
+      "description": "A ethereal figure sits between twin moons, accessing ancient wisdom through cosmic meditation. The Oracle represents deep intuitive knowledge and psychic abilities."
+    },
+    {
+      "key": "empress",
+      "name": "The Celestial Mother",
+      "number": "III",
+      "suit": "major",
+      "upright": ["Cosmic fertility", "Universal love", "Creative abundance", "Stellar beauty", "Divine nurturing"],
+      "reversed": ["Creative blocks", "Neglecting self-care", "Spiritual emptiness"],
+      "image": "mystical_03_empress.jpg",
+      "description": "A radiant goddess sits in a garden of crystalline flowers under aurora-filled skies. She represents universal creativity and cosmic abundance."
+    },
+    {
+      "key": "emperor",
+      "name": "The Cosmic Ruler",
+      "number": "IV",
+      "suit": "major",
+      "upright": ["Universal order", "Cosmic law", "Stellar authority", "Divine structure", "Sacred leadership"],
+      "reversed": ["Abuse of power", "Cosmic chaos", "Rigid control", "Spiritual tyranny"],
+      "image": "mystical_04_emperor.jpg",
+      "description": "A powerful figure commands from a throne of meteors and starlight, representing cosmic order and universal law."
+    },
+    {
+      "key": "hierophant",
+      "name": "The Cosmic Teacher",
+      "number": "V",
+      "suit": "major",
+      "upright": ["Universal wisdom", "Cosmic tradition", "Spiritual teaching", "Sacred knowledge", "Divine guidance"],
+      "reversed": ["Dogmatic thinking", "Spiritual rebellion", "Breaking traditions", "False teachings"],
+      "image": "mystical_05_hierophant.jpg",
+      "description": "A wise figure shares cosmic knowledge beneath a canopy of constellations, bridging earthly and divine wisdom."
+    },
+    {
+      "key": "lovers",
+      "name": "The Twin Souls",
+      "number": "VI",
+      "suit": "major",
+      "upright": ["Soul connection", "Cosmic harmony", "Universal love", "Divine union", "Karmic choices"],
+      "reversed": ["Soul separation", "Karmic lessons", "Relationship imbalance", "Wrong choices"],
+      "image": "mystical_06_lovers.jpg",
+      "description": "Two ethereal beings unite under cosmic light, representing soul connections and divine love that transcends physical realms."
+    },
+    {
+      "key": "chariot",
+      "name": "The Star Rider",
+      "number": "VII",
+      "suit": "major",
+      "upright": ["Cosmic journey", "Stellar willpower", "Universal success", "Guided direction", "Divine protection"],
+      "reversed": ["Lost direction", "Spiritual wandering", "Lack of cosmic connection"],
+      "image": "mystical_07_chariot.jpg",
+      "description": "A celestial warrior rides a chariot pulled by cosmic dragons through the starlit void, representing triumph through spiritual determination."
+    },
+    {
+      "key": "strength",
+      "name": "The Cosmic Guardian",
+      "number": "VIII",
+      "suit": "major",
+      "upright": ["Universal compassion", "Spiritual courage", "Divine patience", "Cosmic healing", "Inner light"],
+      "reversed": ["Spiritual weakness", "Lack of faith", "Inner darkness", "Cosmic imbalance"],
+      "image": "mystical_08_strength.jpg",
+      "description": "A luminous being gently guides a cosmic lion of light, representing the power of love and compassion over force and fear."
+    },
+    {
+      "key": "hermit",
+      "name": "The Starseeker",
+      "number": "IX",
+      "suit": "major",
+      "upright": ["Cosmic solitude", "Universal truth", "Stellar guidance", "Inner cosmos", "Spiritual quest"],
+      "reversed": ["Spiritual isolation", "Lost in space", "Avoiding growth", "Inner darkness"],
+      "image": "mystical_09_hermit.jpg",
+      "description": "A solitary figure holds a lantern of starlight, navigating the cosmic void in search of universal truth and enlightenment."
+    },
+    {
+      "key": "wheel_of_fortune",
+      "name": "The Cosmic Wheel",
+      "number": "X",
+      "suit": "major",
+      "upright": ["Universal cycles", "Cosmic karma", "Stellar destiny", "Divine timing", "Galactic fortune"],
+      "reversed": ["Bad cosmic timing", "Karmic debt", "Resisting universal flow"],
+      "image": "mystical_10_wheel_of_fortune.jpg",
+      "description": "A great wheel of galaxies spins through space, representing the eternal cycles of the universe and cosmic fate."
+    },
+    {
+      "key": "justice",
+      "name": "The Universal Balance",
+      "number": "XI",
+      "suit": "major",
+      "upright": ["Cosmic justice", "Universal law", "Karmic balance", "Divine truth", "Stellar fairness"],
+      "reversed": ["Cosmic injustice", "Karmic imbalance", "Universal chaos", "False truth"],
+      "image": "mystical_11_justice.jpg",
+      "description": "A cosmic judge holds scales that measure souls against starlight, representing universal justice and karmic balance."
+    },
+    {
+      "key": "hanged_man",
+      "name": "The Suspended Soul",
+      "number": "XII",
+      "suit": "major",
+      "upright": ["Cosmic perspective", "Spiritual surrender", "Universal sacrifice", "Divine waiting", "Stellar patience"],
+      "reversed": ["Spiritual stagnation", "Resisting surrender", "Cosmic impatience"],
+      "image": "mystical_12_hanged_man.jpg",
+      "description": "A figure floats suspended in cosmic web of starlight, gaining new perspective through spiritual surrender and divine patience."
+    },
+    {
+      "key": "death",
+      "name": "The Cosmic Transformation",
+      "number": "XIII",
+      "suit": "major",
+      "upright": ["Universal rebirth", "Stellar transformation", "Cosmic evolution", "Divine renewal", "Galactic change"],
+      "reversed": ["Resisting cosmic change", "Spiritual stagnation", "Fear of transformation"],
+      "image": "mystical_13_death.jpg",
+      "description": "A ethereal reaper guides souls through a portal of swirling galaxies, representing cosmic transformation and universal renewal."
+    },
+    {
+      "key": "temperance",
+      "name": "The Cosmic Alchemist",
+      "number": "XIV",
+      "suit": "major",
+      "upright": ["Universal balance", "Cosmic harmony", "Divine healing", "Stellar patience", "Sacred alchemy"],
+      "reversed": ["Cosmic imbalance", "Spiritual excess", "Divine impatience", "Failed alchemy"],
+      "image": "mystical_14_temperance.jpg",
+      "description": "A celestial being blends essences of starlight and moonbeams, representing cosmic balance and universal healing."
+    },
+    {
+      "key": "devil",
+      "name": "The Cosmic Shadow",
+      "number": "XV",
+      "suit": "major",
+      "upright": ["Universal temptation", "Cosmic bondage", "Stellar materialism", "Divine testing", "Shadow work"],
+      "reversed": ["Breaking cosmic chains", "Shadow integration", "Spiritual freedom", "Divine liberation"],
+      "image": "mystical_15_devil.jpg",
+      "description": "A dark cosmic entity binds souls with chains of stardust, representing universal temptation and the need for spiritual liberation."
+    },
+    {
+      "key": "tower",
+      "name": "The Cosmic Collapse",
+      "number": "XVI",
+      "suit": "major",
+      "upright": ["Universal upheaval", "Cosmic revelation", "Stellar awakening", "Divine destruction", "Galactic chaos"],
+      "reversed": ["Avoiding cosmic truth", "Spiritual denial", "Resisting universal change"],
+      "image": "mystical_16_tower.jpg",
+      "description": "A crystal tower shatters in cosmic lightning, as souls are liberated from illusion into universal truth and enlightenment."
+    },
+    {
+      "key": "star",
+      "name": "The Cosmic Hope",
+      "number": "XVII",
+      "suit": "major",
+      "upright": ["Universal hope", "Stellar guidance", "Cosmic healing", "Divine inspiration", "Galactic faith"],
+      "reversed": ["Lost cosmic connection", "Spiritual despair", "Fading hope", "Divine disconnection"],
+      "image": "mystical_17_star.jpg",
+      "description": "A luminous figure pours starlight from cosmic vessels under a canopy of brilliant stars, representing universal hope and divine guidance."
+    },
+    {
+      "key": "moon",
+      "name": "The Cosmic Illusion",
+      "number": "XVIII",
+      "suit": "major",
+      "upright": ["Universal mystery", "Cosmic intuition", "Stellar dreams", "Divine illusion", "Galactic subconscious"],
+      "reversed": ["Cosmic clarity", "Breaking illusions", "Spiritual awakening", "Divine truth"],
+      "image": "mystical_18_moon.jpg",
+      "description": "Twin moons cast ethereal light over a landscape of crystal formations, representing cosmic mystery and universal intuition."
+    },
+    {
+      "key": "sun",
+      "name": "The Cosmic Joy",
+      "number": "XIX",
+      "suit": "major",
+      "upright": ["Universal joy", "Stellar success", "Cosmic celebration", "Divine vitality", "Galactic positivity"],
+      "reversed": ["Cosmic sadness", "Spiritual depression", "Divine exhaustion", "Universal negativity"],
+      "image": "mystical_19_sun.jpg",
+      "description": "A radiant cosmic sun illuminates a child riding a unicorn through fields of crystal flowers, representing universal joy and divine vitality."
+    },
+    {
+      "key": "judgement",
+      "name": "The Cosmic Awakening",
+      "number": "XX",
+      "suit": "major",
+      "upright": ["Universal rebirth", "Cosmic calling", "Stellar awakening", "Divine judgement", "Galactic resurrection"],
+      "reversed": ["Ignoring cosmic call", "Spiritual denial", "Avoiding awakening", "Divine resistance"],
+      "image": "mystical_20_judgement.jpg",
+      "description": "Cosmic beings rise from crystal graves as an angel of starlight sounds the call to universal awakening and spiritual rebirth."
+    },
+    {
+      "key": "world",
+      "name": "The Cosmic Unity",
+      "number": "XXI",
+      "suit": "major",
+      "upright": ["Universal completion", "Cosmic achievement", "Stellar fulfillment", "Divine wholeness", "Galactic success"],
+      "reversed": ["Incomplete cosmos", "Universal stagnation", "Spiritual emptiness", "Divine disconnection"],
+      "image": "mystical_21_world.jpg",
+      "description": "A cosmic dancer spins within a mandala of galaxies, representing universal completion, cosmic achievement, and divine wholeness."
+    }
+  ]
+}

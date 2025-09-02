@@ -1,0 +1,98 @@
+{
+  "id": "cup_of_relationship",
+  "name": "Cup of Relationship",
+  "description": "Seven-card spread for deep relationship insight and guidance",
+  "cardCount": 7,
+  "difficulty": "intermediate", 
+  "estimatedTime": "15-20 minutes",
+  "positions": [
+    {
+      "index": 0,
+      "label": "Your Perspective",
+      "x": 0.3,
+      "y": 0.25,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "Your current feelings and perspective on the relationship"
+    },
+    {
+      "index": 1,
+      "label": "Their Perspective", 
+      "x": 0.7,
+      "y": 0.25,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "Their current feelings and perspective"
+    },
+    {
+      "index": 2,
+      "label": "Relationship Foundation",
+      "x": 0.5,
+      "y": 0.45,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "The foundation and core of your connection"
+    },
+    {
+      "index": 3,
+      "label": "Challenge",
+      "x": 0.2,
+      "y": 0.55,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "Current challenge or obstacle in the relationship"
+    },
+    {
+      "index": 4,
+      "label": "Strength",
+      "x": 0.8,
+      "y": 0.55,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "What's working well and supporting the relationship"
+    },
+    {
+      "index": 5,
+      "label": "Guidance",
+      "x": 0.35,
+      "y": 0.75,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "What you both need to know or do"
+    },
+    {
+      "index": 6,
+      "label": "Potential Outcome",
+      "x": 0.65,
+      "y": 0.75,
+      "width": 0.12,
+      "height": 0.18,
+      "rotation": 0,
+      "description": "Where the relationship is heading"
+    }
+  ],
+  "instructions": [
+    "Focus on a specific relationship (romantic, friendship, family)",
+    "Draw cards for both perspectives first",
+    "Place the foundation card in the center",
+    "Identify the challenge and strength",
+    "Seek guidance for moving forward",
+    "Discover the potential outcome"
+  ],
+  "interpretation": {
+    "overview": "The Cup of Relationship spread offers balanced insight into any relationship, showing multiple perspectives and clear guidance.",
+    "tips": [
+      "Compare the two perspective cards for understanding",
+      "The foundation card reveals the relationship's core nature",
+      "Balance the challenge and strength cards for complete insight", 
+      "The guidance card is crucial for relationship growth",
+      "Remember that outcomes can change based on your actions"
+    ]
+  }
+}

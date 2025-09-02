@@ -1,0 +1,36 @@
+{
+  "id": "one_card",
+  "name": "Daily Guidance",
+  "description": "Single card for daily insight, quick answers, or focused guidance",
+  "cardCount": 1,
+  "difficulty": "beginner",
+  "estimatedTime": "2-5 minutes",
+  "positions": [
+    {
+      "index": 0,
+      "label": "Guidance",
+      "x": 0.5,
+      "y": 0.5,
+      "width": 0.2,
+      "height": 0.35,
+      "rotation": 0,
+      "description": "Your guidance card for today or this situation"
+    }
+  ],
+  "instructions": [
+    "Clear your mind and focus on your question",
+    "Ask for guidance from the universe",
+    "Draw your card when you feel ready",
+    "Meditate on the card's message and symbolism"
+  ],
+  "interpretation": {
+    "overview": "A single card draw offers focused guidance and clear direction for your day or specific question.",
+    "tips": [
+      "Pay attention to your first intuitive reaction to the card",
+      "Consider both the upright and reversed meanings",
+      "Look at the imagery and colors for additional insights",
+      "Trust your intuition over memorized meanings",
+      "Keep the card's message in mind throughout your day"
+    ]
+  }
+}

@@ -1,0 +1,179 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run full validation suite
+      run: |
+        npm run typecheck
+        npm run assets:validate
+        npm audit --audit-level moderate
+
+  build-web:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build web version
+      run: npx expo export:web
+    
+    - name: Upload web build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: dist/
+
+  build-native:
+    needs: validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [android, ios]
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Prebuild ${{ matrix.platform }}
+      run: npx expo prebuild --platform ${{ matrix.platform }} --clear
+    
+    - name: Upload ${{ matrix.platform }} artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-build
+        path: ${{ matrix.platform }}/
+
+  create-release:
+    needs: [validate, build-web, build-native]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Get latest tag
+        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        
+        # Generate changelog since last tag
+        if [ -z "$LATEST_TAG" ]; then
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          CHANGELOG=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+        fi
+        
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        echo "## Changes" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name || github.event.inputs.version }}
+        release_name: Release ${{ github.ref_name || github.event.inputs.version }}
+        body: |
+          # Tarot Timer App Release ${{ github.ref_name || github.event.inputs.version }}
+          
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ## 📱 Platform Support
+          - ✅ Web (Progressive Web App)
+          - ✅ iOS (via Expo Go or custom build)
+          - ✅ Android (via Expo Go or custom build)
+          
+          ## 🚀 Installation
+          
+          ### Web Version
+          Visit [https://your-domain.com](https://your-domain.com) for the web app.
+          
+          ### Mobile Apps
+          1. Install Expo Go from App Store/Play Store
+          2. Scan QR code from development server
+          3. Or build custom apps using artifacts below
+          
+          ## 🔧 Technical Details
+          - Expo SDK: 53.0.22
+          - React: 19.0.0
+          - React Native: 0.79.5
+          - TypeScript: 5.8.3
+          
+          ## 📋 Validation
+          - ✅ TypeScript compilation passed
+          - ✅ Asset validation passed  
+          - ✅ Security audit passed
+          - ✅ Multi-platform build successful
+        draft: false
+        prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+
+  deploy-web:
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build for production
+      run: npx expo export:web
+      env:
+        NODE_ENV: production
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        cname: your-custom-domain.com  # Update with your domain

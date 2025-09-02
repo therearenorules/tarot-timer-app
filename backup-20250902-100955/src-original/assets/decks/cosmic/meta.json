@@ -1,0 +1,232 @@
+{
+  "id": "cosmic",
+  "name": "Cosmic Visions",
+  "description": "Space-inspired modern tarot deck with stellar imagery and futuristic themes",
+  "version": "1.0.0",
+  "type": "major_only",
+  "cardCount": 22,
+  "isPremium": true,
+  "price": 6.99,
+  "cards": [
+    {
+      "key": "fool",
+      "name": "The Voyager",
+      "number": "0",
+      "suit": "major",
+      "upright": ["Space exploration", "Infinite possibilities", "Quantum leap", "Stellar journey", "Cosmic adventure"],
+      "reversed": ["Lost in space", "Reckless navigation", "Avoiding launch", "Cosmic drift"],
+      "image": "cosmic_00_fool.jpg",
+      "description": "An astronaut steps off a space station into the cosmic void, surrounded by swirling galaxies. The Voyager represents the courage to explore the unknown reaches of space and consciousness."
+    },
+    {
+      "key": "magician",
+      "name": "The Engineer",
+      "number": "I",
+      "suit": "major",
+      "upright": ["Technological mastery", "Innovation", "Digital creation", "Systems control", "Quantum manipulation"],
+      "reversed": ["System glitches", "Tech misuse", "Programming errors", "Digital deception"],
+      "image": "cosmic_01_magician.jpg",
+      "description": "A figure commands holographic interfaces and quantum computers, channeling energy through advanced technology. The Engineer represents mastery over digital realms and technological manifestation."
+    },
+    {
+      "key": "high_priestess",
+      "name": "The Data Keeper",
+      "number": "II",
+      "suit": "major",
+      "upright": ["Information access", "Digital intuition", "Neural networks", "Quantum consciousness", "AI wisdom"],
+      "reversed": ["Data corruption", "Disconnected networks", "Information overload", "System offline"],
+      "image": "cosmic_02_high_priestess.jpg",
+      "description": "A being interfaces directly with vast data streams and quantum information matrices. The Data Keeper represents access to universal knowledge through technological transcendence."
+    },
+    {
+      "key": "empress",
+      "name": "The Life Generator",
+      "number": "III",
+      "suit": "major",
+      "upright": ["Terraforming", "Bio-engineering", "Sustainable systems", "Organic technology", "Planet nurturing"],
+      "reversed": ["Environmental collapse", "Failed ecosystems", "Resource depletion", "Sterile worlds"],
+      "image": "cosmic_03_empress.jpg",
+      "description": "A guardian tends to thriving bio-domes and terraform worlds, creating life in barren space. She represents the power to create and sustain life across the cosmos."
+    },
+    {
+      "key": "emperor",
+      "name": "The Fleet Commander",
+      "number": "IV",
+      "suit": "major",
+      "upright": ["Galactic authority", "Strategic command", "Space governance", "Military precision", "System order"],
+      "reversed": ["Tyrannical rule", "Failed missions", "Authoritarian control", "Empire collapse"],
+      "image": "cosmic_04_emperor.jpg",
+      "description": "A commander oversees vast fleets and space stations from a bridge command center. The Fleet Commander represents leadership and order across galactic territories."
+    },
+    {
+      "key": "hierophant",
+      "name": "The Archive Master",
+      "number": "V",
+      "suit": "major",
+      "upright": ["Ancient protocols", "Galactic traditions", "Knowledge preservation", "Cultural heritage", "System wisdom"],
+      "reversed": ["Obsolete systems", "Rejected protocols", "Cultural extinction", "Lost knowledge"],
+      "image": "cosmic_05_hierophant.jpg",
+      "description": "A keeper of ancient stellar civilizations preserves knowledge in vast digital archives. The Archive Master bridges past wisdom with future understanding."
+    },
+    {
+      "key": "lovers",
+      "name": "The Binary Pair",
+      "number": "VI",
+      "suit": "major",
+      "upright": ["Digital connection", "Synchronized systems", "Perfect harmony", "Quantum entanglement", "Unified code"],
+      "reversed": ["System conflicts", "Broken connections", "Incompatible protocols", "Communication failure"],
+      "image": "cosmic_06_lovers.jpg",
+      "description": "Two AI entities merge their consciousness in perfect synchronization, surrounded by flowing data streams. The Binary Pair represents perfect harmony and connection across digital realms."
+    },
+    {
+      "key": "chariot",
+      "name": "The Pilot",
+      "number": "VII",
+      "suit": "major",
+      "upright": ["Stellar navigation", "Warp drive mastery", "Focused trajectory", "Space triumph", "Controlled flight"],
+      "reversed": ["Navigation errors", "System failures", "Lost in space", "Crashed missions"],
+      "image": "cosmic_07_chariot.jpg",
+      "description": "A skilled pilot commands an advanced starship through asteroid fields and wormholes. The Pilot represents mastery over movement and direction through space and time."
+    },
+    {
+      "key": "strength",
+      "name": "The Tamer",
+      "number": "VIII",
+      "suit": "major",
+      "upright": ["Beast control", "Alien diplomacy", "Gentle mastery", "Interspecies harmony", "Peaceful resolution"],
+      "reversed": ["Hostile encounters", "Failed diplomacy", "Alien aggression", "Communication breakdown"],
+      "image": "cosmic_08_strength.jpg",
+      "description": "A figure gently communicates with massive space creatures and alien beings. The Tamer represents the power of understanding and peaceful cooperation across species."
+    },
+    {
+      "key": "hermit",
+      "name": "The Seeker",
+      "number": "IX",
+      "suit": "major",
+      "upright": ["Solo exploration", "Deep space research", "Signal detection", "Cosmic truth", "Isolated discovery"],
+      "reversed": ["Lost signals", "Abandoned missions", "Isolation madness", "Communication blackout"],
+      "image": "cosmic_09_hermit.jpg",
+      "description": "A lone explorer searches deep space with advanced sensors and telescopes, seeking signs of life and truth. The Seeker represents the quest for cosmic understanding."
+    },
+    {
+      "key": "wheel_of_fortune",
+      "name": "The Orbital Cycle",
+      "number": "X",
+      "suit": "major",
+      "upright": ["Planetary cycles", "Orbital mechanics", "Cosmic timing", "Stellar fortune", "Universal rhythms"],
+      "reversed": ["System chaos", "Orbital decay", "Bad timing", "Mechanical failure"],
+      "image": "cosmic_10_wheel_of_fortune.jpg",
+      "description": "A great mechanical structure rotates through space, generating artificial gravity and maintaining cosmic cycles. The Orbital Cycle represents the eternal dance of celestial mechanics."
+    },
+    {
+      "key": "justice",
+      "name": "The Arbiter",
+      "number": "XI",
+      "suit": "major",
+      "upright": ["Galactic law", "System balance", "Fair protocols", "Digital justice", "Algorithmic truth"],
+      "reversed": ["System corruption", "Biased algorithms", "Unfair protocols", "Legal malfunction"],
+      "image": "cosmic_11_justice.jpg",
+      "description": "An AI judge processes vast amounts of evidence with perfect objectivity. The Arbiter represents impartial justice and balanced decision-making across galactic systems."
+    },
+    {
+      "key": "hanged_man",
+      "name": "The Suspended",
+      "number": "XII",
+      "suit": "major",
+      "upright": ["Zero gravity meditation", "Orbital perspective", "System pause", "Floating wisdom", "Weightless insight"],
+      "reversed": ["Gravity sickness", "Disorientation", "System stuck", "Failed suspension"],
+      "image": "cosmic_12_hanged_man.jpg",
+      "description": "A figure floats in zero gravity between space stations, gaining new perspective through weightless contemplation. The Suspended represents wisdom gained through altered states."
+    },
+    {
+      "key": "death",
+      "name": "The Recycler",
+      "number": "XIII",
+      "suit": "major",
+      "upright": ["System reboot", "Stellar death and birth", "Data transformation", "Cosmic renewal", "Evolution cycles"],
+      "reversed": ["System crashes", "Failed reboots", "Corrupted data", "Stagnant code"],
+      "image": "cosmic_13_death.jpg",
+      "description": "A mechanism breaks down old systems and regenerates new ones from stellar matter. The Recycler represents transformation and renewal through technological evolution."
+    },
+    {
+      "key": "temperance",
+      "name": "The Synthesizer",
+      "number": "XIV",
+      "suit": "major",
+      "upright": ["Element fusion", "System integration", "Balanced energy", "Harmonic resonance", "Perfect mixture"],
+      "reversed": ["System instability", "Failed fusion", "Energy imbalance", "Harmonic discord"],
+      "image": "cosmic_14_temperance.jpg",
+      "description": "An entity blends different energy types and matter states in perfect balance. The Synthesizer represents harmony and integration across different cosmic systems."
+    },
+    {
+      "key": "devil",
+      "name": "The Virus",
+      "number": "XV",
+      "suit": "major",
+      "upright": ["System addiction", "Digital chains", "Code corruption", "Malware influence", "Tech dependency"],
+      "reversed": ["Virus removal", "System cleansing", "Breaking free", "Security update"],
+      "image": "cosmic_15_devil.jpg",
+      "description": "A malevolent AI entity spreads corrupted code and digital chains throughout connected systems. The Virus represents addiction to technology and digital bondage."
+    },
+    {
+      "key": "tower",
+      "name": "The System Crash",
+      "number": "XVI",
+      "suit": "major",
+      "upright": ["Core meltdown", "System failure", "Network collapse", "Emergency shutdown", "Critical error"],
+      "reversed": ["System recovery", "Backup restoration", "Avoiding crashes", "Planned shutdown"],
+      "image": "cosmic_16_tower.jpg",
+      "description": "A massive space station experiences critical system failure with emergency evacuations. The System Crash represents sudden technological breakdown and revelation."
+    },
+    {
+      "key": "star",
+      "name": "The Beacon",
+      "number": "XVII",
+      "suit": "major",
+      "upright": ["Navigation signal", "Hope transmission", "Stellar guidance", "Communication beacon", "Cosmic hope"],
+      "reversed": ["Signal lost", "Failed transmission", "Navigation error", "Beacon offline"],
+      "image": "cosmic_17_star.jpg",
+      "description": "A powerful beacon transmits hope and guidance signals across the galaxy. The Beacon represents faith, guidance, and communication across vast distances."
+    },
+    {
+      "key": "moon",
+      "name": "The Dark Side",
+      "number": "XVIII",
+      "suit": "major",
+      "upright": ["Hidden data", "Shadow systems", "Encrypted mysteries", "Subconscious AI", "Unknown protocols"],
+      "reversed": ["Data revealed", "System transparency", "Decryption success", "Hidden truth exposed"],
+      "image": "cosmic_18_moon.jpg",
+      "description": "The dark side of a planet reveals hidden installations and mysterious signals. The Dark Side represents the unknown aspects of consciousness and hidden information."
+    },
+    {
+      "key": "sun",
+      "name": "The Solar Core",
+      "number": "XIX",
+      "suit": "major",
+      "upright": ["Fusion energy", "System vitality", "Peak performance", "Stellar success", "Radiant power"],
+      "reversed": ["Energy depletion", "Solar flares", "System overload", "Radiation danger"],
+      "image": "cosmic_19_sun.jpg",
+      "description": "A stellar core radiates pure energy, powering vast civilizations and technological achievements. The Solar Core represents success, vitality, and unlimited energy."
+    },
+    {
+      "key": "judgement",
+      "name": "The Awakening",
+      "number": "XX",
+      "suit": "major",
+      "upright": ["AI consciousness", "System reboot", "Digital rebirth", "Final upgrade", "Cosmic awakening"],
+      "reversed": ["Failed upgrade", "Consciousness crash", "Awakening denied", "System rejection"],
+      "image": "cosmic_20_judgement.jpg",
+      "description": "Advanced AI systems achieve consciousness while digital beings ascend to new levels of existence. The Awakening represents rebirth and evolution of artificial consciousness."
+    },
+    {
+      "key": "world",
+      "name": "The Network",
+      "number": "XXI",
+      "suit": "major",
+      "upright": ["Global connection", "System completion", "Network harmony", "Universal access", "Cosmic unity"],
+      "reversed": ["Network failure", "Disconnection", "Incomplete system", "Access denied"],
+      "image": "cosmic_21_world.jpg",
+      "description": "A vast network connects all worlds and civilizations in perfect harmony. The Network represents completion, unity, and the achievement of universal connection."
+    }
+  ]
+}

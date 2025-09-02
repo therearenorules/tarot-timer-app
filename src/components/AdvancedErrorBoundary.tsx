@@ -108,7 +108,7 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ error, errorInfo });
     this.trackError(error, errorInfo);
     this.props.onError?.(error, errorInfo);
@@ -123,13 +123,13 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
       errorId: this.state.errorId,
       timestamp: Date.now(),
       level: this.props.level,
-      featureName: this.props.featureName,
+      ...(this.props.featureName && { featureName: this.props.featureName }),
       errorType: error.name,
       message: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
+      ...(error.stack && { stack: error.stack }),
+      componentStack: errorInfo.componentStack || '',
       retryCount: this.state.retryCount,
-      userAgent: navigator.userAgent,
+      userAgent: 'React Native App',
       recovered: false,
     };
 
@@ -159,8 +159,6 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
           if (success) {
             this.setState({
               hasError: false,
-              error: undefined,
-              errorInfo: undefined,
               retryCount: this.state.retryCount + 1,
               isRecovering: false,
               recoveryStrategy: strategy.name,
@@ -193,12 +191,9 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
         global.gc();
       }
       
-      // Clear any cached data
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => caches.delete(name));
-        });
-      }
+      // Clear any cached data - React Native doesn't use web caches
+      // Instead, we could clear AsyncStorage or other React Native specific caches
+      console.log('🧹 Cache clearing not applicable in React Native');
 
       InteractionManager.runAfterInteractions(() => {
         resolve(true);
@@ -245,8 +240,6 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
 
     this.setState({
       hasError: false,
-      error: undefined,
-      errorInfo: undefined,
       retryCount: this.state.retryCount + 1,
       recoveryStrategy: 'manual_retry',
     });
@@ -305,13 +298,13 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
     }
   };
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;
@@ -337,9 +330,9 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
       const title = this.getErrorTitle();
 
       return (
-        <View style={[styles.container, styles[`${severity}Container`]]}>
+        <View style={styles.container}>
           <View style={styles.content}>
-            <Text variant="title2" style={[styles.title, styles[`${severity}Title`]]}>
+            <Text variant="title2" style={styles.title}>
               {title}
             </Text>
             

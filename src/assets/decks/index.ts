@@ -18,7 +18,7 @@ export const getDeckById = (deckId: string): TarotDeck | undefined => {
 };
 
 export const getDefaultDeck = (): TarotDeck => {
-  return AVAILABLE_DECKS[DEFAULT_DECK_ID];
+  return AVAILABLE_DECKS[DEFAULT_DECK_ID]!;
 };
 
 export const getAllDecks = (): TarotDeck[] => {
