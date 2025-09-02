@@ -56,3 +56,26 @@ lpt9
 
 # Claude Code
 /.claude/settings.local.json
+
+# Git architecture backups
+.git-architecture-backup-*/
+
+# Development backups and temporary files
+backup-*/
+*.backup.*
+*-backup-*/
+.spreads-*-backups/
+.cleanup-backups/
+.nuclear-cache-cleanup-backup-*/
+
+# Cache files
+.tsbuildinfo
+.cache/
+.packager/
+metro-cache/
+.metro/
+
+# Temporary files
+*.tmp
+*.temp
+temp-*/

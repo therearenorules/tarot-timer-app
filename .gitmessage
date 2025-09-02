@@ -1,0 +1,21 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type: feat, fix, docs, style, refactor, test, chore, perf, ci
+# Scope: component, service, ui, api, database, config, etc.
+# Subject: imperative mood, lowercase, no period, max 50 chars
+# Body: wrap at 72 chars, explain what and why vs. how
+# Footer: reference issues, breaking changes
+
+# Examples:
+# feat(auth): add user authentication system
+# fix(timer): resolve memory leak in timer component
+# docs(readme): update installation instructions
+# refactor(ui): extract common button component
+# test(auth): add unit tests for login validation
+# chore(deps): update expo to v50
+# perf(cards): optimize card rendering performance
+# ci(github): add automated testing workflow
