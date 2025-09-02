@@ -119,7 +119,8 @@ class PerformanceTracker {
         this.updateMetric('fps', fps);
         this.updateMetric('averageFps', Math.round(averageFps));
         
-        this.frameCount = 0;\n        this.lastFrameTime = currentTime;
+        this.frameCount = 0;
+        this.lastFrameTime = currentTime;
         
         // FPS 경고 체크
         if (fps < this.defaultThresholds.fps) {

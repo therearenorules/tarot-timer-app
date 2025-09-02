@@ -71,7 +71,6 @@ export const CurrentCardHeader = memo<Props>(function CurrentCardHeader({
     </View>
   );
 });
-}
 
 const styles = StyleSheet.create({
   container: {

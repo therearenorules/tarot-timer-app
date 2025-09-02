@@ -21,7 +21,7 @@ interface ErrorContext {
   customData?: Record<string, any>;
 }
 
-interface SanitizedError {
+export interface SanitizedError {
   id: string;
   type: 'runtime' | 'network' | 'validation' | 'security' | 'unknown';
   severity: 'low' | 'medium' | 'high' | 'critical';

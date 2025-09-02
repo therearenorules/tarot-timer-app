@@ -108,7 +108,7 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     this.setState({ error, errorInfo });
     this.trackError(error, errorInfo);
     this.props.onError?.(error, errorInfo);
@@ -123,10 +123,10 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
       errorId: this.state.errorId,
       timestamp: Date.now(),
       level: this.props.level,
-      featureName: this.props.featureName,
+      ...(this.props.featureName && { featureName: this.props.featureName }),
       errorType: error.name,
       message: error.message,
-      stack: error.stack,
+      ...(error.stack && { stack: error.stack }),
       componentStack: errorInfo.componentStack || '',
       retryCount: this.state.retryCount,
       userAgent: 'React Native App',
@@ -159,8 +159,6 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
           if (success) {
             this.setState({
               hasError: false,
-              error: undefined,
-              errorInfo: undefined,
               retryCount: this.state.retryCount + 1,
               isRecovering: false,
               recoveryStrategy: strategy.name,
@@ -242,8 +240,6 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
 
     this.setState({
       hasError: false,
-      error: undefined,
-      errorInfo: undefined,
       retryCount: this.state.retryCount + 1,
       recoveryStrategy: 'manual_retry',
     });
@@ -302,13 +298,13 @@ export class AdvancedErrorBoundary extends Component<Props, State> {
     }
   };
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;

@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { Text, Button } from '@/components';
 import { theme } from '@/constants';
-import type { SanitizedError } from '@/lib/errorHandling/SecureErrorHandler';
+import { type SanitizedError } from '@/lib/errorHandling/SecureErrorHandler';
 
 interface MysticalErrorFallbackProps {
   error: SanitizedError;

@@ -7,10 +7,9 @@ import React, { Component, ReactNode } from 'react';
 import { View, StyleSheet, Alert, Platform, Dimensions } from 'react-native';
 import { Text, Button } from '@/components';
 import { theme } from '@/constants';
-import SecureErrorHandler from '@/lib/errorHandling/SecureErrorHandler';
+import SecureErrorHandler, { type SanitizedError } from '@/lib/errorHandling/SecureErrorHandler';
 import ErrorReportingService from '@/lib/errorHandling/ErrorReportingService';
 import { MysticalErrorFallback } from '@/components/errors/MysticalErrorFallback';
-import type { SanitizedError } from '@/lib/errorHandling/SecureErrorHandler';
 
 interface Props {
   children: ReactNode;
@@ -70,7 +69,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
     };
   }
 
-  async componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override async componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // 보안 에러 처리
     const sanitizedError = this.secureErrorHandler.handleError(
       error,
@@ -164,9 +163,6 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
       try {
         this.setState({
           hasError: false,
-          error: undefined,
-          errorInfo: undefined,
-          sanitizedError: undefined,
           isRecovering: false,
         });
         

@@ -67,7 +67,7 @@ export function PerformanceMonitor({
         renderCount: renderTimes.current.length,
         lastRenderTime: renderTime,
         averageRenderTime: average,
-        memoryUsage,
+        ...(memoryUsage !== undefined && { memoryUsage }),
       });
       
       // 콘솔 로깅
@@ -147,8 +147,8 @@ export function withPerformanceMonitor<T extends object>(
     return (
       <PerformanceMonitor 
         componentName={name}
-        trackMemory={options.trackMemory}
-        logToConsole={options.logToConsole}
+        {...(options.trackMemory !== undefined && { trackMemory: options.trackMemory })}
+        {...(options.logToConsole !== undefined && { logToConsole: options.logToConsole })}
       >
         <WrappedComponent {...props} />
       </PerformanceMonitor>

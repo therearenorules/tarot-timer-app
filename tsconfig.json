@@ -4,7 +4,7 @@
     "strict": true,
     "module": "esnext",
     "target": "es2020",
-    "lib": ["es2020", "dom", "dom.iterable", "react-native"],
+    "lib": ["es2020", "dom", "dom.iterable"],
     
     // JavaScript & Module handling
     "allowJs": true,
@@ -54,7 +54,7 @@
     "useUnknownInCatchVariables": true,
     
     // React Native specific
-    "types": ["react-native", "react", "expo", "jest"]
+    "types": ["react-native", "react", "expo"]
   },
   "extends": "expo/tsconfig.base",
   "include": [

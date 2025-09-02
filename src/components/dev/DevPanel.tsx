@@ -85,7 +85,7 @@ export function DevPanel() {
     const randomCard = testCards[Math.floor(Math.random() * testCards.length)];
     const currentHour = new Date().getHours();
     
-    tarotLog.cardGenerated(randomCard, currentHour);
+    tarotLog.cardGenerated(randomCard!, currentHour);
     performanceUtils.logTarotEvent('테스트 카드 생성', { card: randomCard, hour: currentHour });
   };
 
@@ -98,7 +98,7 @@ export function DevPanel() {
   const testMysticalEffect = () => {
     const effects = ['✨ 반짝임', '🌟 별빛', '💫 소용돌이', '🔮 오라'];
     const randomEffect = effects[Math.floor(Math.random() * effects.length)];
-    tarotLog.mysticalEffect(randomEffect, Math.random() * 2000);
+    tarotLog.mysticalEffect(randomEffect!, Math.random() * 2000);
   };
 
   const renderConfigTab = () => (

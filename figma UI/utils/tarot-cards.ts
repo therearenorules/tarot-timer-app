@@ -95,7 +95,7 @@ export const ALL_TAROT_CARDS: TarotCard[] = [
 export function getRandomTarotCard(): TarotCard {
   const cards = ALL_TAROT_CARDS.length > 0 ? ALL_TAROT_CARDS : MAJOR_ARCANA;
   const randomIndex = Math.floor(Math.random() * cards.length);
-  return cards[randomIndex];
+  return cards[randomIndex]!;
 }
 
 /**
@@ -135,7 +135,7 @@ export function getCardForHour(hour: number): TarotCard {
   }
   
   const cardIndex = Math.abs(hash) % MAJOR_ARCANA.length;
-  return MAJOR_ARCANA[cardIndex];
+  return MAJOR_ARCANA[cardIndex]!;
 }
 
 /**

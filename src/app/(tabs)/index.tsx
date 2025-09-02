@@ -56,12 +56,14 @@ export default function TimerScreen() {
   const currentCardData = useMemo(() => {
     if (!currentCard || !currentCard.isRevealed) return null;
     return {
-      key: currentCard.cardKey,
-      name: currentCard.cardName,
-      upright: currentCard.keywords,
-      reversed: currentCard.keywords,
-      image: `cards/${currentCard.cardKey}.jpg`,
-      description: currentCard.memo || '이 카드에 대한 당신의 해석을 기록해보세요.'
+      id: currentCard.cardKey || `card-${currentCard.hour}`,
+      name: currentCard.cardName || 'Unknown Card',
+      nameKr: currentCard.cardName || '알 수 없는 카드',
+      description: currentCard.memo || 'This card represents your journey.',
+      descriptionKr: currentCard.memo || '이 카드에 대한 당신의 해석을 기록해보세요.',
+      keywords: currentCard.keywords || [],
+      keywordsKr: currentCard.keywords || [],
+      imageUrl: `cards/${currentCard.cardKey || 'back'}.jpg`
     };
   }, [currentCard]);
 
@@ -72,8 +74,10 @@ export default function TimerScreen() {
       isRevealed: card.isRevealed,
       cardName: card.isRevealed ? card.cardName : '미공개',
       keywords: card.isRevealed ? card.keywords : [],
-      memo: card.memo
-    })), [state.hourCards]);
+      memo: card.memo,
+      hasMemo: Boolean(card.memo),
+      isCurrentHour: card.hour === currentHour
+    })), [state.hourCards, currentHour]);
 
   // 초기화
   useEffect(() => {
@@ -169,11 +173,11 @@ export default function TimerScreen() {
           {currentCard ? (
             <View style={styles.cardContainer}>
               <TarotCard
-                card={currentCardData}
+                card={currentCardData!}
                 size="large"
                 state={currentCard.isRevealed ? 'face-up' : 'face-down'}
                 interactive={!currentCard.isRevealed}
-                onFlip={currentCard.isRevealed ? undefined : handleRevealCard}
+                {...(!currentCard.isRevealed && { onFlip: () => { handleRevealCard(); } })}
                 glowIntensity="normal"
               />
               

@@ -50,7 +50,7 @@ export const getAllCards = (): TarotCard[] => {
 
 export const getRandomCard = (): TarotCard => {
   const randomIndex = Math.floor(Math.random() * classicDeck.cards.length);
-  return classicDeck.cards[randomIndex];
+  return classicDeck.cards[randomIndex]!;
 };
 
 // Card display helpers

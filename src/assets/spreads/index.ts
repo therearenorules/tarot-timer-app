@@ -95,7 +95,7 @@ export const getSpreadById = (spreadId: string): SpreadLayout | undefined => {
 };
 
 export const getDefaultSpread = (): SpreadLayout => {
-  return AVAILABLE_SPREADS[DEFAULT_SPREAD_ID];
+  return AVAILABLE_SPREADS[DEFAULT_SPREAD_ID]!;
 };
 
 export const getAllSpreads = (): SpreadLayout[] => {

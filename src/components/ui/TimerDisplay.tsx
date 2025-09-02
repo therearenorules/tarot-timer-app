@@ -27,6 +27,7 @@ interface TimerDisplayProps {
   size?: 'compact' | 'normal' | 'large';
   variant?: 'mystical' | 'elegant' | 'minimal';
   glowIntensity?: 'subtle' | 'normal' | 'intense';
+  timeBasedColors?: boolean;
   
   // 인터랙션 props
   onHourClick?: (hour: number) => void;
