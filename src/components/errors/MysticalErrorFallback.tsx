@@ -196,7 +196,7 @@ export const MysticalErrorFallback: React.FC<MysticalErrorFallbackProps> = ({
         <View style={styles.severityContainer}>
           <View style={[styles.severityBadge, { backgroundColor: getSeverityColor(error.severity) + '20' }]}>
             <View style={[styles.severityDot, { backgroundColor: getSeverityColor(error.severity) }]} />
-            <Text style={[styles.severityText, { color: getSeverityColor(error.severity) }]}>
+            <Text style={[styles.severityText, { color: getSeverityColor(error.severity) }] as any}>
               심각도: {getSeverityText(error.severity)}
             </Text>
           </View>

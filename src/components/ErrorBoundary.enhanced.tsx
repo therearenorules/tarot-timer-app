@@ -207,9 +207,6 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
         
         this.setState({
           hasError: false,
-          error: undefined,
-          errorInfo: undefined,
-          sanitizedError: undefined,
           isRecovering: false,
         });
         
@@ -283,13 +280,13 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
     );
   };
 
-  componentWillUnmount() {
+  override componentWillUnmount() {
     if (this.recoveryTimeout) {
       clearTimeout(this.recoveryTimeout);
     }
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // 사용자 정의 폴백 UI
       if (this.props.fallback) {
