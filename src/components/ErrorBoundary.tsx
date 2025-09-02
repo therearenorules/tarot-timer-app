@@ -251,3 +251,17 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 });
+
+// 새로 추가된 메서드들을 위한 확장
+declare module 'react' {
+  namespace Component {
+    interface Component<P = {}, S = {}> {
+      generateSessionId?(): string;
+      getDeviceInfo?(): any;
+      getAppInfo?(): any;
+      getUserContext?(): any;
+      attemptAutoRecovery?(): Promise<void>;
+      handleAppReset?(): void;
+    }
+  }
+}

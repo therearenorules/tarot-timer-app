@@ -69,8 +69,8 @@ export const HourCard = memo<HourCardProps>(({
       >
         {hour.toString().padStart(2, '0')}
       </Text>
-      {hourCard && (
-        <Text 
+      {hourCard && hourCard.cardName && (
+        <Text
           variant="caption"
           color={theme.colors.textSecondary}
           style={styles.cardInitial}
@@ -90,47 +90,79 @@ HourCard.displayName = 'HourCard';
 
 const styles = StyleSheet.create({
   hourCard: {
-    width: 45,
-    height: 45,
+    width: 48, // 피그마 8pt 그리드에 맞게 조정
+    height: 48, // 피그마 8pt 그리드에 맞게 조정
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
+    borderRadius: theme.borderRadius.md, // 피그마 디자인에 맞게 조정
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: theme.colors.border,
     position: 'relative',
+    // 신비로운 그림자 효과 추가
+    shadowColor: theme.colors.mystical.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   currentHourCard: {
-    backgroundColor: theme.colors.primary + '20',
-    borderColor: theme.colors.primary,
+    backgroundColor: theme.colors.primary + '15', // 더 부드러운 투명도
+    borderColor: theme.colors.premiumGold, // 프리미엄 골드 테두리
     borderWidth: 2,
+    // 현재 시간 카드에 특별한 글로우 효과
+    shadowColor: theme.colors.mystical.glow,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
   },
   selectedHourCard: {
-    backgroundColor: theme.colors.secondary + '20',
-    borderColor: theme.colors.secondary,
+    backgroundColor: theme.colors.midnightBlue + '20', // 미드나잇 블루 배경
+    borderColor: theme.colors.deepPurple, // 딥 퍼플 테두리
+    borderWidth: 2,
   },
   hasMemoStyle: {
-    backgroundColor: theme.colors.accent + '10',
-    borderColor: theme.colors.accent,
+    backgroundColor: theme.colors.premiumGold + '10', // 골드 배경
+    borderColor: theme.colors.premiumGold, // 골드 테두리
   },
   hourNumber: {
-    fontSize: 12,
+    fontSize: 14, // 피그마 타이포그래피에 맞게 조정
     fontWeight: '600',
+    color: theme.colors.text,
+    letterSpacing: -0.5, // 한국어 최적화
   },
   cardInitial: {
-    fontSize: 8,
+    fontSize: 10, // 피그마 디자인에 맞게 조정
     position: 'absolute',
-    bottom: 2,
-    left: 2,
+    bottom: 4,
+    left: 4,
     textTransform: 'uppercase',
+    color: theme.colors.textSecondary,
+    fontWeight: '500',
   },
   memoIndicator: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: theme.colors.accent,
+    width: 8, // 더 큰 크기로 가시성 향상
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: theme.colors.premiumGold, // 프리미엄 골드
     position: 'absolute',
-    top: 2,
-    right: 2,
+    top: 4,
+    right: 4,
+    // 메모 인디케이터에 작은 그림자
+    shadowColor: theme.colors.mystical.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 1,
   },
 });

@@ -1,185 +1,297 @@
-import React, { useEffect, useMemo, useCallback, useRef, useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, InteractionManager } from 'react-native';
-import { Screen, Text, VirtualizedHourGrid, CurrentCardHeader, MemoSheet } from '../../components';
-import { theme } from '../../constants';
-import { getCurrentHour, getTimeBasedGreeting, getHourRangeDescription } from '../../lib/timeManager';
-import { useDailyTarotStore } from '../../stores/dailyTarotStore';
-import { type DailyCard } from '../../lib/database/types';
+/**
+ * Timer Screen - 24시간 타로 카드 타이머 메인 화면
+ * Context API를 사용한 상태 관리 적용
+ */
 
-export default function HomeScreen() {
-  const dailyTarotStore = useDailyTarotStore();
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { Screen, Text, Button } from '@/components';
+import { TimerDisplay, HourStrip, MysticalBackground, TarotCard } from '@/components/ui';
+import { theme } from '@/constants';
+import { 
+  useTarotSession, 
+  useTarotSessionState, 
+  useTarotSessionActions, 
+  useCurrentCard 
+} from '@/contexts';
+
+export default function TimerScreen() {
+  const { state } = useTarotSession();
+  const { initializeSession, revealCard, refreshSession } = useTarotSessionActions();
+  const { currentCard, currentHour } = useCurrentCard();
+  const [isInitializing, setIsInitializing] = useState(false);
   
-  const {
-    currentSession,
-    selectedHour,
-    currentHour,
-    timeUntilNextHour,
-    isLoading,
-    error,
-    selectHour,
-    updateCurrentTime,
-    refreshIfNewDay,
-    getSessionStats,
-    getMemoForHour
-  } = dailyTarotStore;
-
-  // Memoize expensive calculations
-  const sessionStats = useMemo(() => getSessionStats(), [currentSession]);
-  const greeting = useMemo(() => getTimeBasedGreeting(currentHour), [currentHour]);
-  const currentHourCard = useMemo(() =>
-    currentSession?.cards?.find((card: DailyCard) => card.hour === currentHour),
-    [currentSession?.cards, currentHour]
-  );
-
-  const [memoVisible, setMemoVisible] = useState(false);
-  const [draftMemo, setDraftMemo] = useState('');
-
-  // Update time every minute with stable reference and performance optimization
-  const timeUpdateRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const handleTimeUpdate = useCallback(() => {
-    // Use InteractionManager to defer non-critical updates
-    InteractionManager.runAfterInteractions(() => {
-      updateCurrentTime();
-      refreshIfNewDay();
-    });
-  }, [updateCurrentTime, refreshIfNewDay]);
-
-  useEffect(() => {
-    // Improved timer management with better cleanup
-    timeUpdateRef.current = setInterval(handleTimeUpdate, 60000); // Update every minute
-    
-    return () => {
-      if (timeUpdateRef.current) {
-        clearInterval(timeUpdateRef.current);
-        timeUpdateRef.current = null;
+  // 카드 공개 핸들러 메모화
+  const handleRevealCard = useCallback(async () => {
+    if (currentCard && !currentCard.isRevealed) {
+      try {
+        await revealCard(currentHour);
+        Alert.alert('카드 공개', `${currentHour}시의 카드가 공개되었습니다!`);
+      } catch (error) {
+        Alert.alert('오류', '카드를 공개할 수 없습니다.');
       }
-    };
-  }, [handleTimeUpdate]);
-
-  const handleHourPress = useCallback((hour: number) => {
-    selectHour(hour);
-    setDraftMemo(getMemoForHour(hour));
-    setMemoVisible(true);
-  }, [selectHour, getMemoForHour]);
-
-  const handleSaveMemo = useCallback(() => {
-    if (typeof selectedHour === 'number') {
-      dailyTarotStore.saveMemo(selectedHour, draftMemo);
     }
-    setMemoVisible(false);
-  }, [dailyTarotStore, selectedHour, draftMemo]);
+  }, [currentCard, currentHour, revealCard]);
 
-  if (error) {
+  // 세션 새로고침 핸들러 메모화
+  const handleRefresh = useCallback(async () => {
+    try {
+      await refreshSession();
+      Alert.alert('새로고침 완료', '세션이 업데이트되었습니다.');
+    } catch (error) {
+      Alert.alert('오류', '세션을 새로고침할 수 없습니다.');
+    }
+  }, [refreshSession]);
+
+  // 시간 네비게이션 핸들러 메모화
+  const handleHourSelect = useCallback((hour: number) => {
+    if (hour <= currentHour) {
+      // 과거 시간의 카드는 볼 수 있음
+    } else {
+      Alert.alert('알림', '아직 그 시간이 되지 않았습니다.');
+    }
+  }, [currentHour]);
+
+  // 카드 데이터 메모화
+  const currentCardData = useMemo(() => {
+    if (!currentCard || !currentCard.isRevealed) return null;
+    return {
+      key: currentCard.cardKey,
+      name: currentCard.cardName,
+      upright: currentCard.keywords,
+      reversed: currentCard.keywords,
+      image: `cards/${currentCard.cardKey}.jpg`,
+      description: currentCard.memo || '이 카드에 대한 당신의 해석을 기록해보세요.'
+    };
+  }, [currentCard]);
+
+  // 시간 데이터 메모화
+  const hourData = useMemo(() => 
+    state.hourCards.map(card => ({
+      hour: card.hour,
+      isRevealed: card.isRevealed,
+      cardName: card.isRevealed ? card.cardName : '미공개',
+      keywords: card.isRevealed ? card.keywords : [],
+      memo: card.memo
+    })), [state.hourCards]);
+
+  // 초기화
+  useEffect(() => {
+    if (!state.isSessionActive && !isInitializing) {
+      setIsInitializing(true);
+      initializeSession()
+        .then(() => {
+          console.log('✅ Timer screen session initialized');
+        })
+        .catch((error) => {
+          console.error('❌ Timer screen initialization failed:', error);
+          Alert.alert('초기화 실패', '타로 세션을 시작할 수 없습니다.');
+        })
+        .finally(() => {
+          setIsInitializing(false);
+        });
+    }
+  }, [state.isSessionActive, initializeSession, isInitializing]);
+
+
+  // 로딩 상태
+  if (state.isLoading || isInitializing) {
     return (
       <Screen>
-        <View style={styles.centerContainer}>
-          <Text variant="title2" color={theme.colors.accent}>
-            Error Loading Tarot Cards
+        <View style={styles.centerContent}>
+          <Text variant="h3">타로 세션을 준비하는 중...</Text>
+        </View>
+      </Screen>
+    );
+  }
+
+  // 에러 상태
+  if (state.error) {
+    return (
+      <Screen>
+        <View style={styles.centerContent}>
+          <Text variant="h3" color={theme.colors.error}>
+            오류가 발생했습니다
           </Text>
-          <Text variant="body" color={theme.colors.textSecondary} style={styles.errorMessage}>
-            {error}
+          <Text variant="body" color={theme.colors.textSecondary} style={styles.errorText}>
+            {state.error}
           </Text>
+          <Button
+            title="다시 시도"
+            onPress={handleRefresh}
+            style={styles.retryButton}
+            variant="primary"
+          />
         </View>
       </Screen>
     );
   }
 
   return (
-    <Screen>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <CurrentCardHeader
-          title={`${greeting}!`}
-          subtitle="Your 24-hour tarot journey continues"
-          hourLabel={`Current Hour: ${currentHour} (${getHourRangeDescription(currentHour)})`}
-          cardName={currentHourCard?.cardName}
-          keywords={currentHourCard?.keywords}
-          timeUntilNextHour={timeUntilNextHour}
-        />
+    <View style={styles.container}>
+      {/* 신비로운 배경 */}
+      <MysticalBackground
+        variant="aurora"
+        timeBasedColors={true}
+        currentHour={currentHour}
+        enableParticles={true}
+        particleCount={30}
+      />
 
-        <View style={styles.hourGrid}>
-          <View style={styles.gridHeader}>
-            <Text variant="title3" style={styles.sectionTitle}>
-              Today's Cards
-            </Text>
+      <ScrollView 
+        style={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+      >
+        {/* 타이머 디스플레이 */}
+        <View style={styles.timerSection}>
+          <TimerDisplay
+            variant="mystical"
+            size="large"
+            timeBasedColors={true}
+            onMidnight={handleRefresh}
+            showSeconds={true}
+          />
+          
+          <View style={styles.progressInfo}>
             <Text variant="caption" color={theme.colors.textSecondary}>
-              {sessionStats.totalCards} cards • {sessionStats.cardsWithMemos} memos • {sessionStats.completionPercentage}% complete
+              진행률: {state.completionRate}% ({state.totalRevealed}/24 카드)
             </Text>
           </View>
-          <VirtualizedHourGrid
-            currentSession={currentSession}
-            getMemoForHour={getMemoForHour}
+        </View>
+
+        {/* 현재 시간 카드 */}
+        <View style={styles.currentCardSection}>
+          <Text variant="h3" style={styles.sectionTitle}>
+            {currentHour}시의 카드
+          </Text>
+          
+          {currentCard ? (
+            <View style={styles.cardContainer}>
+              <TarotCard
+                card={currentCardData}
+                size="large"
+                state={currentCard.isRevealed ? 'face-up' : 'face-down'}
+                interactive={!currentCard.isRevealed}
+                onFlip={currentCard.isRevealed ? undefined : handleRevealCard}
+                glowIntensity="normal"
+              />
+              
+              {!currentCard.isRevealed && (
+                <Button
+                  title="카드 공개하기"
+                  onPress={handleRevealCard}
+                  style={styles.revealButton}
+                  variant="primary"
+                />
+              )}
+            </View>
+          ) : (
+            <View style={styles.emptyCard}>
+              <Text variant="body" color={theme.colors.textSecondary}>
+                현재 시간의 카드를 준비하는 중...
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* 24시간 스트립 */}
+        <View style={styles.hourStripSection}>
+          <Text variant="h3" style={styles.sectionTitle}>
+            24시간 타로 여정
+          </Text>
+          
+          <HourStrip
+            hours={hourData}
             currentHour={currentHour}
-            selectedHour={selectedHour}
-            onHourPress={handleHourPress}
+            onHourSelect={handleHourSelect}
+            showCardPreviews={true}
+            snapToHour={true}
           />
         </View>
 
-        {currentSession && (
+        {/* 세션 정보 */}
+        {state.isSessionActive && (
           <View style={styles.sessionInfo}>
             <Text variant="caption" color={theme.colors.textSecondary}>
-              Session: {currentSession.date} • Deck: {currentSession.deckId}
+              세션 날짜: {state.sessionDate}
             </Text>
             <Text variant="caption" color={theme.colors.textSecondary}>
-              Generated: {currentSession.generatedAt ? new Date(currentSession.generatedAt).toLocaleTimeString() : 'Unknown'}
+              세션 ID: {state.sessionId}
             </Text>
           </View>
         )}
       </ScrollView>
-      <MemoSheet
-        visible={memoVisible}
-        hour={selectedHour}
-        value={draftMemo}
-        onChangeText={setDraftMemo}
-        onSave={handleSaveMemo}
-        onClose={() => setMemoVisible(false)}
-      />
-    </Screen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: theme.spacing.md,
+    backgroundColor: theme.colors.background,
   },
-  centerContainer: {
+  scrollContainer: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: theme.spacing.lg,
+    paddingBottom: theme.spacing.xl * 2,
+  },
+  centerContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: theme.spacing.xl,
+    padding: theme.spacing.lg,
   },
-  errorMessage: {
+  errorText: {
     textAlign: 'center',
-    marginTop: theme.spacing.md,
-    lineHeight: 20,
+    marginVertical: theme.spacing.md,
   },
-  hourGrid: {
-    flex: 1,
+  retryButton: {
+    marginTop: theme.spacing.lg,
+    minWidth: 120,
+  },
+  timerSection: {
+    alignItems: 'center',
     marginBottom: theme.spacing.xl,
   },
-  gridHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  progressInfo: {
+    marginTop: theme.spacing.sm,
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+  },
+  currentCardSection: {
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
-    flex: 1,
-    color: theme.colors.midnightBlue, // Mystical midnight blue from Figma
-    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: theme.spacing.lg,
+    color: theme.colors.premiumGold,
+  },
+  cardContainer: {
+    alignItems: 'center',
+  },
+  emptyCard: {
+    height: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    borderWidth: 2,
+    borderColor: theme.colors.mystical.border,
+    borderStyle: 'dashed',
+  },
+  revealButton: {
+    marginTop: theme.spacing.lg,
+    minWidth: 160,
+  },
+  hourStripSection: {
+    marginBottom: theme.spacing.xl,
   },
   sessionInfo: {
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
-    marginBottom: theme.spacing.lg,
-    // Mystical shadow effect
-    shadowColor: theme.colors.deepPurple,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingVertical: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
   },
 });

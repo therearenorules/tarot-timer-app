@@ -1,0 +1,4 @@
+Files to clean up:
+- /components/SpreadDetail-fixed.tsx (temporary file)
+- /components/SpreadDetailScreen.tsx (replaced)
+- /components/temp_delete_marker.txt (temporary)

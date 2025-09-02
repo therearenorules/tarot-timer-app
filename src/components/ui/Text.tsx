@@ -50,34 +50,55 @@ export function Text({
 }
 
 const styles = StyleSheet.create({
+  // Updated typography to match Figma specs
   h1: {
-    fontSize: 28,
+    fontSize: 32, // Display Large from Figma
     fontWeight: '700',
-    lineHeight: 34,
+    lineHeight: 38, // 1.2 ratio
+    letterSpacing: -0.5, // Korean optimization
   },
   h2: {
-    fontSize: 24,
-    fontWeight: '600',
-    lineHeight: 30,
+    fontSize: 28, // Display Medium from Figma
+    fontWeight: '700',
+    lineHeight: 34,
+    letterSpacing: -0.5,
   },
   h3: {
-    fontSize: 20,
+    fontSize: 24, // Title Large from Figma
     fontWeight: '600',
-    lineHeight: 26,
+    lineHeight: 29,
+    letterSpacing: -0.5,
   },
   h4: {
-    fontSize: 18,
+    fontSize: 20, // Title Medium from Figma
     fontWeight: '600',
     lineHeight: 24,
+    letterSpacing: -0.5,
   },
-  title1: theme.typography.title1,
-  title2: theme.typography.title2,
-  title3: theme.typography.title3,
-  body: theme.typography.body,
-  caption: theme.typography.caption,
+  title1: {
+    ...theme.typography.title1,
+    letterSpacing: -0.5, // Korean optimization
+  },
+  title2: {
+    ...theme.typography.title2,
+    letterSpacing: -0.5,
+  },
+  title3: {
+    ...theme.typography.title3,
+    letterSpacing: -0.5,
+  },
+  body: {
+    ...theme.typography.body,
+    letterSpacing: 0, // Normal for body text
+  },
+  caption: {
+    ...theme.typography.caption,
+    letterSpacing: 0,
+  },
   tiny: {
-    fontSize: 11,
+    fontSize: 11, // Caption from Figma
     fontWeight: '400',
-    lineHeight: 14,
+    lineHeight: 13,
+    letterSpacing: 0,
   },
 });

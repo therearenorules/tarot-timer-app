@@ -22,6 +22,20 @@ export interface ThemeColors {
   deepPurple: string;
   midnightBlue: string;
   divider: string;
+  // Additional Figma colors
+  backgroundTertiary: string;
+  textQuaternary: string;
+  info: string;
+  // Mystical gradients
+  gradientMystical: string;
+  gradientPremium: string;
+  gradientSurface: string;
+  // Mystical theme properties
+  mystical: {
+    shadow: string;
+    glow: string;
+    border: string;
+  };
 }
 
 export interface Theme {
@@ -62,9 +76,12 @@ export const lightTheme: Theme = {
     error: '#dc2626', // Error color from Figma
     success: '#34C759',
     warning: '#FF9500',
+    info: '#17A2B8', // Info color from Figma
     // Extended colors
     surfaceSecondary: '#f8f6f9', // Very light purple tint from Figma
+    backgroundTertiary: '#f8f6f9', // Tertiary background from Figma
     textTertiary: '#9CA3AF',
+    textQuaternary: '#8E8E93', // Quaternary text from Figma
     borderSecondary: '#e8e1e8', // Light purple tint from Figma
     shadow: 'rgba(74, 26, 79, 0.1)', // Mystical shadow with deep purple
     overlay: 'rgba(0, 0, 0, 0.5)',
@@ -73,6 +90,16 @@ export const lightTheme: Theme = {
     deepPurple: '#4a1a4f',
     midnightBlue: '#1a1f3a',
     divider: '#e8e1e8',
+    // Mystical gradients
+    gradientMystical: 'linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #1a1f3a 100%)',
+    gradientPremium: 'linear-gradient(45deg, #d4af37 0%, #f4d03f 100%)',
+    gradientSurface: 'linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%)',
+    // Mystical theme properties
+    mystical: {
+      shadow: 'rgba(74, 26, 79, 0.2)',
+      glow: 'rgba(212, 175, 55, 0.3)',
+      border: 'rgba(74, 26, 79, 0.3)',
+    },
   },
   spacing: {
     xs: 4,
@@ -130,17 +157,30 @@ export const darkTheme: Theme = {
     error: '#ff453a', // Error color from Figma
     success: '#30D158',
     warning: '#FF9F0A',
+    info: '#64D2FF', // Info color for dark mode from Figma
     // Extended colors
-    surfaceSecondary: '#1a1f3a', // Midnight Blue surface from Figma
+    surfaceSecondary: '#2a2f4a', // Dark tertiary background from Figma
+    backgroundTertiary: '#2a2f4a', // Tertiary background from Figma
     textTertiary: '#8e8e93', // Muted foreground from Figma
+    textQuaternary: '#6B6B7B', // Quaternary text from Figma
     borderSecondary: '#2a2f4a', // Dark divider from Figma
     shadow: 'rgba(74, 26, 79, 0.3)', // Mystical shadow with deep purple
-    overlay: 'rgba(0, 0, 0, 0.7)',
+    overlay: 'rgba(15, 15, 26, 0.8)', // Dark overlay from Figma
     // Mystical Premium colors from Figma
     premiumGold: '#f4d03f', // Lighter gold for dark mode
     deepPurple: '#4a1a4f',
     midnightBlue: '#1a1f3a',
     divider: '#2a2f4a',
+    // Mystical gradients
+    gradientMystical: 'linear-gradient(135deg, #0f0f1a 0%, #4a1a4f 50%, #0f0f1a 100%)',
+    gradientPremium: 'linear-gradient(45deg, #f4d03f 0%, #ffd700 100%)',
+    gradientSurface: 'linear-gradient(180deg, rgba(244, 208, 63, 0.1) 0%, transparent 100%)',
+    // Mystical theme properties
+    mystical: {
+      shadow: 'rgba(74, 26, 79, 0.4)',
+      glow: 'rgba(244, 208, 63, 0.4)',
+      border: 'rgba(74, 26, 79, 0.5)',
+    },
   },
   spacing: {
     xs: 4,

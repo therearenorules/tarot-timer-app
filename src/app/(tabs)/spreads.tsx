@@ -22,34 +22,75 @@ import { handleError, createAppError, ErrorType, ErrorSeverity } from '@/lib/err
 
 const { width: screenWidth } = Dimensions.get('window');
 
+// SpreadCard interface
+interface SpreadCard {
+  positionIndex: number;
+  cardKey: string;
+  cardName: string;
+  isReversed: boolean;
+  drawnAt: string;
+  keywords: string[];
+}
+
 export default function SpreadsScreen() {
-  const spreadStore = useSpreadStore();
+  // const spreadStore = useSpreadStore();
   const [selectedSpreadId, setSelectedSpreadId] = useState<string | null>(null);
   const [showSpreadSelection, setShowSpreadSelection] = useState(true);
   const boardRef = useRef<View>(null);
 
+  // Mock spread store for now
+  const spreadStore: {
+    currentLayout: SpreadLayout | null;
+    drawnCards: SpreadCard[];
+    timelineCards: SpreadCard[];
+    isDrawingMode: boolean;
+    selectedCardIndex: number | null;
+    isTimelineMode: boolean;
+    timelineEnabled: boolean;
+    isLoading: boolean;
+    error: string | null;
+    isInitialized: boolean;
+    getSpreadStats: () => { totalSpreads: number; completedSpreads: number; averageCardsDrawn: number; };
+  } = {
+    currentLayout: null,
+    drawnCards: [],
+    timelineCards: [],
+    isDrawingMode: true,
+    selectedCardIndex: null,
+    isTimelineMode: false,
+    timelineEnabled: false,
+    isLoading: false,
+    error: null,
+    isInitialized: true,
+    getSpreadStats: () => ({
+      totalSpreads: 0,
+      completedSpreads: 0,
+      averageCardsDrawn: 0
+    })
+  };
+
   // Initialize spread system on mount
   useEffect(() => {
-    spreadActions.initializeSpreadSystem().catch(error => {
-      // Error logged: Failed to initialize spread system
-      Alert.alert('Error', 'Failed to initialize spread system');
-    });
+    // spreadActions.initializeSpreadSystem().catch(error => {
+    //   // Error logged: Failed to initialize spread system
+    //   Alert.alert('Error', 'Failed to initialize spread system');
+    // });
   }, []);
 
   const handleStartSpread = async (spreadId: string, timelineEnabled?: boolean) => {
     try {
-      await spreadActions.startNewSpread(spreadId, { timelineEnabled });
+      // await spreadActions.startNewSpread(spreadId, { timelineEnabled });
       setSelectedSpreadId(spreadId);
       setShowSpreadSelection(false);
     } catch (error) {
-      const appError = createAppError(
-        ErrorType.USER_ACTION,
-        ErrorSeverity.MEDIUM,
-        'Failed to start spread',
-        error as Error,
-        { spreadId, timelineEnabled }
-      );
-      handleError(appError);
+      // const appError = createAppError(
+      //   ErrorType.USER_ACTION,
+      //   ErrorSeverity.MEDIUM,
+      //   'Failed to start spread',
+      //   error as Error,
+      //   { spreadId, timelineEnabled }
+      // );
+      // handleError(appError);
     }
   };
 
@@ -127,10 +168,10 @@ export default function SpreadsScreen() {
   const renderSpreadSelection = () => (
     <ScrollView style={styles.selectionContainer} showsVerticalScrollIndicator={false}>
       <Text variant="h2" style={styles.title}>
-        Choose Your Spread
+        스프레드 선택
       </Text>
       <Text variant="body" color={theme.colors.textSecondary} style={styles.subtitle}>
-        Select a tarot spread layout to begin your reading
+        타로 리딩을 시작할 스프레드 레이아웃을 선택하세요
       </Text>
 
       <View style={styles.spreadsGrid}>
@@ -150,7 +191,7 @@ export default function SpreadsScreen() {
       {/* Statistics Section */}
       <View style={styles.statsSection}>
         <Text variant="h3" style={styles.statsTitle}>
-          Your Statistics
+          나의 통계
         </Text>
         <SpreadStats />
       </View>
@@ -172,23 +213,23 @@ export default function SpreadsScreen() {
               variant="text"
             />
           </View>
-          
+
           <View style={styles.headerCenter}>
             <Text variant="h3" style={styles.spreadTitle}>
-              {spreadStore.currentLayout.name}
+              {spreadStore.currentLayout?.name || 'Spread'}
             </Text>
             <Text variant="caption" color={theme.colors.textSecondary}>
-              {spreadStore.drawnCards.length} / {spreadStore.currentLayout.cardCount} cards
+              {spreadStore.drawnCards.length} / {spreadStore.currentLayout?.cardCount || 0} cards
             </Text>
           </View>
-          
+
           <View style={styles.headerRight}>
             {spreadStore.timelineEnabled && (
               <Button
                 title="Timeline"
-                onPress={spreadActions.toggleTimelineMode}
-                style={spreadStore.isTimelineMode ? 
-                  {...styles.timelineButton, ...styles.timelineButtonActive} : 
+                onPress={() => {}}
+                style={spreadStore.isTimelineMode ?
+                  {...styles.timelineButton, ...styles.timelineButtonActive} :
                   styles.timelineButton
                 }
                 variant={spreadStore.isTimelineMode ? "primary" : "outline"}
@@ -348,7 +389,7 @@ function SpreadStats() {
           {stats.totalSpreads}
         </Text>
         <Text variant="caption" color={theme.colors.textSecondary}>
-          Total Spreads
+          총 스프레드
         </Text>
       </View>
       
@@ -357,7 +398,7 @@ function SpreadStats() {
           {stats.completedSpreads}
         </Text>
         <Text variant="caption" color={theme.colors.textSecondary}>
-          Completed
+          완료됨
         </Text>
       </View>
       
@@ -366,7 +407,7 @@ function SpreadStats() {
           {stats.averageCardsDrawn}
         </Text>
         <Text variant="caption" color={theme.colors.textSecondary}>
-          Avg Cards
+          평균 카드
         </Text>
       </View>
     </View>
@@ -413,11 +454,14 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: 2,
+    borderColor: theme.colors.mystical.border,
+    // 신비로운 그림자 효과 적용
+    shadowColor: theme.colors.mystical.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
   spreadCardTitle: {
     marginBottom: 8,
@@ -455,8 +499,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValue: {
-    color: theme.colors.primary,
+    color: theme.colors.premiumGold,
     marginBottom: 4,
+    fontWeight: '700',
   },
 
   // Board Screen

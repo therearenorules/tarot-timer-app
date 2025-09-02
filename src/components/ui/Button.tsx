@@ -3,7 +3,7 @@ import { Pressable, ViewStyle, TextStyle, PressableProps, ActivityIndicator } fr
 import { Text } from './Text';
 import { theme } from '@/constants';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'text';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'text' | 'premium';
 type ButtonSize = 'small' | 'medium' | 'large';
 
 interface ButtonProps extends Omit<PressableProps, 'style'> {
@@ -86,6 +86,14 @@ export function Button({
       text: {
         backgroundColor: 'transparent',
       },
+      premium: {
+        backgroundColor: isDisabled ? theme.colors.border : theme.colors.premiumGold,
+        shadowColor: theme.colors.premiumGold,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+      },
     };
 
     return {
@@ -107,6 +115,8 @@ export function Button({
       case 'outline':
       case 'text':
         return theme.colors.primary;
+      case 'premium':
+        return theme.colors.deepPurple; // Premium button text is deep purple
       default:
         return theme.colors.text;
     }

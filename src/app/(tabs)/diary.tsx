@@ -9,7 +9,7 @@ const mockDiaryEntries = [
     id: '1',
     type: 'daily' as const,
     date: new Date(),
-    title: "Today's 24-Hour Reading",
+    title: "오늘의 24시간 리딩",
     completedHours: 8,
     totalHours: 24,
   },
@@ -17,14 +17,14 @@ const mockDiaryEntries = [
     id: '2',
     type: 'spread' as const,
     date: new Date(Date.now() - 86400000), // Yesterday
-    title: 'Celtic Cross - Career Path',
-    spreadType: 'Celtic Cross',
+    title: '켈틱 크로스 - 진로 길잡이',
+    spreadType: '켈틱 크로스',
   },
   {
     id: '3',
     type: 'daily' as const,
     date: new Date(Date.now() - 86400000),
-    title: "Yesterday's 24-Hour Reading",
+    title: "어제의 24시간 리딩",
     completedHours: 24,
     totalHours: 24,
   },
@@ -32,8 +32,8 @@ const mockDiaryEntries = [
     id: '4',
     type: 'spread' as const,
     date: new Date(Date.now() - 172800000), // 2 days ago
-    title: '3-Card Morning Guidance',
-    spreadType: '3-Card Spread',
+    title: '3장 아침 가이드',
+    spreadType: '3장 스프레드',
   },
 ];
 
@@ -43,10 +43,10 @@ export default function DiaryScreen() {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text variant="title2" style={styles.title}>
-            My Reading History
+            나의 리딩 기록
           </Text>
           <Text variant="body" color={theme.colors.textSecondary}>
-            Review your past tarot readings and insights
+            과거 타로 리딩과 통찰을 확인하세요
           </Text>
         </View>
 
@@ -107,7 +107,7 @@ export default function DiaryScreen() {
 
         <View style={styles.emptyState}>
           <Text variant="body" color={theme.colors.textSecondary} style={styles.emptyText}>
-            Your reading history will appear here as you complete daily readings and spreads.
+            일일 리딩과 스프레드를 완료하면 리딩 기록이 여기에 나타납니다.
           </Text>
         </View>
 
@@ -133,19 +133,20 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xl,
   },
   entryCard: {
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.lg,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    shadowColor: '#000',
+    borderWidth: 2,
+    borderColor: theme.colors.mystical.border,
+    // 신비로운 그림자 효과 적용
+    shadowColor: theme.colors.mystical.shadow,
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
   entryHeader: {
     flexDirection: 'row',
@@ -165,16 +166,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   progressBadge: {
-    backgroundColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.premiumGold + '20',
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.premiumGold + '40',
   },
   spreadBadge: {
-    backgroundColor: theme.colors.secondary + '20',
+    backgroundColor: theme.colors.deepPurple + '20',
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.deepPurple + '40',
   },
   progressBar: {
     marginTop: theme.spacing.sm,
@@ -187,7 +192,8 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.premiumGold,
+    borderRadius: 2,
   },
   emptyState: {
     alignItems: 'center',

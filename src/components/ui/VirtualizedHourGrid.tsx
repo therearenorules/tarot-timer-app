@@ -3,6 +3,7 @@ import { FlatList, View, StyleSheet, Dimensions } from 'react-native';
 import { HourCard } from './HourCard';
 import { theme } from '@/constants';
 import { type DailyCard } from '@/lib/database/types';
+import { useMemoryOptimization } from '@/hooks/useMemoryOptimization';
 
 interface VirtualizedHourGridProps {
   currentSession: any;
@@ -18,8 +19,9 @@ interface HourItem {
 }
 
 const { width } = Dimensions.get('window');
-const ITEM_WIDTH = 45;
-const ITEM_SPACING = 8;
+// 피그마 디자인에 맞게 8pt 그리드 시스템 적용
+const ITEM_WIDTH = 48; // 8pt 그리드에 맞게 조정
+const ITEM_SPACING = 8; // 8pt 그리드
 const ITEMS_PER_ROW = Math.floor((width - 32) / (ITEM_WIDTH + ITEM_SPACING));
 
 export const VirtualizedHourGrid = memo<VirtualizedHourGridProps>(({
@@ -29,6 +31,14 @@ export const VirtualizedHourGrid = memo<VirtualizedHourGridProps>(({
   selectedHour,
   onHourPress,
 }) => {
+  // 메모리 최적화 적용
+  useMemoryOptimization({
+    componentName: 'VirtualizedHourGrid',
+    enableTracking: true,
+    autoCleanup: true,
+    cleanupOnUnmount: true,
+  });
+
   // Create stable data array
   const hourData = useMemo<HourItem[]>(() =>
     Array.from({ length: 24 }, (_, i) => ({
@@ -93,12 +103,23 @@ VirtualizedHourGrid.displayName = 'VirtualizedHourGrid';
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: theme.spacing.sm,
+    paddingVertical: theme.spacing.md, // 피그마 디자인에 맞게 패딩 조정
+    paddingHorizontal: theme.spacing.sm,
+    backgroundColor: theme.colors.background, // 신비로운 배경색 적용
   },
   itemContainer: {
     width: ITEM_WIDTH + ITEM_SPACING,
     height: ITEM_WIDTH + ITEM_SPACING,
     alignItems: 'center',
     justifyContent: 'center',
+    // 신비로운 그림자 효과 추가 (React Native용)
+    shadowColor: theme.colors.mystical.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
 });

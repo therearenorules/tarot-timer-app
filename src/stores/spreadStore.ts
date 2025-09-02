@@ -78,19 +78,19 @@ const drawCardForPosition = async (positionIndex: number, spreadId: string): Pro
 const captureSpread = async (ref: React.RefObject<any>): Promise<string> => {
   // TODO: Implement actual screenshot capture using expo-file-system
   // For now, return a placeholder URI
-  console.log('Spread capture requested - implementation needed');
+  // TODO: Implement actual screenshot capture using expo-file-system
   return `spread_capture_${Date.now()}.png`;
 };
 
 // Real spread save function
 const saveSpread = async (imageUri: string, options?: any): Promise<void> => {
   try {
-    console.log('Saving spread:', imageUri, options);
+    // TODO: Implement actual file saving using expo-file-system
     // TODO: Implement actual file saving using expo-file-system
     // TODO: Optionally save to gallery using expo-media-library
 
     if (options?.saveToGallery) {
-      console.log('Gallery save requested - implementation needed');
+      // TODO: Save to gallery using expo-media-library
     }
   } catch (error) {
     console.error('Failed to save spread:', error);
@@ -101,9 +101,9 @@ const saveSpread = async (imageUri: string, options?: any): Promise<void> => {
 // Real spread share function
 const shareSpread = async (imageUri: string): Promise<void> => {
   try {
-    console.log('Sharing spread:', imageUri);
     // TODO: Implement actual sharing using expo-sharing
-    console.log('Spread sharing requested - implementation needed');
+    // TODO: Implement actual sharing using expo-sharing
+    // Implementation needed for sharing functionality
   } catch (error) {
     console.error('Failed to share spread:', error);
     throw error;
