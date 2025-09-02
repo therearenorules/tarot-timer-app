@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <!-- Primary Meta Tags -->
+    <title>타로 타이머 - Tarot Timer</title>
+    <meta name="title" content="타로 타이머 - Tarot Timer">
+    <meta name="description" content="🔮 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 켈틱 크로스, 3카드, 5카드 등 다양한 스프레드와 타로 일기, 명상 타이머 기능을 제공하는 무료 온라인 타로 앱입니다. 전체 78장 타로 카드 해석 포함.">
+    <meta name="keywords" content="타로, 타로카드, 타이머, 명상, 점술, tarot, tarot cards, timer, meditation">
+    <meta name="author" content="therearenorules">
+    <meta name="robots" content="index, follow, max-snippet:160, max-image-preview:large, max-video-preview:30">
+    <meta name="googlebot" content="index, follow, max-snippet:160, max-image-preview:large">
+    <meta name="bingbot" content="index, follow">
+    <meta name="slurp" content="index, follow">
+    
+    <!-- International SEO -->
+    <link rel="alternate" hreflang="ko" href="https://tarot-timer.app/">
+    <link rel="alternate" hreflang="en" href="https://tarot-timer.app/en/">
+    <link rel="alternate" hreflang="x-default" href="https://tarot-timer.app/">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://tarot-timer.app/">
+    
+    <!-- Publisher and copyright -->
+    <meta name="publisher" content="타로 타이머">
+    <meta name="copyright" content="© 2024 타로 타이머. All rights reserved.">
+    <meta name="generator" content="React Native Web, Expo">
+    
+    <!-- Mobile and PWA metadata -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="타로 타이머">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Rating and content classification -->
+    <meta name="rating" content="general">
+    <meta name="content-language" content="ko-KR">
+    <meta name="audience" content="all">
+    <meta name="distribution" content="global">
+    <meta name="classification" content="Entertainment, Lifestyle, Spirituality">
+    
+    <!-- App store metadata -->
+    <meta name="apple-itunes-app" content="app-id=tarot-timer, app-argument=https://tarot-timer.app/">
+    <meta name="google-play-app" content="app-id=com.tarot.timer">
+    
+    <!-- Verification tags (placeholders) -->
+    <meta name="google-site-verification" content="your-google-verification-code">
+    <meta name="msvalidate.01" content="your-bing-verification-code">
+    <meta name="yandex-verification" content="your-yandex-verification-code">
+    <meta name="naver-site-verification" content="your-naver-verification-code">
+    
+    <!-- Performance and caching hints -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000">
+    <meta http-equiv="Expires" content="Thu, 01 Dec 2025 16:00:00 GMT">
+    
+    <!-- Accessibility enhancements -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    
+    <!-- Search engine specific -->
+    <meta name="revisit-after" content="7 days">
+    <meta name="page-topic" content="Tarot, Divination, Meditation, Timer">
+    <meta name="page-type" content="Web Application">
+    
+    <!-- Geographic targeting -->
+    <meta name="geo.region" content="KR">
+    <meta name="geo.country" content="Korea">
+    <meta name="geo.placename" content="South Korea">
+    <meta name="ICBM" content="37.5665, 126.9780">
+    <meta name="geo.position" content="37.5665;126.9780">
+    
+    <!-- Rich snippets support -->
+    <meta name="news_keywords" content="타로, 타로카드, 온라인타로, 무료타로, 타로리딩">
+    <meta name="article:section" content="Lifestyle">
+    <meta name="article:tag" content="spirituality,tarot,meditation,wellness">
+    
+    <!-- Business information -->
+    <meta name="contact" content="admin@tarot-timer.app">
+    <meta name="reply-to" content="admin@tarot-timer.app">
+    
+    <!-- Enhanced Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tarot-timer.app/">
+    <meta property="og:title" content="타로 타이머 - 개인 맞춤형 타로 카드 리딩 앱">
+    <meta property="og:description" content="🔮 AI 기반 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 다양한 스프레드, 타로 일기, 명상 타이머까지 - 현대적인 타로 앱의 새로운 기준을 제시합니다.">
+    <meta property="og:image" content="https://tarot-timer.app/og-image.png">
+    <meta property="og:image:alt" content="타로 타이머 앱 - 개인 맞춤형 타로 카드 리딩 인터페이스">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:site_name" content="타로 타이머">
+    <meta property="og:updated_time" content="2025-09-02T00:00:00+09:00">
+    <meta property="article:publisher" content="https://tarot-timer.app">
+    <meta property="article:author" content="therearenorules">
+    <meta property="article:section" content="Tarot">
+    <meta property="article:tag" content="타로">
+    <meta property="article:tag" content="타로카드">
+    <meta property="article:tag" content="타이머">
+    <meta property="article:tag" content="명상">
+    <meta property="article:tag" content="점술">
+    
+    <!-- Enhanced Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://tarot-timer.app/">
+    <meta name="twitter:title" content="타로 타이머 - 개인 맞춤형 타로 카드 리딩">
+    <meta name="twitter:description" content="🔮 AI 기반 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 다양한 스프레드와 타로 일기 기능을 무료로 이용하세요.">
+    <meta name="twitter:image" content="https://tarot-timer.app/twitter-card.png">
+    <meta name="twitter:image:alt" content="타로 타이머 - 개인 맞춤형 타로 카드 리딩 앱">
+    <meta name="twitter:creator" content="@therearenorules">
+    <meta name="twitter:site" content="@tarot_timer">
+    
+    <!-- Additional social media optimization -->
+    <meta property="fb:app_id" content="tarot-timer-app">
+    <meta property="og:rich_attachment" content="true">
+    
+    <!-- LinkedIn specific -->
+    <meta property="og:image:secure_url" content="https://tarot-timer.app/og-image.png">
+    
+    <!-- Pinterest specific -->
+    <meta name="pinterest-rich-pin" content="true">
+    <meta property="og:see_also" content="https://tarot-timer.app/cards">
+    <meta property="og:see_also" content="https://tarot-timer.app/spreads">
+    <meta property="og:see_also" content="https://tarot-timer.app/daily">
+    
+    <!-- Telegram specific -->
+    <meta property="telegram:channel" content="@tarot_timer">
+    
+    <!-- WhatsApp specific -->
+    <meta property="og:video" content="https://tarot-timer.app/demo-video.mp4">
+    <meta property="og:video:type" content="video/mp4">
+    <meta property="og:video:width" content="1280">
+    <meta property="og:video:height" content="720">
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Theme and Safari -->
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="타로 타이머">
+    
+    <!-- Enhanced Security Headers - OWASP Compliant -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'strict-dynamic' https://cdn.jsdelivr.net https://unpkg.com https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://images.unsplash.com https://pixabay.com; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https: wss:; media-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Strict-Transport-Security" content="max-age=63072000; includeSubDomains; preload">
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), accelerometer=(self), gyroscope=(self), notifications=(self), push=(self), vibrate=(self)">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Resource-Policy" content="same-origin">
+    
+    <!-- Enhanced Resource Hints for Performance -->
+    <!-- Critical connections -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    
+    <!-- DNS prefetch for third-party resources -->
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://api.tarot-timer.app">
+    <link rel="dns-prefetch" href="https://analytics.google.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/fonts/korean-font.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/manifest.json" as="fetch" type="application/json" crossorigin>
+    <link rel="preload" href="/sw.js" as="script">
+    
+    <!-- Prefetch likely-to-be-needed resources -->
+    <link rel="prefetch" href="/cards/major-arcana.json" as="fetch" type="application/json">
+    <link rel="prefetch" href="/spreads/celtic-cross.json" as="fetch" type="application/json">
+    <link rel="prefetch" href="/api/daily-card" as="fetch">
+    
+    <!-- Module preload for modern browsers -->
+    <link rel="modulepreload" href="/static/js/main.js">
+    <link rel="modulepreload" href="/static/js/vendor.js">
+    
+    <!-- Preload hero images with responsive hints -->
+    <link rel="preload" href="/images/hero-desktop.webp" as="image" media="(min-width: 768px)">
+    <link rel="preload" href="/images/hero-mobile.webp" as="image" media="(max-width: 767px)">
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="/static/css/critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/static/css/critical.css"></noscript>
+    
+    <!-- Critical CSS -->
+    <style>
+        /* Critical above-the-fold styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1f3a;
+            color: #ffffff;
+            overflow-x: hidden;
+            /* Prevent flash of unstyled content */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        body.loaded {
+            opacity: 1;
+        }
+        
+        #root {
+            height: 100vh;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            /* Safe area handling for modern mobile devices */
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 9999;
+        }
+        
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Hide loading spinner when app loads */
+        body.loaded .loading-spinner {
+            display: none;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            body {
+                background: #000000;
+                color: #ffffff;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #0d1117;
+                color: #f0f6fc;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+        
+        /* Responsive typography */
+        @media (max-width: 768px) {
+            body {
+                font-size: 16px;
+                line-height: 1.5;
+            }
+        }
+    </style>
+    
+    <!-- Enhanced Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "타로 타이머",
+      "alternateName": "Tarot Timer",
+      "description": "🔮 시간별 타로 카드와 함께하는 의미있는 하루를 시작하세요. AI 기반 개인 맞춤형 타로 리딩, 다양한 스프레드, 일기 기능을 제공하는 현대적인 타로 앱입니다.",
+      "url": "https://tarot-timer.app",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "softwareVersion": "1.0.0",
+      "releaseNotes": "Initial release with comprehensive tarot reading features",
+      "installUrl": "https://tarot-timer.app",
+      "screenshot": [
+        "https://tarot-timer.app/screenshots/home.png",
+        "https://tarot-timer.app/screenshots/reading.png",
+        "https://tarot-timer.app/screenshots/diary.png"
+      ],
+      "featureList": [
+        "개인 맞춤형 타로 리딩",
+        "다양한 타로 스프레드 (켈틱 크로스, 3카드, 5카드 등)",
+        "타로 일기 및 기록 관리",
+        "명상 타이머 기능",
+        "카드별 상세 해석 및 키워드",
+        "오프라인 사용 가능",
+        "다국어 지원 (한국어, 영어)"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW",
+        "availability": "https://schema.org/InStock",
+        "validFrom": "2024-01-01"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "therearenorules",
+        "url": "https://github.com/therearenorules"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "타로 타이머",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://tarot-timer.app/logo.png",
+          "width": 512,
+          "height": 512
+        }
+      },
+      "datePublished": "2024-01-01",
+      "dateModified": "2025-09-02",
+      "inLanguage": ["ko-KR", "en-US"],
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "People interested in tarot, spirituality, and self-reflection"
+      },
+      "keywords": "타로, 타로카드, 타로리딩, 온라인타로, 무료타로, 타이머, 명상, 점술, 운세, 카드점, tarot, tarot cards, tarot reading, online tarot, free tarot, timer, meditation, divination, fortune telling",
+      "mainEntity": {
+        "@type": "SoftwareApplication",
+        "name": "타로 타이머 PWA",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Web Browser"
+      }
+    }
+    </script>
+    
+    <!-- Organization Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "타로 타이머",
+      "alternateName": "Tarot Timer",
+      "url": "https://tarot-timer.app",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://tarot-timer.app/logo.png",
+        "width": 512,
+        "height": 512
+      },
+      "description": "개인 맞춤형 타로 카드 리딩과 타이머 기능을 제공하는 모바일 앱 개발팀",
+      "foundingDate": "2024",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": ["Korean", "English"],
+        "url": "https://tarot-timer.app/contact"
+      },
+      "sameAs": [
+        "https://github.com/therearenorules/tarot-timer-app"
+      ]
+    }
+    </script>
+    
+    <!-- Website Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "타로 타이머",
+      "alternateName": "Tarot Timer",
+      "url": "https://tarot-timer.app",
+      "description": "개인 맞춤형 타로 카드 리딩 웹 애플리케이션",
+      "inLanguage": "ko-KR",
+      "isAccessibleForFree": true,
+      "creator": {
+        "@type": "Person",
+        "name": "therearenorules"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://tarot-timer.app/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Loading spinner -->
+    <div class="loading-spinner" aria-label="로딩 중..." role="status"></div>
+    
+    <!-- Main app container -->
+    <div id="root" role="main" aria-label="타로 타이머 메인 애플리케이션"></div>
+    
+    <!-- Accessibility skip link -->
+    <a href="#root" class="skip-link" style="position: absolute; top: -40px; left: 6px; background: #6366f1; color: white; padding: 8px; text-decoration: none; z-index: 10000;">메인 콘텐츠로 이동</a>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Service Worker registration for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(function(error) {
+                    console.log('ServiceWorker registration failed');
+                });
+            });
+        }
+        
+        // Remove loading spinner when React app loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 100);
+        });
+        
+        // Handle focus for accessibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const skipLink = document.querySelector('.skip-link');
+            skipLink.addEventListener('focus', function() {
+                this.style.top = '6px';
+            });
+            skipLink.addEventListener('blur', function() {
+                this.style.top = '-40px';
+            });
+        });
+    </script>
+    
+    <!-- Error boundary fallback -->
+    <noscript>
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px;">
+            <div>
+                <h1>🔮 타로 타이머</h1>
+                <p>이 앱을 사용하려면 JavaScript를 활성화해주세요.</p>
+                <p>JavaScript must be enabled to run this app.</p>
+            </div>
+        </div>
+    </noscript>
+</body>
+</html>

@@ -6,7 +6,7 @@ import React, { Component, ReactNode } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Button } from '@/components';
 import { theme } from '@/constants';
-import { errorReportingService } from '@/services/errorReportingService';
+import monitoringService from '../utils/monitoring';
 
 interface Props {
   children: ReactNode;
@@ -43,13 +43,16 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Report error to service
-    const reportId = errorReportingService.reportError(
-      error,
-      'global',
-      { componentStack: errorInfo.componentStack || '' },
-      { retryCount: this.retryCount }
-    );
+    // Report error to monitoring service
+    monitoringService.captureError(error, {
+      errorInfo,
+      severity: 'critical',
+      context: {
+        componentStack: errorInfo.componentStack || '',
+        retryCount: this.retryCount,
+        errorBoundary: true,
+      },
+    });
     
     // Log the error
     this.logError(error, errorInfo);
@@ -57,7 +60,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({
       error,
       errorInfo,
-      errorId: reportId || this.state.errorId,
+      errorId: this.state.errorId,
     });
 
     // Call custom error handler if provided
@@ -92,13 +95,8 @@ export class ErrorBoundary extends Component<Props, State> {
       this.retryCount += 1;
       console.log(`🔄 Retrying... (${this.retryCount}/${this.maxRetries})`);
       
-      // Update error reporting service
-      errorReportingService.updateRecovery(this.state.errorId, {
-        attempted: true,
-        successful: true,
-        strategy: 'manual_retry',
-        retryCount: this.retryCount,
-      });
+      // Log retry attempt
+      monitoringService.addBreadcrumb(`Error boundary retry attempt ${this.retryCount}`, 'info');
       
       this.setState({
         hasError: false,
@@ -106,12 +104,8 @@ export class ErrorBoundary extends Component<Props, State> {
         errorInfo: undefined,
       });
     } else {
-      // Update error reporting service for failed retry
-      errorReportingService.updateRecovery(this.state.errorId, {
-        attempted: true,
-        successful: false,
-        retryCount: this.retryCount,
-      });
+      // Log failed recovery
+      monitoringService.addBreadcrumb('Error boundary max retries reached', 'error');
       
       Alert.alert(
         'Error',

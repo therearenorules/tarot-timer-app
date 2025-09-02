@@ -50,6 +50,8 @@ config.resolver = {
     'expo/src/winter': path.resolve(__dirname, 'src/lib/dummyWinter.js'),
     // RSC 모듈 해결을 위한 더미 alias
     '@expo/metro-runtime/rsc/runtime': path.resolve(__dirname, 'src/lib/dummyRsc.js'),
+    '@expo/metro-runtime/src/index.ts': path.resolve(__dirname, 'src/lib/metroRuntime.js'),
+    '@expo/metro-runtime/src/index': path.resolve(__dirname, 'src/lib/metroRuntime.js'),
     // UUID 모듈 해결을 위한 alias
     'expo-modules-core/src/uuid': path.resolve(__dirname, 'src/lib/dummyUuid.js'),
   },
@@ -124,8 +126,8 @@ config.serializer = {
 };
 
 // Enhanced cache settings for faster rebuilds
-config.cacheVersion = '2.1.0'; // Incremented for React Navigation fix
-config.resetCache = true;
+config.cacheVersion = '2.2.0'; // Incremented for web compatibility fix
+config.resetCache = false;
 
 // Development-specific optimizations
 if (process.env.NODE_ENV !== 'production') {

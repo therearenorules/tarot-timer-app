@@ -1,0 +1,21 @@
+# Tarot Timer App - Production robots.txt
+User-agent: *
+Allow: /
+
+# Security headers for web crawlers
+Sitemap: /sitemap.xml
+
+# Block access to sensitive directories
+Disallow: /api/
+Disallow: /admin/
+Disallow: /.env*
+Disallow: /config/
+
+# Allow specific assets
+Allow: /static/
+Allow: /assets/
+Allow: /icons/
+Allow: /images/
+
+# Cache directive for search engines
+Crawl-delay: 1

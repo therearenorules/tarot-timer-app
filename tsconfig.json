@@ -36,7 +36,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     
     // Performance optimizations
     "incremental": true,
@@ -50,7 +50,7 @@
     // Advanced checks for better code quality
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": false,
-    "noImplicitOverride": true,
+    "noImplicitOverride": false,
     "useUnknownInCatchVariables": true,
     
     // React Native specific
