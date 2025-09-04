@@ -708,10 +708,42 @@
 
                     <!-- Spread Cards -->
                     <div class="space-y-6">
-                        <!-- 3-Card Spread -->
-                        <div class="relative group">
+                        <!-- 1카드 스프레드 - 빠른 뽑기 (기본) -->
+                        <div class="relative group" onclick="startSpreadReading('one-card')">
                             <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4">
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">1카드 스프레드 - 빠른 뽑기</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 border-blue-400/30">
+                                                기본
+                                            </span>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">One Card Quick Draw</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">간단한 질문을 위한 한 장 뽑기로 빠른 답변을 얻을 수 있습니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3카드 스프레드 (기본) -->
+                        <div class="relative group" onclick="startSpreadReading('three-card')">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
                                 <div class="flex items-start justify-between">
                                     <div class="space-y-2 flex-1">
                                         <div class="flex items-center gap-3">
@@ -723,8 +755,11 @@
                                                 </svg>
                                             </div>
                                             <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">3카드 스프레드</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 border-blue-400/30">
+                                                기본
+                                            </span>
                                         </div>
-                                        <p class="body-small text-yellow-400/80">3 Card Spread</p>
+                                        <p class="body-small text-yellow-400/80">Three Card Spread</p>
                                     </div>
                                 </div>
                                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
@@ -739,10 +774,78 @@
                             </div>
                         </div>
 
-                        <!-- Celtic Cross -->
-                        <div class="relative group">
+                        <!-- 5카드 스프레드 (기본) -->
+                        <div class="relative group" onclick="startSpreadReading('five-card')">
                             <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4">
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <polygon points="12,2 22,8.5 17.5,20 6.5,20 2,8.5"></polygon>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">5카드 스프레드</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 border-blue-400/30">
+                                                기본
+                                            </span>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">Five Card V-Shape</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">종합적인 안내를 위한 V자 형태의 5장 스프레드입니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4카드 시간선 (기본) -->
+                        <div class="relative group" onclick="startSpreadReading('four-card-timeline')">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                                                    <line x1="3" y1="6" x2="3" y2="18"></line>
+                                                    <line x1="9" y1="6" x2="9" y2="18"></line>
+                                                    <line x1="15" y1="6" x2="15" y2="18"></line>
+                                                    <line x1="21" y1="6" x2="21" y2="18"></line>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">4카드 시간선</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 border-blue-400/30">
+                                                기본
+                                            </span>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">Four Card Timeline</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">시간의 흐름에 따른 상황 변화를 보는 4장 시간선 스프레드입니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 켈틱 크로스 (프리미엄) -->
+                        <div class="relative group" onclick="startSpreadReading('celtic-cross')">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
                                 <div class="flex items-start justify-between">
                                     <div class="space-y-2 flex-1">
                                         <div class="flex items-center gap-3">
@@ -764,6 +867,77 @@
                                 </div>
                                 <div class="p-4 bg-white/5 rounded-xl border border-white/10">
                                     <p class="body-small text-white/90 leading-relaxed">복잡한 상황에 대한 깊이 있는 통찰을 제공하는 10카드 스프레드입니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 컵 오브 릴레이션십 (프리미엄) -->
+                        <div class="relative group" onclick="startSpreadReading('cup-of-relationship')">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2c-4.418 0-8 2.686-8 6 0 4.418 8 14 8 14s8-9.582 8-14c0-3.314-3.582-6-8-6z"/>
+                                                    <circle cx="12" cy="8" r="3"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">컵 오브 릴레이션십</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-none shadow-lg gap-1">
+                                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                                                </svg>
+                                                프리미엄
+                                            </span>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">Cup of Relationship</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">관계의 깊은 역학과 사랑의 에너지를 탐구하는 11카드 스프레드입니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AB선택 스프레드 (프리미엄) -->
+                        <div class="relative group" onclick="startSpreadReading('ab-choice')">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4 cursor-pointer">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">AB선택 스프레드</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-none shadow-lg gap-1">
+                                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                                                </svg>
+                                                프리미엄
+                                            </span>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">AB Choice Spread</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">두 가지 중요한 선택지를 비교 분석하는 7카드 스프레드입니다.</p>
                                 </div>
                                 <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
                                     <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -918,63 +1092,12 @@
                                     </svg>
                                     스프레드 기록
                                 </h2>
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">6개 기록</span>
+                                <span id="spread-count" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">0개 기록</span>
                             </div>
                             
-                            <!-- Spread Record -->
-                            <div class="bg-white/5 border border-white/10 touch-card rounded-2xl p-5 space-y-4">
-                                <div class="flex items-start justify-between">
-                                    <div class="space-y-2 flex-1">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                                <line x1="9" y1="9" x2="15" y2="15"></line>
-                                                <line x1="15" y1="9" x2="9" y2="15"></line>
-                                            </svg>
-                                            <span class="body-medium text-white group-hover:text-yellow-400 transition-colors">새로운 직장에 대한 결정</span>
-                                        </div>
-                                        <div class="flex items-center gap-2 body-small">
-                                            <svg class="h-3 w-3 text-yellow-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                                            </svg>
-                                            <span class="text-white/70">2024년 1월 15일 월요일</span>
-                                        </div>
-                                    </div>
-                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-green-500/20 text-green-400 border border-green-500/30">저장됨</span>
-                                </div>
-
-                                <!-- Spread Badge -->
-                                <div class="flex items-center justify-center">
-                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">AB선택 스프레드</span>
-                                </div>
-                                
-                                <!-- Insights Preview -->
-                                <div class="p-3 bg-white/5 rounded-lg border border-white/10">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <svg class="h-3 w-3 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 5z"></path>
-                                        </svg>
-                                        <span class="caption text-yellow-400">인사이트</span>
-                                    </div>
-                                    <p class="body-small text-white/80 line-clamp-2 leading-relaxed">
-                                        두 선택지 모두 좋은 기회가 될 것 같습니다. A는 안정성을, B는 도전을 의미합니다.
-                                    </p>
-                                </div>
-                                
-                                <!-- Action Button -->
-                                <div class="pt-2">
-                                    <button class="w-full px-4 py-2 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 group-hover:border-yellow-400/50 touch-optimization">
-                                        <svg class="h-3 w-3 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                                            <line x1="15" y1="9" x2="9" y2="15"></line>
-                                        </svg>
-                                        보기
-                                    </button>
-                                </div>
+                            <!-- Dynamic Spread Records List -->
+                            <div id="spread-records-list" class="space-y-4">
+                                <!-- Dynamic content will be inserted here -->
                             </div>
                         </div>
                     </div>
@@ -1241,6 +1364,676 @@
             }
         }
 
+        // Current spread data
+        let currentSpread = null;
+        let currentSpreadCards = [];
+
+        // Spread definitions with card positions
+        const spreadDefinitions = {
+            'one-card': {
+                name: '1카드 스프레드 - 빠른 뽑기',
+                cardCount: 1,
+                positions: ['현재 상황'],
+                layout: 'single'
+            },
+            'three-card': {
+                name: '3카드 스프레드',
+                cardCount: 3,
+                positions: ['과거', '현재', '미래'],
+                layout: 'horizontal'
+            },
+            'five-card': {
+                name: '5카드 스프레드',
+                cardCount: 5,
+                positions: ['기반', '도전', '힘', '조언', '결과'],
+                layout: 'v-shape'
+            },
+            'four-card-timeline': {
+                name: '4카드 시간선',
+                cardCount: 4,
+                positions: ['1개월 전', '현재', '3개월 후', '1년 후'],
+                layout: 'timeline'
+            },
+            'celtic-cross': {
+                name: '켈틱 크로스',
+                cardCount: 10,
+                positions: ['현재 상황', '도전/장애', '먼 과거', '최근 과거', '가능한 결과', '가까운 미래', '당신의 접근법', '외부 영향', '희망과 두려움', '최종 결과'],
+                layout: 'celtic-cross'
+            },
+            'cup-of-relationship': {
+                name: '컵 오브 릴레이션십',
+                cardCount: 11,
+                positions: ['나의 현재 상태', '상대의 현재 상태', '우리의 현재 상태', '과거', '현재', '방해물', '나의 마음', '상대의 마음', '내가 상대에게 바라는 점', '상대가 나에게 바라는 점', '결과'],
+                layout: 'cup-shape'
+            },
+            'ab-choice': {
+                name: 'AB선택 스프레드',
+                cardCount: 7,
+                positions: ['A 선택지 1', 'A 선택지 2', 'A 선택지 3', '현재 상황', 'B 선택지 1', 'B 선택지 2', 'B 선택지 3'],
+                layout: 'choice'
+            }
+        };
+
+        // Start spread reading function
+        function startSpreadReading(spreadId) {
+            currentSpread = spreadDefinitions[spreadId];
+            if (!currentSpread) {
+                alert('선택된 스프레드를 찾을 수 없습니다.');
+                return;
+            }
+
+            console.log(`🎴 ${currentSpread.name} 시작`);
+            
+            // Switch to timer tab to show spread drawing area
+            showTab('timer');
+            
+            // Hide initial state and show spread drawing state
+            setTimeout(() => {
+                hideInitialTimerState();
+                showSpreadDrawingInterface(spreadId);
+            }, 300);
+        }
+
+        // Hide initial timer interface
+        function hideInitialTimerState() {
+            const initialState = document.getElementById('initial-state');
+            const cardsDrawnState = document.getElementById('cards-drawn-state');
+            
+            if (initialState) {
+                initialState.classList.add('hidden');
+            }
+            if (cardsDrawnState) {
+                cardsDrawnState.classList.add('hidden');
+            }
+        }
+
+        // Show spread drawing interface
+        function showSpreadDrawingInterface(spreadId) {
+            // Hide the entire tab structure and show full screen spread
+            const tabContent = document.getElementById('timer-content');
+            const tabNavigation = document.querySelector('.tab-navigation');
+            
+            // Hide tab navigation
+            if (tabNavigation) {
+                tabNavigation.classList.add('hidden');
+            }
+            
+            // Replace timer content with spread interface
+            if (tabContent) {
+                tabContent.innerHTML = '';
+                const spreadInterface = createSpreadInterface(spreadId);
+                tabContent.appendChild(spreadInterface);
+            }
+        }
+
+        // This function is no longer needed as we're using full screen
+        function createSpreadDrawingArea() {
+            // Deprecated - now using full screen approach
+        }
+
+        // Create spread interface
+        function createSpreadInterface(spreadId) {
+            const spread = spreadDefinitions[spreadId];
+            const container = document.createElement('div');
+            container.className = 'min-h-screen flex flex-col';
+            container.dataset.spreadId = spreadId;
+
+            // Top Header with title and back button
+            const topHeader = document.createElement('div');
+            topHeader.className = 'flex items-center justify-between p-4';
+            topHeader.innerHTML = `
+                <button onclick="backToSpreadSelection()" class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 touch-optimization">
+                    <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                </button>
+                <h1 class="title-large text-gradient-mystical">${spread.name.replace(' 스프레드', '').replace('스프레드', '')}</h1>
+                <div class="w-9"></div>
+            `;
+
+            // Reading title input section
+            const titleSection = document.createElement('div');
+            titleSection.className = 'px-4 pb-4';
+            titleSection.innerHTML = `
+                <input type="text" id="spread-title-input" placeholder="리딩 제목을 입력하세요" 
+                       class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white text-center placeholder-white/50 focus:outline-none focus:border-yellow-400 transition-colors spread-title-input" 
+                       maxlength="50">
+            `;
+
+            // Card drawing area - centered and spacious
+            const cardArea = document.createElement('div');
+            cardArea.className = 'flex-1 flex items-center justify-center p-8';
+            cardArea.innerHTML = createCardLayout(spreadId);
+
+            // Action buttons area
+            const actionArea = document.createElement('div');
+            actionArea.className = 'p-6 border-t border-white/10';
+            actionArea.innerHTML = `
+                <div id="initial-action">
+                    <button onclick="drawSpreadCards('${spreadId}')" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-4 px-8 text-lg hover:from-yellow-500 hover:to-yellow-600 transition-all duration-200 shadow-2xl shadow-yellow-400/20 rounded-xl touch-optimization">
+                        <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                        </svg>
+                        카드 뽑기 시작
+                    </button>
+                </div>
+                <div id="completed-actions" class="hidden flex gap-3">
+                    <button onclick="redrawSpreadCards('${spreadId}')" class="flex-1 bg-white/10 border border-white/20 text-white font-bold py-3 px-6 rounded-xl hover:bg-white/20 transition-all duration-200 touch-optimization">
+                        <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                            <path d="M21 3v5h-5"></path>
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                            <path d="M3 21v-5h5"></path>
+                        </svg>
+                        다시 뽑기
+                    </button>
+                    <button onclick="saveSpreadReading('${spreadId}')" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg touch-optimization">
+                        <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7,10 12,15 17,10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        저장하기
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(topHeader);
+            container.appendChild(titleSection);
+            container.appendChild(cardArea);
+            container.appendChild(actionArea);
+
+            return container;
+        }
+
+        // Create card layout based on spread type
+        function createCardLayout(spreadId) {
+            const spread = spreadDefinitions[spreadId];
+            let layoutHTML = '';
+
+            switch (spread.layout) {
+                case 'single':
+                    layoutHTML = `
+                        <div class="flex justify-center">
+                            <div class="card-slot" data-position="0">
+                                <div class="w-32 h-48 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                    <div class="w-6 h-8 bg-yellow-400/20 rounded-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'horizontal':
+                    layoutHTML = `
+                        <div class="flex justify-center gap-6">
+                            ${spread.positions.map((position, index) => `
+                                <div class="card-slot text-center" data-position="${index}">
+                                    <div class="w-28 h-42 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                        <div class="w-5 h-7 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    break;
+
+                case 'v-shape':
+                    layoutHTML = `
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="flex gap-12">
+                                <div class="card-slot text-center" data-position="0">
+                                    <div class="w-24 h-36 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                        <div class="w-4 h-6 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="4">
+                                    <div class="w-24 h-36 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                        <div class="w-4 h-6 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="card-slot text-center" data-position="1">
+                                    <div class="w-24 h-36 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                        <div class="w-4 h-6 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="3">
+                                    <div class="w-24 h-36 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                        <div class="w-4 h-6 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-slot text-center" data-position="2">
+                                <div class="w-24 h-36 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-xl shadow-lg flex items-center justify-center">
+                                    <div class="w-4 h-6 bg-yellow-400/20 rounded-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'timeline':
+                    layoutHTML = `
+                        <div class="flex justify-center gap-4">
+                            ${spread.positions.map((position, index) => `
+                                <div class="card-slot text-center" data-position="${index}">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    break;
+
+                case 'choice':
+                    layoutHTML = `
+                        <div class="flex justify-center gap-8">
+                            <div class="text-center">
+                                <h3 class="text-yellow-400 font-bold mb-4">선택지 A</h3>
+                                <div class="flex flex-col gap-3">
+                                    ${[0,1,2].map(i => `
+                                        <div class="card-slot" data-position="${i}">
+                                            <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                                <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="card-slot text-center" data-position="3">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-yellow-400 font-bold mb-4">선택지 B</h3>
+                                <div class="flex flex-col gap-3">
+                                    ${[4,5,6].map(i => `
+                                        <div class="card-slot" data-position="${i}">
+                                            <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                                <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'celtic-cross':
+                    layoutHTML = `
+                        <div class="flex justify-center gap-8">
+                            <!-- Main Cross -->
+                            <div class="relative">
+                                <div class="grid grid-cols-3 grid-rows-3 gap-2 w-48 h-48">
+                                    <div></div>
+                                    <div class="card-slot text-center" data-position="2">
+                                        <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                            <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                    <div></div>
+                                    
+                                    <div class="card-slot text-center" data-position="3">
+                                        <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                            <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                    <div class="card-slot text-center relative" data-position="0">
+                                        <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                            <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                        </div>
+                                        <!-- Cross card overlay -->
+                                        <div class="absolute inset-0 transform rotate-90 card-slot" data-position="1">
+                                            <div class="w-14 h-20 bg-gradient-to-br from-red-500/5 to-red-500/10 border-2 border-dashed border-red-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                                <div class="w-3 h-4 bg-red-400/20 rounded-sm"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-slot text-center" data-position="5">
+                                        <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                            <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div></div>
+                                    <div class="card-slot text-center" data-position="4">
+                                        <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                            <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                    <div></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right column -->
+                            <div class="flex flex-col gap-3">
+                                <div class="card-slot text-center" data-position="6">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="7">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="8">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="9">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'cup-shape':
+                    layoutHTML = `
+                        <div class="flex flex-col items-center gap-4">
+                            <!-- Top row -->
+                            <div class="flex gap-3">
+                                <div class="card-slot text-center" data-position="0">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="1">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="2">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Middle rows -->
+                            <div class="flex gap-6 items-center">
+                                <div class="card-slot text-center" data-position="3">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="4">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="5">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-6">
+                                <div class="card-slot text-center" data-position="6">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="7">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Bottom rows -->
+                            <div class="flex gap-3">
+                                <div class="card-slot text-center" data-position="8">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                                <div class="card-slot text-center" data-position="9">
+                                    <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                        <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Final outcome -->
+                            <div class="card-slot text-center" data-position="10">
+                                <div class="w-14 h-20 bg-gradient-to-br from-white/5 to-white/10 border-2 border-dashed border-yellow-400/30 rounded-lg shadow-lg flex items-center justify-center">
+                                    <div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                default:
+                    layoutHTML = `
+                        <div class="grid grid-cols-3 gap-4 max-w-md mx-auto">
+                            ${spread.positions.map((position, index) => `
+                                <div class="card-slot text-center" data-position="${index}">
+                                    <div class="w-20 h-30 bg-yellow-400/20 border-2 border-dashed border-yellow-400/50 rounded-lg flex items-center justify-center mb-1">
+                                        <span class="text-yellow-400 text-xs font-medium">${position}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    break;
+            }
+
+            return layoutHTML;
+        }
+
+        // Draw spread cards
+        function drawSpreadCards(spreadId) {
+            const spread = spreadDefinitions[spreadId];
+            currentSpreadCards = [];
+
+            // Fisher-Yates shuffle for random card selection
+            const shuffledCards = [...allTarotCards];
+            for (let i = shuffledCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledCards[i], shuffledCards[j]] = [shuffledCards[j], shuffledCards[i]];
+            }
+
+            // Select required number of cards
+            for (let i = 0; i < spread.cardCount; i++) {
+                currentSpreadCards.push(shuffledCards[i]);
+            }
+
+            // Show cards with animation
+            animateCardDraw(spread);
+        }
+
+        // Animate card drawing
+        function animateCardDraw(spread) {
+            const cardSlots = document.querySelectorAll('.card-slot');
+            let delay = 0;
+
+            cardSlots.forEach((slot, index) => {
+                setTimeout(() => {
+                    const card = currentSpreadCards[index];
+                    const cardElement = slot.querySelector('div');
+                    
+                    // Add faster flip animation
+                    cardElement.style.transition = 'transform 0.2s ease-in-out';
+                    cardElement.style.transform = 'rotateY(90deg)';
+                    
+                    setTimeout(() => {
+                        // Replace with actual card (no card name displayed)
+                        cardElement.innerHTML = `
+                            <img src="${card.image}" alt="${card.name}" 
+                                 class="w-full h-full object-cover rounded-xl" 
+                                 onerror="this.src='assets/tarot-cards/classic-tarot/card-back.jpg'">
+                        `;
+                        cardElement.style.position = 'relative';
+                        cardElement.style.transform = 'rotateY(0deg)';
+                    }, 100);
+                }, delay);
+                
+                delay += 150; // Faster stagger animation
+            });
+
+            // Show completion message after all cards are drawn
+            setTimeout(() => {
+                showSpreadCompletion();
+            }, delay + 300);
+        }
+
+        // Show spread completion
+        function showSpreadCompletion() {
+            const drawButton = document.querySelector('button[onclick^="drawSpreadCards"]');
+            if (drawButton) {
+                drawButton.innerHTML = `
+                    <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                    리딩 완료
+                `;
+                drawButton.classList.remove('from-yellow-400', 'to-yellow-500', 'hover:from-yellow-500', 'hover:to-yellow-600');
+                drawButton.classList.add('bg-green-500', 'hover:bg-green-600');
+                drawButton.onclick = null; // Disable further clicks
+            }
+
+            console.log(`🎴 ${currentSpread.name} 리딩 완료!`);
+        }
+
+        // Redraw spread cards with new random selection
+        function redrawSpreadCards() {
+            if (!currentSpread) return;
+            
+            console.log('🔄 카드를 다시 뽑고 있습니다...');
+            
+            // Clear current cards and reset to transparent placeholders
+            clearCurrentCards();
+            
+            // Generate new random cards
+            const newCards = generateRandomCards(currentSpread.cardCount);
+            currentSpreadCards = newCards;
+            
+            // Animate new cards being drawn
+            animateCardDraw(currentSpread);
+            
+            // Update spread title input placeholder if exists and empty
+            const titleInput = document.querySelector('.spread-title-input');
+            if (titleInput && !titleInput.value.trim()) {
+                titleInput.placeholder = `새로운 ${currentSpread.name}`;
+            }
+        }
+        
+        // Save current spread reading to diary
+        function saveSpreadReading() {
+            if (!currentSpread || !currentSpreadCards.length) {
+                alert('저장할 스프레드 데이터가 없습니다.');
+                return;
+            }
+            
+            const titleInput = document.querySelector('.spread-title-input');
+            const spreadTitle = titleInput ? titleInput.value.trim() : '';
+            
+            if (!spreadTitle) {
+                alert('스프레드 제목을 입력해주세요.');
+                titleInput?.focus();
+                return;
+            }
+            
+            // Get current cards with positions
+            const cards = currentSpreadCards.map((card, index) => ({
+                position: currentSpread.positions[index],
+                cardName: card.name,
+                cardImage: card.image,
+                keywords: card.keywords?.join(', ') || '',
+                meaning: card.meaning || ''
+            }));
+            
+            // Create spread record
+            const spreadRecord = {
+                id: Date.now().toString(),
+                title: spreadTitle,
+                spreadType: currentSpread.name,
+                spreadId: currentSpread.id,
+                date: new Date().toISOString(),
+                dateFormatted: new Date().toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long'
+                }),
+                cards: cards,
+                positions: currentSpread.positions,
+                layout: currentSpread.layout,
+                cardCount: currentSpread.cardCount
+            };
+            
+            // Save to localStorage
+            const existingRecords = JSON.parse(localStorage.getItem('spreadRecords') || '[]');
+            existingRecords.unshift(spreadRecord);
+            localStorage.setItem('spreadRecords', JSON.stringify(existingRecords));
+            
+            console.log('💾 스프레드가 저장되었습니다:', spreadRecord);
+            
+            // Show success message and return to spread selection
+            alert('✨ 스프레드가 성공적으로 저장되었습니다!');
+            
+            // Refresh spread records list
+            refreshSpreadRecordsList();
+            
+            backToSpreadSelection();
+        }
+        
+        // Helper functions for redraw and save
+        function clearCurrentCards() {
+            const cardSlots = document.querySelectorAll('.card-slot');
+            cardSlots.forEach(slot => {
+                // Reset to transparent card placeholder
+                const placeholder = slot.querySelector('div');
+                if (placeholder) {
+                    placeholder.innerHTML = `<div class="w-3 h-4 bg-yellow-400/20 rounded-sm"></div>`;
+                    placeholder.style.background = 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1))';
+                    placeholder.style.border = '2px dashed rgba(250, 204, 21, 0.3)';
+                    placeholder.style.transform = 'none';
+                    placeholder.style.transition = '';
+                }
+            });
+        }
+        
+        function generateRandomCards(count) {
+            // Use Fisher-Yates shuffle to get random cards
+            const allCards = [...tarotCards];
+            for (let i = allCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allCards[i], allCards[j]] = [allCards[j], allCards[i]];
+            }
+            return allCards.slice(0, count);
+        }
+
+        // Back to spread selection
+        function backToSpreadSelection() {
+            // Show tab navigation again
+            const tabNavigation = document.querySelector('.tab-navigation');
+            if (tabNavigation) {
+                tabNavigation.classList.remove('hidden');
+            }
+
+            // Reset states
+            currentSpread = null;
+            currentSpreadCards = [];
+
+            // Go back to spreads tab
+            showTab('spreads');
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateTime();
@@ -1248,7 +2041,11 @@
             
             // Load diary list on page load
             refreshDiaryList();
-            console.log('📖 페이지 로드 완료, 일기 리스트 초기화됨');
+            
+            // Load spread records list on page load
+            refreshSpreadRecordsList();
+            
+            console.log('📖 페이지 로드 완료, 일기 리스트 및 스프레드 기록 초기화됨');
         });
 
         // Draw daily cards functionality
@@ -1856,6 +2653,339 @@
             return div;
         }
         
+        // Refresh spread records list with latest data
+        function refreshSpreadRecordsList() {
+            const spreadRecords = JSON.parse(localStorage.getItem('spreadRecords') || '[]');
+            const recordsList = document.getElementById('spread-records-list');
+            const spreadCount = document.getElementById('spread-count');
+            
+            if (!recordsList) {
+                console.log('📋 스프레드 기록 리스트 요소를 찾을 수 없습니다');
+                return;
+            }
+            
+            // Update count
+            if (spreadCount) {
+                spreadCount.textContent = `${spreadRecords.length}개 기록`;
+            }
+            
+            // Clear existing list
+            recordsList.innerHTML = '';
+            
+            if (spreadRecords.length === 0) {
+                recordsList.innerHTML = `
+                    <div class="text-center py-8 text-white/60">
+                        <svg class="h-12 w-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                        </svg>
+                        <p class="body-medium mb-2">저장된 스프레드가 없습니다</p>
+                        <p class="body-small">스프레드 리딩을 완료하고 저장해보세요</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort by date (newest first)
+            const sortedRecords = spreadRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Add each spread record
+            sortedRecords.forEach(record => {
+                const recordElement = createSpreadRecordElement(record);
+                recordsList.appendChild(recordElement);
+            });
+            
+            console.log('📜 스프레드 기록 리스트 업데이트됨:', spreadRecords.length);
+        }
+        
+        // Create spread record element
+        function createSpreadRecordElement(record) {
+            const div = document.createElement('div');
+            div.className = 'bg-white/5 border border-white/10 touch-card rounded-2xl p-5 space-y-4';
+            
+            div.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="space-y-2 flex-1">
+                        <div class="flex items-center gap-2">
+                            <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                            </svg>
+                            <span class="body-medium text-white group-hover:text-yellow-400 transition-colors">${record.title}</span>
+                        </div>
+                        <div class="flex items-center gap-2 body-small">
+                            <svg class="h-3 w-3 text-yellow-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span class="text-white/70">${record.dateFormatted}</span>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-green-500/20 text-green-400 border border-green-500/30">저장됨</span>
+                </div>
+
+                <!-- Spread Badge -->
+                <div class="flex items-center justify-center">
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">${record.spreadType}</span>
+                </div>
+                
+                <!-- Cards Preview (first 3 cards) -->
+                <div class="flex justify-center gap-2">
+                    ${record.cards.slice(0, 3).map(card => `
+                        <div class="w-8 h-12 rounded overflow-hidden border border-yellow-400/30 shadow-lg">
+                            <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                        </div>
+                    `).join('')}
+                    ${record.cards.length > 3 ? `
+                        <div class="w-8 h-12 rounded bg-white/10 border border-white/20 flex items-center justify-center">
+                            <span class="text-xs text-white/60">+${record.cards.length - 3}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <!-- Action Button -->
+                <div class="pt-2">
+                    <button onclick="viewSpreadRecord('${record.id}')" class="w-full px-4 py-2 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 group-hover:border-yellow-400/50 touch-optimization">
+                        <svg class="h-3 w-3 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                        </svg>
+                        보기
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // View spread record popup
+        function viewSpreadRecord(recordId) {
+            console.log('🎴 Opening spread record:', recordId);
+            
+            // Load spread records from localStorage
+            const spreadRecords = JSON.parse(localStorage.getItem('spreadRecords') || '[]');
+            const record = spreadRecords.find(r => r.id === recordId);
+            
+            if (!record) {
+                alert('해당 스프레드 기록을 찾을 수 없습니다.');
+                return;
+            }
+            
+            // Show popup
+            document.getElementById('spread-popup').classList.remove('hidden');
+            document.getElementById('spread-popup').classList.add('flex');
+            
+            // Update popup content
+            document.getElementById('spread-popup-title').textContent = record.title;
+            document.getElementById('spread-popup-type').textContent = record.spreadType;
+            document.getElementById('spread-popup-date').textContent = record.dateFormatted;
+            
+            // Render spread layout and cards
+            renderSpreadPopupLayout(record);
+            renderSpreadPopupCards(record);
+            
+            console.log('📜 스프레드 기록 팝업 열기 완료:', record.title);
+        }
+        
+        // Close spread record popup
+        function closeSpreadPopup() {
+            document.getElementById('spread-popup').classList.add('hidden');
+            document.getElementById('spread-popup').classList.remove('flex');
+            console.log('🎴 스프레드 기록 팝업 닫기');
+        }
+        
+        // Render spread layout in popup
+        function renderSpreadPopupLayout(record) {
+            const layoutContainer = document.getElementById('spread-popup-layout');
+            if (!layoutContainer) return;
+            
+            let layoutHTML = '';
+            
+            switch (record.layout) {
+                case 'single':
+                    layoutHTML = `
+                        <div class="flex justify-center">
+                            <div class="w-16 h-24 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                <img src="${record.cards[0].cardImage}" alt="${record.cards[0].cardName}" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'horizontal':
+                    layoutHTML = `
+                        <div class="flex justify-center gap-2">
+                            ${record.cards.map(card => `
+                                <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                    <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'v-shape':
+                    layoutHTML = `
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="flex justify-center gap-4">
+                                <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                    <img src="${record.cards[0].cardImage}" alt="${record.cards[0].cardName}" class="w-full h-full object-cover">
+                                </div>
+                                <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                    <img src="${record.cards[1].cardImage}" alt="${record.cards[1].cardName}" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                            <div class="flex justify-center gap-2">
+                                ${record.cards.slice(2).map(card => `
+                                    <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'timeline':
+                    layoutHTML = `
+                        <div class="grid grid-cols-2 gap-2">
+                            ${record.cards.map(card => `
+                                <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                    <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'choice':
+                    layoutHTML = `
+                        <div class="flex justify-center items-center gap-4">
+                            <!-- Choice A -->
+                            <div class="flex flex-col items-center gap-1">
+                                ${record.cards.slice(0, 3).map(card => `
+                                    <div class="w-10 h-15 rounded overflow-hidden shadow-lg border border-yellow-400/30">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <!-- Center -->
+                            <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                <img src="${record.cards[3].cardImage}" alt="${record.cards[3].cardName}" class="w-full h-full object-cover">
+                            </div>
+                            <!-- Choice B -->
+                            <div class="flex flex-col items-center gap-1">
+                                ${record.cards.slice(4).map(card => `
+                                    <div class="w-10 h-15 rounded overflow-hidden shadow-lg border border-yellow-400/30">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'celtic-cross':
+                    layoutHTML = `
+                        <div class="relative grid grid-cols-4 grid-rows-4 gap-1 w-48 h-48">
+                            ${record.cards.map((card, index) => {
+                                const positions = [
+                                    'col-start-2 row-start-2',
+                                    'col-start-2 row-start-2',
+                                    'col-start-2 row-start-1',
+                                    'col-start-2 row-start-3',
+                                    'col-start-3 row-start-2',
+                                    'col-start-1 row-start-2',
+                                    'col-start-4 row-start-4',
+                                    'col-start-4 row-start-3',
+                                    'col-start-4 row-start-2',
+                                    'col-start-4 row-start-1'
+                                ];
+                                return `
+                                    <div class="w-8 h-12 rounded overflow-hidden shadow-lg border border-yellow-400/30 ${positions[index]}">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    break;
+                    
+                case 'cup-shape':
+                    layoutHTML = `
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="flex justify-center gap-2">
+                                ${record.cards.slice(0, 3).map(card => `
+                                    <div class="w-10 h-15 rounded overflow-hidden shadow-lg border border-yellow-400/30">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="flex justify-center gap-1">
+                                ${record.cards.slice(3, 5).map(card => `
+                                    <div class="w-10 h-15 rounded overflow-hidden shadow-lg border border-yellow-400/30">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                ${record.cards.slice(5).map(card => `
+                                    <div class="w-10 h-15 rounded overflow-hidden shadow-lg border border-yellow-400/30 mx-auto">
+                                        <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    layoutHTML = `
+                        <div class="flex flex-wrap justify-center gap-2">
+                            ${record.cards.map(card => `
+                                <div class="w-12 h-18 rounded-lg overflow-hidden shadow-lg border border-yellow-400/30">
+                                    <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+            }
+            
+            layoutContainer.innerHTML = layoutHTML;
+        }
+        
+        // Render spread cards details in popup
+        function renderSpreadPopupCards(record) {
+            const cardsContainer = document.getElementById('spread-popup-cards');
+            if (!cardsContainer) return;
+            
+            const cardsHTML = record.cards.map((card, index) => `
+                <div class="bg-white/5 border border-white/10 rounded-lg p-3 space-y-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-9 rounded overflow-hidden border border-yellow-400/30 shadow-sm">
+                            <img src="${card.cardImage}" alt="${card.cardName}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1">
+                            <div class="body-small font-medium text-yellow-400">${card.position}</div>
+                            <div class="caption text-white/80">${card.cardName}</div>
+                        </div>
+                    </div>
+                    ${card.keywords ? `
+                        <div class="caption text-white/60">
+                            ${card.keywords}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            cardsContainer.innerHTML = cardsHTML;
+        }
+        
         // View daily diary popup
         function viewDailyDiary(date) {
             console.log('📖 Opening diary for:', date);
@@ -2162,6 +3292,81 @@
                 </div>
                 <button 
                     onclick="closeDiaryPopup()" 
+                    class="w-full py-3 px-4 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-all touch-optimization">
+                    닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spread Record Popup Modal (Mobile Optimized) -->
+    <div id="spread-popup" class="fixed inset-0 bg-black/80 backdrop-blur-mystical z-50 hidden items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-slate-900 to-slate-800 rounded-2xl border border-yellow-400/30 max-w-md w-full max-h-[90vh] flex flex-col animate-mystical-glow">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                    </svg>
+                    <h2 id="spread-popup-title" class="title-medium text-white">스프레드 기록</h2>
+                </div>
+                <button onclick="closeSpreadPopup()" class="text-white/60 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 touch-optimization">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Spread Info Section -->
+            <div class="p-4 border-b border-white/10">
+                <div class="space-y-3">
+                    <!-- Spread Type Badge -->
+                    <div class="flex justify-center">
+                        <span id="spread-popup-type" class="inline-flex items-center rounded-full px-4 py-2 text-sm bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">
+                            3카드 스프레드
+                        </span>
+                    </div>
+                    
+                    <!-- Date -->
+                    <div class="flex items-center justify-center gap-2">
+                        <svg class="h-4 w-4 text-yellow-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span id="spread-popup-date" class="body-small text-white/70">2025년 1월 4일 금요일</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spread Cards Display -->
+            <div class="flex-1 p-4 overflow-y-auto custom-scrollbar">
+                <div class="space-y-4">
+                    <!-- Cards Layout Container -->
+                    <div id="spread-popup-layout" class="flex justify-center items-center min-h-[200px]">
+                        <!-- Dynamic layout will be inserted here -->
+                    </div>
+                    
+                    <!-- Card Details -->
+                    <div id="spread-popup-cards" class="space-y-3">
+                        <!-- Dynamic card details will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-4 border-t border-white/10 space-y-3">
+                <div class="flex items-center justify-center gap-2 text-white/60">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="caption text-center">저장된 스프레드 기록입니다</span>
+                </div>
+                <button 
+                    onclick="closeSpreadPopup()" 
                     class="w-full py-3 px-4 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-all touch-optimization">
                     닫기
                 </button>
