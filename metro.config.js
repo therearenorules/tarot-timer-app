@@ -44,10 +44,6 @@ config.resolver = {
     '@store': path.resolve(__dirname, 'src/store'),
     '@types': path.resolve(__dirname, 'src/types'),
     '@utils': path.resolve(__dirname, 'src/utils'),
-    // Winter 모듈 해결을 위한 더미 alias
-    './winter': path.resolve(__dirname, 'src/lib/dummyWinter.js'),
-    '../winter': path.resolve(__dirname, 'src/lib/dummyWinter.js'),
-    'expo/src/winter': path.resolve(__dirname, 'src/lib/dummyWinter.js'),
     // RSC 모듈 해결을 위한 더미 alias
     '@expo/metro-runtime/rsc/runtime': path.resolve(__dirname, 'src/lib/dummyRsc.js'),
     '@expo/metro-runtime/src/index.ts': path.resolve(__dirname, 'src/lib/metroRuntime.js'),
@@ -113,11 +109,6 @@ config.serializer = {
   },
   // Filter modules in production for smaller bundles
   processModuleFilter: (module) => {
-    // Winter 모듈 관련 필터링 추가
-    if (module.path.includes('/winter') && !module.path.includes('/winter.js')) {
-      return false;
-    }
-    
     if (process.env.NODE_ENV === 'production') {
       return !/(test|spec|__tests__|\.test\.|\.spec\.)/.test(module.path);
     }
@@ -126,7 +117,7 @@ config.serializer = {
 };
 
 // Enhanced cache settings for faster rebuilds
-config.cacheVersion = '2.2.0'; // Incremented for web compatibility fix
+config.cacheVersion = '2.6.0'; // Incremented for winter module direct file implementation
 config.resetCache = false;
 
 // Development-specific optimizations

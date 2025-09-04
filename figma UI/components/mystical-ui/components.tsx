@@ -1,269 +1,426 @@
-import React, { ReactNode, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
+import * as Icons from './icons';
+import { cn } from '../../utils/cn';
 
-// ==========================================
-// BASIC UI COMPONENTS
-// ==========================================
+// Mystical UI Components with Golden Theme
 
-interface CardProps {
-  className?: string;
-  children: ReactNode;
+// Mystical Button Component
+interface MysticalButtonProps {
+  children: React.ReactNode;
   onClick?: () => void;
-}
-
-export function Card({ className = "", children, onClick }: CardProps) {
-  return (
-    <div 
-      className={`bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl ${className}`}
-      onClick={onClick}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function CardContent({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <div className={`p-6 ${className}`}>{children}</div>;
-}
-
-export function CardHeader({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <div className={`p-6 pb-0 ${className}`}>{children}</div>;
-}
-
-export function CardTitle({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <h3 className={`text-xl font-bold text-white ${className}`}>{children}</h3>;
-}
-
-interface ButtonProps {
-  className?: string;
-  children: ReactNode;
-  onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
-  variant?: 'default' | 'outline';
-  size?: 'default' | 'sm';
+  className?: string;
 }
 
-export function Button({ className = "", children, onClick, disabled = false, variant = 'default', size = 'default' }: ButtonProps) {
-  const baseClasses = "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2";
+export const MysticalButton: React.FC<MysticalButtonProps> = ({
+  children,
+  onClick,
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  className
+}) => {
+  const baseStyles = "relative font-medium transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50";
   
-  const variantClasses = {
-    default: "bg-gradient-to-r from-yellow-400 to-yellow-600 text-black hover:from-yellow-500 hover:to-yellow-700 shadow-lg",
-    outline: "border border-white/30 text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm"
+  const variantStyles = {
+    primary: "bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-gray-900 shadow-lg hover:shadow-xl transform hover:scale-105",
+    secondary: "bg-gray-800 hover:bg-gray-700 text-yellow-400 border border-yellow-400/30 hover:border-yellow-400/60",
+    ghost: "text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10"
   };
   
-  const sizeClasses = {
-    default: "px-6 py-3 text-base",
-    sm: "px-4 py-2 text-sm"
+  const sizeStyles = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base", 
+    lg: "px-6 py-3 text-lg"
   };
   
   return (
     <button
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={cn(
+        baseStyles,
+        variantStyles[variant],
+        sizeStyles[size],
+        disabled && "opacity-50 cursor-not-allowed",
+        className
+      )}
       onClick={onClick}
       disabled={disabled}
     >
-      {children}
+      <span className="relative z-10">{children}</span>
+      {variant === 'primary' && (
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg blur-sm opacity-75 animate-mystical-pulse -z-10"></div>
+      )}
     </button>
   );
-}
+};
 
-interface BadgeProps {
+// Mystical Card Component
+interface MysticalCardProps {
+  children: React.ReactNode;
   className?: string;
-  children: ReactNode;
-  variant?: 'default' | 'outline';
+  hover?: boolean;
+  glowing?: boolean;
 }
 
-export function Badge({ className = "", children, variant = 'default' }: BadgeProps) {
-  const baseClasses = "inline-flex items-center px-2 py-1 rounded-md text-xs font-medium";
+export const MysticalCard: React.FC<MysticalCardProps> = ({
+  children,
+  className,
+  hover = false,
+  glowing = false
+}) => {
+  return (
+    <div className={cn(
+      "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900",
+      "border border-yellow-400/20 rounded-xl p-6",
+      "shadow-2xl backdrop-blur-sm",
+      hover && "hover:border-yellow-400/40 hover:shadow-yellow-400/20 hover:shadow-2xl transition-all duration-500 hover:scale-105",
+      glowing && "shadow-yellow-400/30 border-yellow-400/40 animate-mystical-glow",
+      className
+    )}>
+      {children}
+    </div>
+  );
+};
+
+// Icon Button Component
+interface IconButtonProps {
+  icon: keyof typeof Icons;
+  onClick?: () => void;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'ghost';
+  className?: string;
+  tooltip?: string;
+}
+
+export const IconButton: React.FC<IconButtonProps> = ({
+  icon,
+  onClick,
+  size = 'md',
+  variant = 'ghost',
+  className,
+  tooltip
+}) => {
+  const IconComponent = Icons[icon];
   
-  const variantClasses = {
-    default: "bg-yellow-400 text-black",
-    outline: "border border-yellow-400/40 text-yellow-400 bg-yellow-400/10"
+  const sizeMap = {
+    sm: { button: 'w-8 h-8', icon: 'w-4 h-4' },
+    md: { button: 'w-10 h-10', icon: 'w-5 h-5' },
+    lg: { button: 'w-12 h-12', icon: 'w-6 h-6' }
+  };
+  
+  const variantStyles = {
+    primary: "bg-yellow-400 hover:bg-yellow-500 text-gray-900",
+    secondary: "bg-gray-800 hover:bg-gray-700 text-yellow-400 border border-yellow-400/30",
+    ghost: "text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10"
   };
   
   return (
-    <span className={`${baseClasses} ${variantClasses[variant]} ${className}`}>
-      {children}
-    </span>
-  );
-}
-
-interface TextareaProps {
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  className?: string;
-}
-
-export function Textarea({ placeholder, value, onChange, className = "" }: TextareaProps) {
-  return (
-    <textarea
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className={`w-full p-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder:text-white/50 resize-none focus:border-yellow-400/50 focus:ring-2 focus:ring-yellow-400/20 focus:outline-none transition-all duration-300 ${className}`}
-    />
-  );
-}
-
-interface InputProps {
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string;
-  autoFocus?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-}
-
-export function Input({ placeholder, value, onChange, className = "", autoFocus, onKeyDown }: InputProps) {
-  return (
-    <input
-      type="text"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      autoFocus={autoFocus}
-      className={`w-full p-3 rounded-lg bg-white/5 border border-white/20 text-white placeholder:text-white/50 focus:border-yellow-400/50 focus:ring-2 focus:ring-yellow-400/20 focus:outline-none transition-all duration-300 ${className}`}
-    />
-  );
-}
-
-interface SwitchProps {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  className?: string;
-}
-
-export function Switch({ checked, onCheckedChange, className = "" }: SwitchProps) {
-  return (
     <button
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onCheckedChange(!checked)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 ${
-        checked ? 'bg-yellow-400' : 'bg-white/20'
-      } ${className}`}
+      className={cn(
+        "rounded-lg transition-all duration-300 flex items-center justify-center",
+        "focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50",
+        sizeMap[size].button,
+        variantStyles[variant],
+        className
+      )}
+      onClick={onClick}
+      title={tooltip}
     >
-      <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
-          checked ? 'translate-x-6' : 'translate-x-1'
-        }`}
-      />
+      <IconComponent className={cn("text-current", sizeMap[size].icon)} />
     </button>
   );
-}
+};
 
-// ==========================================
-// TABS COMPONENTS
-// ==========================================
-
-interface TabsProps {
-  value: string;
-  onValueChange: (value: string) => void;
+// Mystical Progress Component
+interface MysticalProgressProps {
+  value: number;
+  max: number;
   className?: string;
-  children: ReactNode;
+  showText?: boolean;
 }
 
-export function Tabs({ value, onValueChange, className = "", children }: TabsProps) {
+export const MysticalProgress: React.FC<MysticalProgressProps> = ({
+  value,
+  max,
+  className,
+  showText = true
+}) => {
+  const percentage = Math.min((value / max) * 100, 100);
+  
   return (
-    <div className={className} data-tabs-value={value}>
-      {React.Children.map(children, child => 
-        React.isValidElement(child) 
-          ? React.cloneElement(child as React.ReactElement<any>, { value, onValueChange })
-          : child
+    <div className={cn("relative", className)}>
+      <div className="w-full bg-gray-800 rounded-full h-3 shadow-inner border border-gray-700">
+        <div 
+          className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-1000 ease-out shadow-lg"
+          style={{ width: `${percentage}%` }}
+        >
+          <div className="h-full bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full animate-mystical-shimmer"></div>
+        </div>
+      </div>
+      {showText && (
+        <div className="text-center mt-2 text-sm text-yellow-400 font-medium">
+          {value} / {max}
+        </div>
       )}
     </div>
   );
-}
+};
 
-interface TabsListProps {
-  className?: string;
-  children: ReactNode;
+// Mystical Input Component
+interface MysticalInputProps {
+  type?: 'text' | 'password' | 'email';
+  placeholder?: string;
   value?: string;
-  onValueChange?: (value: string) => void;
+  onChange?: (value: string) => void;
+  className?: string;
+  icon?: keyof typeof Icons;
 }
 
-export function TabsList({ className = "", children, value, onValueChange }: TabsListProps) {
+export const MysticalInput: React.FC<MysticalInputProps> = ({
+  type = 'text',
+  placeholder,
+  value,
+  onChange,
+  className,
+  icon
+}) => {
+  const IconComponent = icon ? Icons[icon] : null;
+  
   return (
-    <div className={className}>
-      {React.Children.map(children, child => 
-        React.isValidElement(child) 
-          ? React.cloneElement(child as React.ReactElement<any>, { 
-              activeValue: value, 
-              onValueChange,
-              isActive: (child.props as any).value === value
-            })
-          : child
+    <div className={cn("relative", className)}>
+      {IconComponent && (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-yellow-400">
+          <IconComponent className="w-5 h-5" />
+        </div>
       )}
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+        className={cn(
+          "w-full bg-gray-800/50 border border-yellow-400/20 rounded-lg px-4 py-3 text-white placeholder-gray-400",
+          "focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 focus:border-yellow-400/40",
+          "transition-all duration-300",
+          icon && "pl-11"
+        )}
+      />
     </div>
   );
-}
+};
 
-interface TabsTriggerProps {
-  value: string;
+// Mystical Modal Component
+interface MysticalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: React.ReactNode;
   className?: string;
-  children: ReactNode;
-  activeValue?: string;
-  onValueChange?: (value: string) => void;
-  isActive?: boolean;
 }
 
-export function TabsTrigger({ value, className = "", children, activeValue, onValueChange, isActive }: TabsTriggerProps) {
-  const handleClick = () => {
-    if (onValueChange) {
-      onValueChange(value);
-    }
-  };
-
+export const MysticalModal: React.FC<MysticalModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  className
+}) => {
+  if (!isOpen) return null;
+  
   return (
-    <button
-      onClick={handleClick}
-      className={className}
-      data-state={isActive ? 'active' : 'inactive'}
-    >
-      {children}
-    </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div className={cn(
+        "relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900",
+        "border border-yellow-400/30 rounded-2xl shadow-2xl",
+        "max-w-lg w-full mx-4 max-h-[90vh] overflow-auto",
+        "transform transition-all duration-300",
+        className
+      )}>
+        {/* Header */}
+        {title && (
+          <div className="flex items-center justify-between p-6 border-b border-yellow-400/20">
+            <h3 className="text-xl font-bold text-yellow-400">{title}</h3>
+            <IconButton
+              icon="X"
+              onClick={onClose}
+              size="sm"
+              variant="ghost"
+            />
+          </div>
+        )}
+        
+        {/* Content */}
+        <div className="p-6">
+          {children}
+        </div>
+      </div>
+    </div>
   );
-}
+};
 
-interface TabsContentProps {
-  value: string;
+// Mystical Switch Component
+interface MysticalSwitchProps {
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
   className?: string;
-  children: ReactNode;
+  label?: string;
 }
 
-export function TabsContent({ value, className = "", children }: TabsContentProps) {
-  // Always render content - the parent will handle conditional display
-  return <div className={className}>{children}</div>;
+export const MysticalSwitch: React.FC<MysticalSwitchProps> = ({
+  checked,
+  onCheckedChange,
+  className,
+  label
+}) => {
+  return (
+    <label className={cn("relative inline-flex items-center cursor-pointer", className)}>
+      <input
+        type="checkbox"
+        className="sr-only"
+        checked={checked}
+        onChange={(e) => onCheckedChange?.(e.target.checked)}
+      />
+      <div
+        className={cn(
+          "relative w-11 h-6 rounded-full transition-all duration-300 ease-in-out",
+          checked ? "bg-gradient-to-r from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-400/30" : "bg-gray-600"
+        )}
+      >
+        <div
+          className={cn(
+            "absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-all duration-300 ease-in-out shadow-sm",
+            checked ? "transform translate-x-5" : ""
+          )}
+        />
+      </div>
+      {label && (
+        <span className="ml-3 text-white">{label}</span>
+      )}
+    </label>
+  );
+};
+
+// ImageWithFallback 컴포넌트
+interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  fallback?: string;
 }
 
-// ==========================================
-// IMAGE COMPONENT
-// ==========================================
-
-interface ImageWithFallbackProps {
-  src: string;
-  alt: string;
-  className?: string;
-}
-
-export function ImageWithFallback({ src, alt, className = "" }: ImageWithFallbackProps) {
+export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
+  src,
+  alt,
+  className,
+  fallback = "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
+  ...props
+}) => {
   const [imgSrc, setImgSrc] = useState(src);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
+  const handleLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+  };
+
   const handleError = () => {
-    if (!hasError) {
-      setImgSrc('https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=500&fit=crop');
-      setHasError(true);
+    setIsLoading(false);
+    setHasError(true);
+    if (imgSrc !== fallback) {
+      setImgSrc(fallback);
     }
   };
 
   return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      className={className}
-      onError={handleError}
-    />
+    <div className={cn("relative overflow-hidden", className)}>
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+      <img
+        src={imgSrc}
+        alt={alt}
+        className={cn(
+          "w-full h-full object-cover transition-opacity duration-300",
+          isLoading ? "opacity-0" : "opacity-100",
+          className
+        )}
+        onLoad={handleLoad}
+        onError={handleError}
+        {...props}
+      />
+      {hasError && imgSrc === fallback && (
+        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
+          <div className="text-white text-center">
+            <div className="w-12 h-12 mx-auto mb-2 opacity-50">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-xs opacity-75">이미지 로드 실패</p>
+          </div>
+        </div>
+      )}
+    </div>
   );
+};
+
+// Mystical Tooltip Component
+interface MysticalTooltipProps {
+  content: string;
+  children: React.ReactNode;
+  position?: 'top' | 'bottom' | 'left' | 'right';
 }
+
+export const MysticalTooltip: React.FC<MysticalTooltipProps> = ({
+  content,
+  children,
+  position = 'top'
+}) => {
+  const [isVisible, setIsVisible] = React.useState(false);
+  
+  const positionStyles = {
+    top: "bottom-full left-1/2 transform -translate-x-1/2 mb-2",
+    bottom: "top-full left-1/2 transform -translate-x-1/2 mt-2", 
+    left: "right-full top-1/2 transform -translate-y-1/2 mr-2",
+    right: "left-full top-1/2 transform -translate-y-1/2 ml-2"
+  };
+  
+  return (
+    <div 
+      className="relative inline-block"
+      onMouseEnter={() => setIsVisible(true)}
+      onMouseLeave={() => setIsVisible(false)}
+    >
+      {children}
+      {isVisible && (
+        <div className={cn(
+          "absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 border border-yellow-400/20 rounded shadow-lg whitespace-nowrap",
+          positionStyles[position]
+        )}>
+          {content}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default {
+  MysticalButton,
+  MysticalCard,
+  IconButton,
+  MysticalProgress,
+  MysticalInput,
+  MysticalModal,
+  MysticalSwitch,
+  MysticalTooltip,
+  ImageWithFallback
+};

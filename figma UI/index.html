@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>타로 타이머 - 신비로운 24시간 카드 리딩</title>
+  <meta name="description" content="신비로운 타로 타이머로 24시간 동안 당신의 운명을 확인해보세요. 다양한 타로 스프레드와 일일 리딩으로 영적 여정을 기록하세요.">
+  <meta name="keywords" content="타로, 타로카드, 24시간타로, 타로리딩, 타로스프레드, 점술, 신비술">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="/">
+  <meta property="og:title" content="타로 타이머 - 신비로운 24시간 카드 리딩">
+  <meta property="og:description" content="신비로운 타로 타이머로 24시간 동안 당신의 운명을 확인해보세요.">
+  <meta property="og:image" content="/assets/app-logo-main.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="/">
+  <meta property="twitter:title" content="타로 타이머 - 신비로운 24시간 카드 리딩">
+  <meta property="twitter:description" content="신비로운 타로 타이머로 24시간 동안 당신의 운명을 확인해보세요.">
+  <meta property="twitter:image" content="/assets/app-logo-main.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  
+  <!-- Preload critical fonts and resources -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+  
+  <!-- Critical CSS inline -->
+  <style>
+    /* Critical styles for initial render */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #2d1b69 100%);
+      color: #e0d4f1;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border: 3px solid #4a1a4f;
+      border-top: 3px solid #d4af37;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 9999;
+    }
+    
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Hide content until React loads */
+    #root:empty::after {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border: 3px solid #4a1a4f;
+      border-top: 3px solid #d4af37;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Ensure smooth transitions */
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 0.5s ease-in-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+
+  <!-- React and other scripts will be loaded here -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind config
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            'premium-gold': '#d4af37',
+            'bright-gold': '#f4d03f',
+            'deep-purple': '#4a1a4f',
+            'midnight-blue': '#1a1f3a',
+            'mystical-text': '#e0d4f1',
+            'mystical-bg': '#2d1b69',
+            'mystical-nav': '#1f1635'
+          },
+          backgroundImage: {
+            'gradient-mystical': 'linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #2d1b69 100%)',
+            'mystic-pattern': "url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"60\" height=\"60\" viewBox=\"0 0 60 60\"><g fill-opacity=\"0.1\"><circle cx=\"30\" cy=\"30\" r=\"2\" fill=\"%23d4af37\"/><circle cx=\"15\" cy=\"15\" r=\"1\" fill=\"%23d4af37\"/><circle cx=\"45\" cy=\"15\" r=\"1\" fill=\"%23d4af37\"/><circle cx=\"15\" cy=\"45\" r=\"1\" fill=\"%23d4af37\"/><circle cx=\"45\" cy=\"45\" r=\"1\" fill=\"%23d4af37\"/></g></svg>')"
+          },
+          animation: {
+            'mystical-pulse': 'mysticalPulse 2s ease-in-out infinite',
+            'fade-in': 'fadeIn 0.5s ease-in-out'
+          },
+          boxShadow: {
+            'mystical': '0 10px 25px -5px rgba(212, 175, 55, 0.3), 0 4px 6px -2px rgba(212, 175, 55, 0.1)'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- React App Container -->
+  <div id="root"></div>
+  
+  <!-- No JavaScript message -->
+  <noscript>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #2d1b69 100%); color: #e0d4f1; display: flex; align-items: center; justify-content: center; text-align: center; font-family: 'Noto Sans KR', sans-serif;">
+      <div>
+        <h1 style="font-size: 2rem; margin-bottom: 1rem; color: #d4af37;">타로 타이머</h1>
+        <p>이 애플리케이션은 JavaScript가 필요합니다.<br>브라우저에서 JavaScript를 활성화해주세요.</p>
+      </div>
+    </div>
+  </noscript>
+
+  <!-- Load the app components -->
+  <script type="text/babel" data-type="module">
+    // CSS를 JavaScript로 로드
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    cssLink.href = './globals.css';
+    document.head.appendChild(cssLink);
+
+    // 언어 시스템 모듈을 시뮬레이션 (실제로는 별도 파일에서 import)
+    const translations = {
+      ko: {
+        'nav.timer': '타이머',
+        'nav.spreads': '스프레드',
+        'nav.journal': '저널',
+        'nav.settings': '설정',
+        'timer.title': '타로 타이머',
+        'timer.currentHour': '현재 시간',
+        'timer.now': '지금',
+        'timer.revealDestiny': '운명을 펼쳐보세요',
+        'timer.cosmicMessage': '우주가 전하는 24시간의 신성한 메시지',
+        'timer.drawCards': '24시간 카드 뽑기',
+        'timer.drawingCards': '카드를 뽑는 중...',
+        'timer.energyFlow': '시간의 흐름',
+        'timer.sacredJournal': '성스러운 저널',
+        'timer.journalPlaceholder': '이 시간의 카드가 전하는 메시지를 기록해보세요...',
+        'timer.saveReading': '일일 타로 저장하기',
+        'timer.saved': '저장됨',
+        'timer.quote': '"시간은 강물과 같다. 우리는 그 흐름 속에서 진실을 발견한다."',
+        'common.characters': '자',
+        'spreads.title': '타로 스프레드',
+        'spreads.subtitle': '당신의 질문에 맞는 완벽한 스프레드',
+        'spreads.beginReading': '리딩 시작하기',
+        'spreads.premium': '프리미엄',
+        'spreads.quote': '"모든 카드에는 우주의 지혜가 담겨 있다."',
+        'journal.title': '신성한 저널',
+        'journal.subtitle': '당신의 타로 여정을 기록하세요',
+        'journal.dailyTarot': '일일 타로',
+        'journal.spreadRecords': '스프레드 기록',
+        'journal.saved': '저장됨',
+        'journal.view': '보기',
+        'journal.noReadings': '아직 저장된 리딩이 없습니다',
+        'journal.noReadingsDesc': '타이머에서 24시간 카드를 뽑고 저장해보세요',
+        'journal.noSpreads': '아직 저장된 스프레드가 없습니다',
+        'journal.noSpreadsDesc': '스프레드 탭에서 리딩을 완료하고 저장해보세요',
+        'journal.quote': '"기록된 지혜는 미래의 나침반이 된다."',
+        'settings.title': '설정',
+        'settings.subtitle': '앱을 당신에게 맞게 설정하세요',
+        'settings.premium': '프리미엄 멤버십',
+        'settings.active': '활성화됨',
+        'settings.premiumSpreads': '모든 프리미엄 스프레드 접근',
+        'settings.adFree': '광고 없는 환경',
+        'settings.unlimitedStorage': '무제한 저장 공간',
+        'settings.managePremium': '프리미엄 관리',
+        'settings.displayTheme': '화면 & 테마',
+        'settings.darkMode': '다크 모드',
+        'settings.language': '언어',
+        'settings.korean': '한국어',
+        'settings.english': '영어',
+        'settings.soundHaptics': '소리 & 햅틱',
+        'settings.soundEffects': '효과음',
+        'settings.version': '버전 1.0.0',
+        'settings.copyright': '© 2024 Tarot Timer',
+        'settings.quote': '"설정된 의도는 명확한 답을 가져온다."'
+      },
+      en: {
+        'nav.timer': 'Timer',
+        'nav.spreads': 'Spreads',
+        'nav.journal': 'Journal',
+        'nav.settings': 'Settings'
+        // ... 영어 번역들
+      }
+    };
+
+    // 간단한 언어 시스템
+    const LanguageContext = React.createContext();
+    const LanguageProvider = ({ children }) => {
+      const [language, setLanguage] = React.useState('ko');
+      const t = (key) => translations[language][key] || key;
+      return React.createElement(LanguageContext.Provider, {
+        value: { language, setLanguage, t }
+      }, children);
+    };
+    const useLanguage = () => React.useContext(LanguageContext);
+
+    // 아이콘 컴포넌트들
+    const ClockIcon = ({ className }) => React.createElement('svg', {
+      className,
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24'
+    }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }),
+    React.createElement('polyline', { points: '12,6 12,12 16,14' }));
+
+    const LayoutIcon = ({ className }) => React.createElement('svg', {
+      className,
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24'
+    }, React.createElement('rect', { x: '3', y: '3', width: '18', height: '18', rx: '2', ry: '2' }),
+    React.createElement('line', { x1: '9', y1: '9', x2: '21', y2: '9' }),
+    React.createElement('line', { x1: '9', y1: '15', x2: '21', y2: '15' }));
+
+    const BookOpenIcon = ({ className }) => React.createElement('svg', {
+      className,
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24'
+    }, React.createElement('path', { d: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z' }),
+    React.createElement('path', { d: 'M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z' }));
+
+    const SettingsIcon = ({ className }) => React.createElement('svg', {
+      className,
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24'
+    }, React.createElement('circle', { cx: '12', cy: '12', r: '3' }),
+    React.createElement('path', { d: 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z' }));
+
+    const TarotCardsIcon = ({ className }) => React.createElement('svg', {
+      className,
+      fill: 'none',
+      stroke: 'currentColor',
+      viewBox: '0 0 24 24'
+    }, React.createElement('rect', { x: '4', y: '4', width: '6', height: '10', rx: '2' }),
+    React.createElement('rect', { x: '8', y: '6', width: '6', height: '10', rx: '2' }),
+    React.createElement('rect', { x: '12', y: '8', width: '6', height: '10', rx: '2' }));
+
+    // 간단한 데모 앱
+    const App = () => {
+      const [activeTab, setActiveTab] = React.useState('timer');
+      const { t } = useLanguage();
+
+      const tabConfig = [
+        { key: 'timer', icon: ClockIcon, label: t('nav.timer') },
+        { key: 'spreads', icon: LayoutIcon, label: t('nav.spreads') },
+        { key: 'journal', icon: BookOpenIcon, label: t('nav.journal') },
+        { key: 'settings', icon: SettingsIcon, label: t('nav.settings') }
+      ];
+
+      const renderContent = () => {
+        switch (activeTab) {
+          case 'timer':
+            return React.createElement('div', { className: 'p-6 space-y-6 text-center' },
+              React.createElement('h1', { 
+                className: 'text-3xl font-bold bg-gradient-to-r from-premium-gold to-bright-gold bg-clip-text text-transparent' 
+              }, t('timer.title')),
+              React.createElement('p', { className: 'text-mystical-text' }, new Date().toLocaleDateString('ko-KR')),
+              React.createElement('div', { className: 'flex justify-center py-8' },
+                React.createElement('div', { 
+                  className: 'w-32 h-48 bg-gradient-to-br from-deep-purple to-midnight-blue rounded-lg flex flex-col items-center justify-center shadow-mystical' 
+                },
+                  React.createElement(TarotCardsIcon, { className: 'w-12 h-12 text-premium-gold mb-4' }),
+                  React.createElement('div', { className: 'w-3/4 h-2 bg-gradient-to-r from-premium-gold to-bright-gold rounded animate-pulse' })
+                )
+              ),
+              React.createElement('p', { className: 'text-mystical-text' }, t('timer.revealDestiny')),
+              React.createElement('p', { className: 'text-sm text-mystical-text opacity-80 italic' }, t('timer.quote'))
+            );
+          case 'spreads':
+            return React.createElement('div', { className: 'p-6 text-center' },
+              React.createElement('h1', { 
+                className: 'text-3xl font-bold bg-gradient-to-r from-premium-gold to-bright-gold bg-clip-text text-transparent mb-4' 
+              }, t('spreads.title')),
+              React.createElement('p', { className: 'text-mystical-text mb-8' }, t('spreads.subtitle')),
+              React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' },
+                ['3카드', '4카드', '5카드', '켈틱 크로스'].map((spread, index) => 
+                  React.createElement('div', { 
+                    key: index,
+                    className: 'bg-mystical-nav/50 border border-premium-gold/30 rounded-lg p-4 hover:shadow-mystical transition-all duration-300' 
+                  },
+                    React.createElement('h3', { className: 'text-premium-gold font-semibold mb-2' }, spread),
+                    React.createElement('button', { 
+                      className: 'w-full bg-deep-purple hover:bg-deep-purple/80 text-white py-2 rounded transition-colors' 
+                    }, t('spreads.beginReading'))
+                  )
+                )
+              ),
+              React.createElement('p', { className: 'text-sm text-mystical-text opacity-80 italic mt-8' }, t('spreads.quote'))
+            );
+          case 'journal':
+            return React.createElement('div', { className: 'p-6 text-center' },
+              React.createElement('h1', { 
+                className: 'text-3xl font-bold bg-gradient-to-r from-premium-gold to-bright-gold bg-clip-text text-transparent mb-4' 
+              }, t('journal.title')),
+              React.createElement('p', { className: 'text-mystical-text mb-8' }, t('journal.subtitle')),
+              React.createElement('div', { className: 'space-y-6' },
+                React.createElement('div', { className: 'bg-mystical-nav/50 border border-premium-gold/30 rounded-lg p-6' },
+                  React.createElement('h2', { className: 'text-premium-gold font-semibold mb-4' }, t('journal.dailyTarot')),
+                  React.createElement('p', { className: 'text-mystical-text' }, t('journal.noReadings')),
+                  React.createElement('p', { className: 'text-sm text-mystical-text opacity-70' }, t('journal.noReadingsDesc'))
+                ),
+                React.createElement('div', { className: 'bg-mystical-nav/50 border border-premium-gold/30 rounded-lg p-6' },
+                  React.createElement('h2', { className: 'text-premium-gold font-semibold mb-4' }, t('journal.spreadRecords')),
+                  React.createElement('p', { className: 'text-mystical-text' }, t('journal.noSpreads')),
+                  React.createElement('p', { className: 'text-sm text-mystical-text opacity-70' }, t('journal.noSpreadsDesc'))
+                )
+              ),
+              React.createElement('p', { className: 'text-sm text-mystical-text opacity-80 italic mt-8' }, t('journal.quote'))
+            );
+          case 'settings':
+            return React.createElement('div', { className: 'p-6 text-center' },
+              React.createElement('h1', { 
+                className: 'text-3xl font-bold bg-gradient-to-r from-premium-gold to-bright-gold bg-clip-text text-transparent mb-4' 
+              }, t('settings.title')),
+              React.createElement('p', { className: 'text-mystical-text mb-8' }, t('settings.subtitle')),
+              React.createElement('div', { className: 'max-w-md mx-auto space-y-6' },
+                React.createElement('div', { className: 'bg-mystical-nav/50 border border-premium-gold/30 rounded-lg p-4' },
+                  React.createElement('div', { className: 'flex justify-between items-center mb-2' },
+                    React.createElement('h3', { className: 'text-premium-gold font-semibold' }, t('settings.premium')),
+                    React.createElement('span', { className: 'bg-premium-gold text-midnight-blue px-2 py-1 rounded text-sm' }, t('settings.active'))
+                  ),
+                  React.createElement('p', { className: 'text-sm text-mystical-text' }, '✓ ' + t('settings.premiumSpreads')),
+                  React.createElement('p', { className: 'text-sm text-mystical-text' }, '✓ ' + t('settings.adFree')),
+                  React.createElement('p', { className: 'text-sm text-mystical-text' }, '✓ ' + t('settings.unlimitedStorage'))
+                ),
+                React.createElement('div', { className: 'space-y-4' },
+                  React.createElement('div', { className: 'flex justify-between items-center' },
+                    React.createElement('span', { className: 'text-mystical-text' }, t('settings.language')),
+                    React.createElement('select', { 
+                      className: 'bg-mystical-bg/50 border border-premium-gold/30 rounded px-3 py-1 text-mystical-text',
+                      defaultValue: 'ko'
+                    },
+                      React.createElement('option', { value: 'ko' }, t('settings.korean')),
+                      React.createElement('option', { value: 'en' }, t('settings.english'))
+                    )
+                  )
+                ),
+                React.createElement('div', { className: 'text-sm text-mystical-text opacity-70 space-y-1' },
+                  React.createElement('p', null, t('settings.version')),
+                  React.createElement('p', null, t('settings.copyright'))
+                )
+              ),
+              React.createElement('p', { className: 'text-sm text-mystical-text opacity-80 italic mt-8' }, t('settings.quote'))
+            );
+          default:
+            return React.createElement('div', { className: 'p-6 text-center' },
+              React.createElement('h1', { className: 'text-2xl text-premium-gold' }, '준비 중...')
+            );
+        }
+      };
+
+      return React.createElement('div', { className: 'min-h-screen bg-gradient-mystical text-mystical-text' },
+        React.createElement('div', { className: 'fixed inset-0 bg-mystic-pattern opacity-10 pointer-events-none' }),
+        React.createElement('div', { className: 'relative z-10 min-h-screen flex flex-col' },
+          React.createElement('div', { className: 'flex-1 overflow-y-auto' }, renderContent()),
+          React.createElement('div', { className: 'bg-mystical-nav/90 backdrop-blur-md border-t border-premium-gold/20' },
+            React.createElement('div', { className: 'flex justify-around items-center py-2' },
+              tabConfig.map(({ key, icon: Icon, label }) =>
+                React.createElement('button', {
+                  key,
+                  onClick: () => setActiveTab(key),
+                  className: `flex flex-col items-center py-2 px-4 rounded-lg transition-colors duration-200 ${
+                    activeTab === key
+                      ? 'text-premium-gold bg-premium-gold/10'
+                      : 'text-mystical-text hover:text-premium-gold'
+                  }`
+                },
+                  React.createElement(Icon, { className: 'w-6 h-6 mb-1' }),
+                  React.createElement('span', { className: 'text-xs font-medium' }, label)
+                )
+              )
+            )
+          )
+        )
+      );
+    };
+
+    // 앱을 렌더링
+    const AppWithProvider = () => React.createElement(LanguageProvider, null, React.createElement(App));
+
+    // DOM에 렌더링
+    setTimeout(() => {
+      const container = document.getElementById('root');
+      const root = ReactDOM.createRoot(container);
+      root.render(React.createElement(AppWithProvider));
+    }, 100);
+  </script>
+
+  <!-- Service Worker 등록 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

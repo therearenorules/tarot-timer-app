@@ -125,29 +125,31 @@ export default function RootLayout() {
       <AppProvider>
         <DatabaseProvider enableSampleData={false}>
           <StoreProvider>
-          <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <StatusBar 
-              style="dark" 
-              backgroundColor={theme.colors.background}
-              translucent={Platform.OS === 'android'}
-            />
-            
-            <Stack 
-              screenOptions={{ 
-                headerShown: false,
-                // 부드러운 전환 애니메이션
-                animation: Platform.OS === 'ios' ? 'slide_from_right' : 'fade',
-                animationDuration: 300,
-              }}
-            >
-              <Stack.Screen 
-                name="(tabs)" 
-                options={{
-                  title: '타로 타이머',
-                }}
-              />
-            </Stack>
-          </View>
+            <ContextProviders>
+              <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+                <StatusBar 
+                  style="dark" 
+                  backgroundColor={theme.colors.background}
+                  translucent={Platform.OS === 'android'}
+                />
+                
+                <Stack 
+                  screenOptions={{ 
+                    headerShown: false,
+                    // 부드러운 전환 애니메이션
+                    animation: Platform.OS === 'ios' ? 'slide_from_right' : 'fade',
+                    animationDuration: 300,
+                  }}
+                >
+                  <Stack.Screen 
+                    name="(tabs)" 
+                    options={{
+                      title: '타로 타이머',
+                    }}
+                  />
+                </Stack>
+              </View>
+            </ContextProviders>
           </StoreProvider>
         </DatabaseProvider>
       </AppProvider>

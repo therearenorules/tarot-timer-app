@@ -1,0 +1,53 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light Mode Mystical Texture Pattern -->
+  
+  <!-- Base pattern -->
+  <pattern id="lightMysticalPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <!-- Subtle dots -->
+    <circle cx="20" cy="20" r="0.8" fill="#d4af37" opacity="0.15" />
+    <circle cx="0" cy="0" r="0.4" fill="#4a1a4f" opacity="0.08" />
+    <circle cx="40" cy="40" r="0.4" fill="#4a1a4f" opacity="0.08" />
+    <circle cx="40" cy="0" r="0.3" fill="#d4af37" opacity="0.12" />
+    <circle cx="0" cy="40" r="0.3" fill="#d4af37" opacity="0.12" />
+    
+    <!-- Geometric lines -->
+    <line x1="0" y1="20" x2="40" y2="20" stroke="#4a1a4f" stroke-width="0.2" opacity="0.06" />
+    <line x1="20" y1="0" x2="20" y2="40" stroke="#4a1a4f" stroke-width="0.2" opacity="0.06" />
+    
+    <!-- Small stars -->
+    <g transform="translate(10, 30)" opacity="0.1">
+      <path d="M0,-2 L0.6,-0.6 L2,0 L0.6,0.6 L0,2 L-0.6,0.6 L-2,0 L-0.6,-0.6 Z" fill="#d4af37" />
+    </g>
+    
+    <g transform="translate(30, 10)" opacity="0.08">
+      <path d="M0,-1.5 L0.4,-0.4 L1.5,0 L0.4,0.4 L0,1.5 L-0.4,0.4 L-1.5,0 L-0.4,-0.4 Z" fill="#4a1a4f" />
+    </g>
+  </pattern>
+  
+  <!-- Apply pattern -->
+  <rect width="200" height="200" fill="url(#lightMysticalPattern)" />
+  
+  <!-- Overlay gradient for depth -->
+  <rect width="200" height="200" fill="url(#lightOverlay)" />
+  
+  <!-- Sacred geometry overlay -->
+  <g opacity="0.05">
+    <g transform="translate(100, 100)">
+      <!-- Flower of life partial -->
+      <circle r="25" fill="none" stroke="#4a1a4f" stroke-width="0.5" />
+      <circle cx="0" cy="-43" r="25" fill="none" stroke="#4a1a4f" stroke-width="0.3" />
+      <circle cx="37" cy="-21" r="25" fill="none" stroke="#4a1a4f" stroke-width="0.3" />
+      <circle cx="37" cy="21" r="25" fill="none" stroke="#4a1a4f" stroke-width="0.3" />
+      <circle cx="0" cy="43" r="25" fill="none" stroke="#4a1a4f" stroke-width="0.3" />
+      <circle cx="-37" cy="21" r="25" fill="none" stroke="#4a1a4f" stroke-width="0.3" />
+      <circle cx="-37" cy="-21" r="25" fill="none" stroke="#4a1a4f" stroke-width="0.3" />
+    </g>
+  </g>
+  
+  <defs>
+    <radialGradient id="lightOverlay" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.02" />
+      <stop offset="100%" style="stop-color:#4a1a4f;stop-opacity:0.03" />
+    </radialGradient>
+  </defs>
+</svg>

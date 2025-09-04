@@ -33,6 +33,10 @@ export const contentSecurityPolicy: SecurityPolicy = {
     'https://www.googletagmanager.com',
     // PWA and service worker
     "'strict-dynamic'",
+    // Chrome extension compatibility
+    'chrome-extension:',
+    // Webpack and hot reloading
+    "'wasm-unsafe-eval'",
   ],
   'style-src': [
     "'self'",
@@ -65,8 +69,10 @@ export const contentSecurityPolicy: SecurityPolicy = {
     'https://www.google-analytics.com',
     // Error reporting
     'https://*.sentry.io',
+    // Chrome extension compatibility
+    'chrome-extension:',
     // Development
-    ...(process.env.NODE_ENV !== 'production' ? ['ws://localhost:*', 'http://localhost:*'] : []),
+    ...(process.env.NODE_ENV !== 'production' ? ['ws://localhost:*', 'http://localhost:*', 'wss://localhost:*'] : []),
   ],
   'media-src': [
     "'self'",

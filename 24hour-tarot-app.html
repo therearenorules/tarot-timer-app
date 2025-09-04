@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24시간 타로 앱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        :root {
+            /* Figma 디자인 색상 */
+            --background: #0f0f1a;
+            --foreground: #ffffff;
+            --card: #1a1f3a;
+            --card-foreground: #ffffff;
+            --primary: #4a1a4f;
+            --secondary: #1a1f3a;
+            --secondary-foreground: #c8b8d4;
+            --accent: #f4d03f;
+            --accent-foreground: #0f0f1a;
+            --border: #2a2f4a;
+            --premium-gold: #f4d03f;
+            --deep-purple: #4a1a4f;
+            --midnight-blue: #1a1f3a;
+            --muted: rgba(200, 184, 212, 0.5);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--midnight-blue) 0%, var(--deep-purple) 50%, var(--midnight-blue) 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 애니메이션 정의 */
+        @keyframes mystical-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+
+        @keyframes card-appear {
+            0% { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.9) rotateY(180deg);
+            }
+            50% {
+                opacity: 0.5;
+                transform: translateY(10px) scale(0.95) rotateY(90deg);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0) scale(1) rotateY(0deg);
+            }
+        }
+
+        @keyframes card-flip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(180deg); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(244, 208, 63, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(244, 208, 63, 0.6); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes bounce-in {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translate(-50%, -50%);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05) translate(-50%, -50%);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translate(-50%, -50%);
+            }
+        }
+
+        /* 유틸리티 클래스 */
+        .mystical-pulse { animation: mystical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .glow-effect { animation: glow 2s ease-in-out infinite; }
+        .card-flip { animation: card-flip 0.6s ease-in-out; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 앱 컨테이너 */
+        .app-container {
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--background);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 메인 콘텐츠 영역 */
+        .main-content {
+            padding-bottom: 80px; /* 하단 네비게이션 공간 */
+            min-height: calc(100vh - 80px);
+        }
+
+        /* 탭 화면들 */
+        .tab-screen {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 100px);
+        }
+
+        .tab-screen.active {
+            display: block;
+        }
+
+        /* 하단 네비게이션 */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            height: 80px;
+            background: rgba(26, 31, 58, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 8px 16px 24px;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 12px;
+            min-width: 60px;
+        }
+
+        .nav-item.active {
+            background: rgba(244, 208, 63, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            color: var(--premium-gold);
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--secondary-foreground);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--premium-gold);
+        }
+
+        /* 헤더 스타일 */
+        .screen-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .screen-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--premium-gold) 0%, #ffffff 50%, var(--premium-gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .screen-subtitle {
+            color: var(--secondary-foreground);
+            font-size: 16px;
+        }
+
+        .current-date {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* 버튼 스타일 */
+        .btn {
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--foreground);
+            padding: 16px 24px;
+            box-shadow: 0 4px 16px rgba(74, 26, 79, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(74, 26, 79, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--secondary-foreground);
+            border: 2px solid var(--border);
+            padding: 14px 22px;
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--accent-foreground);
+            padding: 16px 24px;
+            box-shadow: 0 4px 16px rgba(244, 208, 63, 0.3);
+        }
+
+        .btn-large {
+            font-size: 18px;
+            padding: 20px 32px;
+            border-radius: 16px;
+        }
+
+        /* 카드 스타일 */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--premium-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(244, 208, 63, 0.2);
+        }
+
+        /* 타로 카드 이미지 */
+        .tarot-card {
+            aspect-ratio: 2/3;
+            background: linear-gradient(135deg, var(--card) 0%, var(--secondary) 100%);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tarot-card.current-hour {
+            border-color: var(--premium-gold);
+            box-shadow: 0 0 20px rgba(244, 208, 63, 0.4);
+        }
+
+        .tarot-card.has-memo::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--card);
+        }
+
+        .tarot-card.reversed {
+            transform: rotate(180deg);
+        }
+
+        .tarot-card-back {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--deep-purple), var(--midnight-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--premium-gold);
+        }
+
+        .tarot-card-front {
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--premium-gold);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .card-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-top: auto;
+        }
+
+        .card-image {
+            font-size: 32px;
+            margin: 12px 0;
+        }
+
+        /* 24시간 스크롤 */
+        .hour-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 16px 0;
+            margin: 20px -20px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .hour-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hour-card {
+            flex-shrink: 0;
+            width: 80px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .hour-card .tarot-card {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 8px;
+        }
+
+        .hour-time {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--secondary-foreground);
+        }
+
+        .hour-card.current .hour-time {
+            color: var(--premium-gold);
+        }
+
+        /* 메인 카드 영역 */
+        .main-card-area {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .main-card {
+            width: 200px;
+            height: 300px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .main-card-info {
+            margin-top: 16px;
+        }
+
+        .main-card-time {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--premium-gold);
+            margin-bottom: 8px;
+        }
+
+        .main-card-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        /* 메모 영역 */
+        .memo-area {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 24px 0;
+        }
+
+        .memo-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: transparent;
+            border: none;
+            color: var(--foreground);
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+        }
+
+        .memo-textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .memo-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .memo-save-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        /* 스프레드 그리드 */
+        .spread-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .spread-card {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .spread-card:hover {
+            border-color: var(--premium-gold);
+            transform: translateY(-2px);
+        }
+
+        .spread-preview {
+            width: 40px;
+            height: 60px;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .spread-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .spread-count {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* 모달 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 320px;
+            width: 100%;
+            position: relative;
+            animation: bounce-in 0.5s ease-out;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* 토스트 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            color: var(--foreground);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        /* 로딩 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--premium-gold);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--foreground);
+        }
+
+        .empty-description {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* 반응형 */
+        @media (max-width: 320px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .main-card {
+                width: 160px;
+                height: 240px;
+            }
+            
+            .screen-title {
+                font-size: 24px;
+            }
+            
+            .hour-card {
+                width: 70px;
+            }
+        }
+
+        /* 특별한 효과 */
+        .draw-cards-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .draw-cards-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .draw-cards-btn:hover::before {
+            left: 100%;
+        }
+
+        /* 카드 뽑기 애니메이션 */
+        .cards-generating {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 26, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+            flex-direction: column;
+        }
+
+        .cards-generating.active {
+            display: flex;
+        }
+
+        .generating-text {
+            color: var(--premium-gold);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .generating-cards {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            max-width: 300px;
+        }
+
+        .generating-card {
+            width: 30px;
+            height: 45px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+
+        .generating-card.appear {
+            opacity: 1;
+            transform: scale(1);
+            animation: card-appear 0.5s ease-out;
+        }
+
+        /* 스프레드 관련 스타일 */
+        .spread-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 20px 0;
+        }
+
+        .spread-canvas {
+            min-height: 400px;
+            background: var(--card);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spread-layout {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+        }
+
+        .card-slot {
+            position: absolute;
+            width: 60px;
+            height: 90px;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(42, 47, 74, 0.3);
+        }
+
+        .card-slot:hover {
+            border-color: var(--premium-gold);
+            background: rgba(244, 208, 63, 0.1);
+        }
+
+        .card-slot.filled {
+            border-style: solid;
+            border-color: var(--premium-gold);
+            background: transparent;
+        }
+
+        .card-slot .slot-label {
+            font-size: 10px;
+            color: var(--muted);
+            text-align: center;
+            padding: 4px;
+            line-height: 1.2;
+        }
+
+        .card-slot .tarot-card {
+            width: 100%;
+            height: 100%;
+            font-size: 20px;
+            border: none;
+        }
+
+        .spread-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* 켈틱 크로스 레이아웃 */
+        .celtic-cross {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        .celtic-cross .card-slot:nth-child(1) { /* 현재 */
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .celtic-cross .card-slot:nth-child(2) { /* 도전 */
+            top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg);
+        }
+        .celtic-cross .card-slot:nth-child(3) { /* 먼 과거 */
+            top: 50%; left: 20%; transform: translate(-50%, -50%);
+        }
+        .celtic-cross .card-slot:nth-child(4) { /* 가능한 미래 */
+            top: 50%; right: 20%; transform: translate(50%, -50%);
+        }
+        .celtic-cross .card-slot:nth-child(5) { /* 최근 과거 */
+            bottom: 20%; left: 50%; transform: translate(-50%, 50%);
+        }
+        .celtic-cross .card-slot:nth-child(6) { /* 가까운 미래 */
+            top: 20%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .celtic-cross .card-slot:nth-child(7) { /* 자신 */
+            bottom: 10%; right: 10%;
+        }
+        .celtic-cross .card-slot:nth-child(8) { /* 외부 영향 */
+            bottom: 35%; right: 10%;
+        }
+        .celtic-cross .card-slot:nth-child(9) { /* 희망과 두려움 */
+            bottom: 60%; right: 10%;
+        }
+        .celtic-cross .card-slot:nth-child(10) { /* 최종 결과 */
+            top: 10%; right: 10%;
+        }
+
+        /* 3카드 스프레드 레이아웃 */
+        .three-card {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            padding: 40px 20px;
+        }
+
+        .three-card .card-slot {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* 5카드 스프레드 레이아웃 */
+        .five-card {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+        }
+
+        .five-card .card-slot:nth-child(1) { /* 중앙 */
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .five-card .card-slot:nth-child(2) { /* 동쪽 */
+            top: 50%; right: 10%; transform: translate(50%, -50%);
+        }
+        .five-card .card-slot:nth-child(3) { /* 남쪽 */
+            bottom: 10%; left: 50%; transform: translate(-50%, 50%);
+        }
+        .five-card .card-slot:nth-child(4) { /* 서쪽 */
+            top: 50%; left: 10%; transform: translate(-50%, -50%);
+        }
+        .five-card .card-slot:nth-child(5) { /* 북쪽 */
+            top: 10%; left: 50%; transform: translate(-50%, -50%);
+        }
+
+        /* 1카드 스프레드 레이아웃 */
+        .one-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .one-card .card-slot {
+            position: relative;
+            width: 100px;
+            height: 150px;
+        }
+
+        /* 카드 뽑기 모달 */
+        .draw-card-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .draw-card-modal.active {
+            display: flex;
+        }
+
+        .drawing-card {
+            width: 120px;
+            height: 180px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .drawing-card .tarot-card {
+            width: 100%;
+            height: 100%;
+            animation: card-flip 0.8s ease-in-out;
+        }
+
+        /* 일기 탭 스타일 */
+        .segment-control {
+            display: flex;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .segment-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: var(--secondary-foreground);
+        }
+
+        .segment-btn.active {
+            background: var(--primary);
+            color: var(--foreground);
+            box-shadow: 0 2px 8px rgba(74, 26, 79, 0.3);
+        }
+
+        .diary-section {
+            min-height: 400px;
+        }
+
+        /* 데일리 카드 스크롤 */
+        .daily-cards-scroll {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .daily-card-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .daily-card-item:hover {
+            border-color: var(--premium-gold);
+            transform: translateY(-2px);
+        }
+
+        .daily-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .daily-card-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--premium-gold);
+        }
+
+        .daily-card-memo-count {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .daily-card-preview {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .daily-card-preview::-webkit-scrollbar {
+            display: none;
+        }
+
+        .daily-preview-card {
+            flex-shrink: 0;
+            width: 40px;
+            height: 60px;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* 저장된 스프레드 그리드 */
+        .saved-spreads-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .saved-spread-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .saved-spread-item:hover {
+            border-color: var(--premium-gold);
+            transform: translateY(-2px);
+        }
+
+        .saved-spread-thumbnail {
+            width: 80px;
+            height: 120px;
+            background: var(--secondary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .spread-mini-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            width: 100%;
+            height: 100%;
+            padding: 4px;
+        }
+
+        .spread-mini-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .saved-spread-info {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .saved-spread-meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* 빈 상태 개선 */
+        .diary-empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted);
+        }
+
+        .diary-empty-state .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .diary-empty-state .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--foreground);
+        }
+
+        .diary-empty-state .empty-description {
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 타이머 탭 -->
+            <div id="timer-tab" class="tab-screen active">
+                <div class="screen-header">
+                    <h1 class="screen-title mystical-pulse">오늘의 24시간 타로</h1>
+                    <div class="current-date" id="current-date"></div>
+                </div>
+
+                <!-- 카드 뽑기 버튼 (첫 진입 시만 표시) -->
+                <div id="draw-cards-section" class="text-center" style="margin: 40px 0;">
+                    <button id="draw-cards-btn" class="btn btn-accent btn-large draw-cards-btn">
+                        ✨ 오늘의 24시간 타로 뽑기
+                    </button>
+                </div>
+
+                <!-- 메인 카드 영역 -->
+                <div id="main-card-section" class="main-card-area" style="display: none;">
+                    <div class="main-card">
+                        <div id="main-tarot-card" class="tarot-card glow-effect">
+                            <div class="tarot-card-back">🔮</div>
+                        </div>
+                    </div>
+                    <div class="main-card-info">
+                        <div id="main-card-time" class="main-card-time">현재 오후 3시 카드</div>
+                        <div id="main-card-name" class="main-card-name">The Sun</div>
+                    </div>
+                </div>
+
+                <!-- 메모 영역 -->
+                <div id="memo-section" class="memo-area" style="display: none;">
+                    <textarea 
+                        id="current-memo" 
+                        class="memo-textarea" 
+                        placeholder="이 시간에 일어난 일을 기록해보세요…"></textarea>
+                    <div class="memo-actions">
+                        <div style="color: var(--muted); font-size: 12px;">자동 저장됨</div>
+                        <button id="save-memo-btn" class="btn btn-primary memo-save-btn">저장</button>
+                    </div>
+                </div>
+
+                <!-- 24시간 스크롤 -->
+                <div id="hour-scroll-section" class="hour-scroll" style="display: none;">
+                    <!-- 동적으로 생성됨 -->
+                </div>
+            </div>
+
+            <!-- 스프레드 탭 -->
+            <div id="spread-tab" class="tab-screen">
+                <!-- 스프레드 선택 화면 -->
+                <div id="spread-selection-screen">
+                    <div class="screen-header">
+                        <h1 class="screen-title">타로 스프레드</h1>
+                        <p class="screen-subtitle">원하는 스프레드를 선택하세요</p>
+                    </div>
+
+                    <div class="spread-grid">
+                        <div class="spread-card" data-spread="celtic-cross" data-count="10">
+                            <div class="spread-preview">⚜️</div>
+                            <div class="spread-name">켈틱 크로스</div>
+                            <div class="spread-count">10장 + 시간선 4장</div>
+                        </div>
+                        <div class="spread-card" data-spread="cup-relationship" data-count="7">
+                            <div class="spread-preview">💕</div>
+                            <div class="spread-name">컵 오브 릴레이션십</div>
+                            <div class="spread-count">7장</div>
+                        </div>
+                        <div class="spread-card" data-spread="five-card" data-count="5">
+                            <div class="spread-preview">🌟</div>
+                            <div class="spread-name">5카드 스프레드</div>
+                            <div class="spread-count">5장</div>
+                        </div>
+                        <div class="spread-card" data-spread="four-timeline" data-count="4">
+                            <div class="spread-preview">⏰</div>
+                            <div class="spread-name">4카드 시간선</div>
+                            <div class="spread-count">4장</div>
+                        </div>
+                        <div class="spread-card" data-spread="three-card" data-count="3">
+                            <div class="spread-preview">🔮</div>
+                            <div class="spread-name">3카드 스프레드</div>
+                            <div class="spread-count">3장</div>
+                        </div>
+                        <div class="spread-card" data-spread="one-card" data-count="1">
+                            <div class="spread-preview">✨</div>
+                            <div class="spread-name">1카드 스프레드</div>
+                            <div class="spread-count">1장</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 활성 스프레드 화면 -->
+                <div id="active-spread-screen" style="display: none;">
+                    <div class="spread-header">
+                        <button id="back-to-spreads" class="btn btn-secondary" style="position: absolute; left: 0; top: 0; padding: 8px 12px; font-size: 14px;">← 뒤로</button>
+                        <div style="text-align: center; flex: 1;">
+                            <h2 id="current-spread-name" class="screen-title" style="font-size: 20px; margin-bottom: 4px;"></h2>
+                            <div id="spread-progress" class="screen-subtitle"></div>
+                        </div>
+                    </div>
+
+                    <!-- 스프레드 캔버스 -->
+                    <div id="spread-canvas" class="spread-canvas">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+
+                    <!-- 스프레드 액션 버튼들 -->
+                    <div class="spread-actions">
+                        <button id="capture-spread" class="btn btn-accent" style="flex: 1; margin-right: 8px;" disabled>
+                            📸 캡처 저장
+                        </button>
+                        <button id="reset-spread" class="btn btn-secondary" onclick="resetCurrentSpread()">
+                            🔄 초기화
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 일기 탭 -->
+            <div id="diary-tab" class="tab-screen">
+                <div class="screen-header">
+                    <h1 class="screen-title">타로 일기</h1>
+                </div>
+
+                <!-- 세그먼트 컨트롤 -->
+                <div class="segment-control">
+                    <button id="daily-segment" class="segment-btn active">데일리 타로</button>
+                    <button id="spreads-segment" class="segment-btn">저장된 스프레드</button>
+                </div>
+
+                <!-- 데일리 타로 섹션 -->
+                <div id="daily-section" class="diary-section">
+                    <div id="daily-cards-scroll" class="daily-cards-scroll">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+                </div>
+
+                <!-- 저장된 스프레드 섹션 -->
+                <div id="spreads-section" class="diary-section" style="display: none;">
+                    <div id="saved-spreads-grid" class="saved-spreads-grid">
+                        <!-- 동적으로 생성됨 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 설정 탭 -->
+            <div id="settings-tab" class="tab-screen">
+                <div class="screen-header">
+                    <h1 class="screen-title">설정</h1>
+                </div>
+
+                <div class="card" style="padding: 20px; margin-bottom: 16px;">
+                    <h3 style="color: var(--premium-gold); margin-bottom: 16px;">테마 덱 관리</h3>
+                    <div style="margin-bottom: 12px;">현재 테마: 클래식 타로</div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                        <div class="tarot-card" style="width: 50px; height: 75px; font-size: 16px;">🔮</div>
+                        <div class="tarot-card" style="width: 50px; height: 75px; font-size: 16px;">⭐</div>
+                        <div class="tarot-card" style="width: 50px; height: 75px; font-size: 16px;">🌙</div>
+                        <div class="tarot-card" style="width: 50px; height: 75px; font-size: 16px;">☀️</div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%;">테마 덱 상점</button>
+                </div>
+
+                <div class="card" style="padding: 20px; margin-bottom: 16px;">
+                    <h3 style="color: var(--premium-gold); margin-bottom: 16px;">알림 설정</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <span>시간별 알림</span>
+                        <span style="color: var(--success);">켜짐</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <span>자정 리셋 알림</span>
+                        <span style="color: var(--success);">켜짐</span>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 20px;">
+                    <h3 style="color: var(--premium-gold); margin-bottom: 16px;">앱 정보</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <span>버전</span>
+                        <span style="color: var(--muted);">1.0.0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <span>제작자</span>
+                        <span style="color: var(--muted);">Claude Code</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <div class="bottom-navigation">
+            <div class="nav-item active" data-tab="timer">
+                <div class="nav-icon">⏰</div>
+                <div class="nav-label">타이머</div>
+            </div>
+            <div class="nav-item" data-tab="spread">
+                <div class="nav-icon">🔮</div>
+                <div class="nav-label">스프레드</div>
+            </div>
+            <div class="nav-item" data-tab="diary">
+                <div class="nav-icon">📖</div>
+                <div class="nav-label">일기</div>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <div class="nav-icon">⚙️</div>
+                <div class="nav-label">설정</div>
+            </div>
+        </div>
+
+        <!-- 카드 생성 애니메이션 -->
+        <div id="cards-generating" class="cards-generating">
+            <div class="generating-text">✨ 24시간 타로 카드를 생성하고 있습니다...</div>
+            <div class="generating-cards">
+                <!-- 24개 카드가 동적으로 생성됨 -->
+            </div>
+        </div>
+
+        <!-- 카드 상세 모달 -->
+        <div id="card-detail-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-card-time" class="modal-title">오후 3시</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-tarot-card" class="tarot-card" style="width: 120px; height: 180px; margin: 0 auto 16px;">
+                        <div class="tarot-card-back">🔮</div>
+                    </div>
+                    <div id="modal-card-name" style="text-align: center; font-weight: 600; margin-bottom: 16px;">The Sun</div>
+                    <textarea id="modal-memo" class="memo-textarea" placeholder="이 시간에 일어난 일을 기록해보세요…"></textarea>
+                    <div style="display: flex; justify-content: space-between; margin-top: 16px;">
+                        <button id="prev-hour-btn" class="btn btn-secondary">← 이전</button>
+                        <button id="next-hour-btn" class="btn btn-secondary">다음 →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 카드 뽑기 모달 -->
+        <div id="draw-card-modal" class="draw-card-modal">
+            <div class="drawing-card">
+                <div id="drawing-tarot-card" class="tarot-card">
+                    <div class="tarot-card-back">🔮</div>
+                </div>
+                <div style="text-align: center; color: var(--premium-gold); margin-top: 16px; font-size: 14px;">
+                    카드를 뽑고 있습니다...
+                </div>
+            </div>
+        </div>
+
+        <!-- 토스트 -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script>
+        // 전역 상태
+        let currentHour = new Date().getHours();
+        let todayCards = {};
+        let memos = {};
+        let isCardsDrawn = false;
+        
+        // 스프레드 상태
+        let currentSpread = null;
+        let currentSpreadCards = {};
+        let spreadProgress = 0;
+        
+        // 타로 카드 데이터 (78장의 타로 카드)
+        const tarotCards = [
+            { name: "The Fool", emoji: "🃏", number: "0" },
+            { name: "The Magician", emoji: "🎩", number: "I" },
+            { name: "The High Priestess", emoji: "🌙", number: "II" },
+            { name: "The Empress", emoji: "👑", number: "III" },
+            { name: "The Emperor", emoji: "🏛️", number: "IV" },
+            { name: "The Hierophant", emoji: "⛪", number: "V" },
+            { name: "The Lovers", emoji: "💕", number: "VI" },
+            { name: "The Chariot", emoji: "🏇", number: "VII" },
+            { name: "Strength", emoji: "🦁", number: "VIII" },
+            { name: "The Hermit", emoji: "🏮", number: "IX" },
+            { name: "Wheel of Fortune", emoji: "🎡", number: "X" },
+            { name: "Justice", emoji: "⚖️", number: "XI" },
+            { name: "The Hanged Man", emoji: "🙃", number: "XII" },
+            { name: "Death", emoji: "💀", number: "XIII" },
+            { name: "Temperance", emoji: "🍷", number: "XIV" },
+            { name: "The Devil", emoji: "👹", number: "XV" },
+            { name: "The Tower", emoji: "🗼", number: "XVI" },
+            { name: "The Star", emoji: "⭐", number: "XVII" },
+            { name: "The Moon", emoji: "🌙", number: "XVIII" },
+            { name: "The Sun", emoji: "☀️", number: "XIX" },
+            { name: "Judgement", emoji: "📯", number: "XX" },
+            { name: "The World", emoji: "🌍", number: "XXI" },
+            // 컵 슈트
+            { name: "Ace of Cups", emoji: "🏆", number: "A♥" },
+            { name: "Two of Cups", emoji: "💑", number: "2♥" },
+            { name: "Three of Cups", emoji: "🥂", number: "3♥" },
+            { name: "Four of Cups", emoji: "🍵", number: "4♥" },
+            { name: "Five of Cups", emoji: "😢", number: "5♥" },
+            { name: "Six of Cups", emoji: "🎁", number: "6♥" },
+            { name: "Seven of Cups", emoji: "💭", number: "7♥" },
+            { name: "Eight of Cups", emoji: "🚶", number: "8♥" },
+            { name: "Nine of Cups", emoji: "😊", number: "9♥" },
+            { name: "Ten of Cups", emoji: "🏠", number: "10♥" },
+            { name: "Page of Cups", emoji: "🧒", number: "J♥" },
+            { name: "Knight of Cups", emoji: "🏇", number: "Kn♥" },
+            { name: "Queen of Cups", emoji: "👸", number: "Q♥" },
+            { name: "King of Cups", emoji: "👑", number: "K♥" },
+            // 펜타클 슈트
+            { name: "Ace of Pentacles", emoji: "💰", number: "A♦" },
+            { name: "Two of Pentacles", emoji: "⚖️", number: "2♦" },
+            { name: "Three of Pentacles", emoji: "🏗️", number: "3♦" },
+            { name: "Four of Pentacles", emoji: "🔒", number: "4♦" },
+            { name: "Five of Pentacles", emoji: "❄️", number: "5♦" },
+            { name: "Six of Pentacles", emoji: "🤝", number: "6♦" },
+            { name: "Seven of Pentacles", emoji: "🌱", number: "7♦" },
+            { name: "Eight of Pentacles", emoji: "🔨", number: "8♦" },
+            { name: "Nine of Pentacles", emoji: "🍇", number: "9♦" },
+            { name: "Ten of Pentacles", emoji: "🏰", number: "10♦" },
+            { name: "Page of Pentacles", emoji: "📚", number: "J♦" },
+            { name: "Knight of Pentacles", emoji: "🐎", number: "Kn♦" },
+            { name: "Queen of Pentacles", emoji: "🌺", number: "Q♦" },
+            { name: "King of Pentacles", emoji: "👑", number: "K♦" },
+            // 소드 슈트
+            { name: "Ace of Swords", emoji: "⚔️", number: "A♠" },
+            { name: "Two of Swords", emoji: "🤷", number: "2♠" },
+            { name: "Three of Swords", emoji: "💔", number: "3♠" },
+            { name: "Four of Swords", emoji: "😴", number: "4♠" },
+            { name: "Five of Swords", emoji: "😤", number: "5♠" },
+            { name: "Six of Swords", emoji: "⛵", number: "6♠" },
+            { name: "Seven of Swords", emoji: "🥷", number: "7♠" },
+            { name: "Eight of Swords", emoji: "🪢", number: "8♠" },
+            { name: "Nine of Swords", emoji: "😰", number: "9♠" },
+            { name: "Ten of Swords", emoji: "⚰️", number: "10♠" },
+            { name: "Page of Swords", emoji: "🗡️", number: "J♠" },
+            { name: "Knight of Swords", emoji: "🏃", number: "Kn♠" },
+            { name: "Queen of Swords", emoji: "❄️", number: "Q♠" },
+            { name: "King of Swords", emoji: "⚔️", number: "K♠" },
+            // 완드 슈트
+            { name: "Ace of Wands", emoji: "🌿", number: "A♣" },
+            { name: "Two of Wands", emoji: "🗺️", number: "2♣" },
+            { name: "Three of Wands", emoji: "🚢", number: "3♣" },
+            { name: "Four of Wands", emoji: "🎉", number: "4♣" },
+            { name: "Five of Wands", emoji: "🤼", number: "5♣" },
+            { name: "Six of Wands", emoji: "🏆", number: "6♣" },
+            { name: "Seven of Wands", emoji: "🛡️", number: "7♣" },
+            { name: "Eight of Wands", emoji: "🏹", number: "8♣" },
+            { name: "Nine of Wands", emoji: "🤕", number: "9♣" },
+            { name: "Ten of Wands", emoji: "📦", number: "10♣" },
+            { name: "Page of Wands", emoji: "🔥", number: "J♣" },
+            { name: "Knight of Wands", emoji: "🏇", number: "Kn♣" },
+            { name: "Queen of Wands", emoji: "🦁", number: "Q♣" },
+            { name: "King of Wands", emoji: "🔥", number: "K♣" }
+        ];
+
+        // DOM 로드 완료 후 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            updateCurrentDate();
+            loadUserData();
+            setupEventListeners();
+            updateCurrentTime();
+            
+            // 1초마다 시간 업데이트
+            setInterval(updateCurrentTime, 1000);
+            
+            // 5분마다 저장
+            setInterval(saveUserData, 5 * 60 * 1000);
+        }
+
+        function setupEventListeners() {
+            // 네비게이션 탭 이벤트
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => switchTab(item));
+            });
+
+            // 카드 뽑기 버튼
+            document.getElementById('draw-cards-btn').addEventListener('click', drawDailyCards);
+
+            // 메모 저장
+            document.getElementById('save-memo-btn').addEventListener('click', saveMemo);
+            
+            // 메모 자동 저장
+            document.getElementById('current-memo').addEventListener('input', debounce(autoSaveMemo, 1000));
+
+            // 모달 닫기
+            document.querySelector('.modal-close').addEventListener('click', closeModal);
+            document.getElementById('card-detail-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            // 모달 네비게이션
+            document.getElementById('prev-hour-btn').addEventListener('click', () => navigateHour(-1));
+            document.getElementById('next-hour-btn').addEventListener('click', () => navigateHour(1));
+
+            // 스프레드 관련 이벤트
+            document.querySelectorAll('.spread-card').forEach(card => {
+                card.addEventListener('click', () => selectSpread(card));
+            });
+
+            // 스프레드 뒤로가기
+            document.getElementById('back-to-spreads').addEventListener('click', backToSpreadSelection);
+
+            // 스프레드 액션 버튼들
+            document.getElementById('capture-spread').addEventListener('click', captureSpread);
+            document.getElementById('reset-spread').addEventListener('click', resetCurrentSpread);
+
+            // 일기 탭 세그먼트 컨트롤
+            document.getElementById('daily-segment').addEventListener('click', () => switchDiarySection('daily'));
+            document.getElementById('spreads-segment').addEventListener('click', () => switchDiarySection('spreads'));
+        }
+
+        function switchTab(clickedItem) {
+            // 모든 탭과 화면 비활성화
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-screen').forEach(screen => screen.classList.remove('active'));
+
+            // 클릭된 탭과 해당 화면 활성화
+            clickedItem.classList.add('active');
+            const tabName = clickedItem.dataset.tab;
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // 일기 탭 진입 시 데이터 로드
+            if (tabName === 'diary') {
+                loadDiaryData();
+            }
+        }
+
+        // 일기 탭 관련 함수들
+        function switchDiarySection(section) {
+            // 세그먼트 버튼 상태 변경
+            document.querySelectorAll('.segment-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (section === 'daily') {
+                document.getElementById('daily-segment').classList.add('active');
+                document.getElementById('daily-section').style.display = 'block';
+                document.getElementById('spreads-section').style.display = 'none';
+                loadDailyCards();
+            } else {
+                document.getElementById('spreads-segment').classList.add('active');
+                document.getElementById('daily-section').style.display = 'none';
+                document.getElementById('spreads-section').style.display = 'block';
+                loadSavedSpreads();
+            }
+        }
+
+        function loadDiaryData() {
+            // 기본적으로 데일리 타로 섹션 표시
+            switchDiarySection('daily');
+        }
+
+        function loadDailyCards() {
+            const container = document.getElementById('daily-cards-scroll');
+            const dailyData = getDailyCardsData();
+            
+            if (dailyData.length === 0) {
+                container.innerHTML = `
+                    <div class="diary-empty-state">
+                        <div class="empty-icon">🌟</div>
+                        <div class="empty-title">아직 데일리 타로가 없습니다</div>
+                        <div class="empty-description">타이머 탭에서 24시간 타로를 뽑고<br>메모를 남겨보세요</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            dailyData.forEach(dayData => {
+                const memoCount = dayData.memoCount;
+                const dateStr = formatDiaryDate(dayData.date);
+                
+                html += `
+                    <div class="daily-card-item" onclick="openDailyDetail('${dayData.date}')">
+                        <div class="daily-card-header">
+                            <div class="daily-card-date">${dateStr}</div>
+                            <div class="daily-card-memo-count">메모 ${memoCount}개</div>
+                        </div>
+                        <div class="daily-card-preview">
+                            ${dayData.previewCards.map(card => `
+                                <div class="daily-preview-card">${card.emoji}</div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function loadSavedSpreads() {
+            const container = document.getElementById('saved-spreads-grid');
+            
+            try {
+                const savedSpreads = JSON.parse(localStorage.getItem('saved-spreads') || '[]');
+                
+                if (savedSpreads.length === 0) {
+                    container.innerHTML = `
+                        <div class="diary-empty-state" style="grid-column: 1 / -1;">
+                            <div class="empty-icon">🔮</div>
+                            <div class="empty-title">저장된 스프레드가 없습니다</div>
+                            <div class="empty-description">스프레드 탭에서 카드를 뽑고<br>완성된 스프레드를 저장해보세요</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                savedSpreads.forEach(spread => {
+                    const date = new Date(spread.createdAt);
+                    const dateStr = date.toLocaleDateString('ko-KR', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    // 미니 카드들 생성
+                    const miniCards = Object.values(spread.cards).slice(0, 9); // 최대 9개
+                    const miniCardsHtml = miniCards.map(card => 
+                        `<div class="spread-mini-card">${card.emoji}</div>`
+                    ).join('');
+                    
+                    html += `
+                        <div class="saved-spread-item" onclick="openSpreadDetail(${spread.id})">
+                            <div class="saved-spread-thumbnail">
+                                <div class="spread-mini-cards">
+                                    ${miniCardsHtml}
+                                </div>
+                            </div>
+                            <div class="saved-spread-info">${spread.name}</div>
+                            <div class="saved-spread-meta">${dateStr} • ${spread.type}</div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('저장된 스프레드 로드 실패:', error);
+                container.innerHTML = `
+                    <div class="diary-empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">데이터 로드 실패</div>
+                        <div class="empty-description">저장된 데이터를 불러올 수 없습니다</div>
+                    </div>
+                `;
+            }
+        }
+
+        function getDailyCardsData() {
+            const data = [];
+            
+            // todayCards에서 데이터 추출
+            Object.keys(todayCards).forEach(dateStr => {
+                const dayCards = todayCards[dateStr];
+                if (!dayCards) return;
+                
+                // 메모 개수 계산
+                let memoCount = 0;
+                for (let hour = 0; hour < 24; hour++) {
+                    const memoKey = `${dateStr}-${hour}`;
+                    if (memos[memoKey]?.trim()) {
+                        memoCount++;
+                    }
+                }
+                
+                // 미리보기 카드들 (첫 4장)
+                const previewCards = [];
+                for (let hour = 0; hour < Math.min(4, 24); hour++) {
+                    if (dayCards[hour]) {
+                        previewCards.push(dayCards[hour]);
+                    }
+                }
+                
+                if (previewCards.length > 0) {
+                    data.push({
+                        date: dateStr,
+                        memoCount,
+                        previewCards
+                    });
+                }
+            });
+            
+            // 최신순 정렬
+            return data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        function formatDiaryDate(dateStr) {
+            const date = new Date(dateStr);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return '오늘';
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return '어제';
+            } else {
+                return date.toLocaleDateString('ko-KR', {
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'short'
+                });
+            }
+        }
+
+        function openDailyDetail(dateStr) {
+            // 간단한 알림으로 대체 (실제 구현에서는 상세 모달 표시)
+            showToast('📖 데일리 상세 기능은 추후 구현 예정입니다');
+        }
+
+        function openSpreadDetail(spreadId) {
+            // 간단한 알림으로 대체 (실제 구현에서는 상세 모달 표시)
+            showToast('🔮 스프레드 상세 기능은 추후 구현 예정입니다');
+        }
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                weekday: 'short' 
+            };
+            const dateString = now.toLocaleDateString('ko-KR', options);
+            document.getElementById('current-date').textContent = dateString;
+        }
+
+        function updateCurrentTime() {
+            const now = new Date();
+            currentHour = now.getHours();
+            
+            if (isCardsDrawn) {
+                updateMainCard();
+                updateHourHighlight();
+            }
+        }
+
+        function drawDailyCards() {
+            const drawBtn = document.getElementById('draw-cards-btn');
+            const generateScreen = document.getElementById('cards-generating');
+            
+            // 버튼 비활성화 및 로딩 표시
+            drawBtn.disabled = true;
+            drawBtn.innerHTML = '<div class="loading"></div> 생성 중...';
+            
+            // 애니메이션 화면 표시
+            setTimeout(() => {
+                generateScreen.classList.add('active');
+                startCardGenerationAnimation();
+            }, 500);
+        }
+
+        function startCardGenerationAnimation() {
+            const cardsContainer = document.querySelector('.generating-cards');
+            cardsContainer.innerHTML = '';
+            
+            // 24개 카드 생성
+            for (let i = 0; i < 24; i++) {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'generating-card';
+                cardsContainer.appendChild(cardDiv);
+            }
+            
+            // 순차적으로 카드 나타내기
+            const cards = cardsContainer.querySelectorAll('.generating-card');
+            let delay = 0;
+            
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('appear');
+                    
+                    // 마지막 카드 완료 후 처리
+                    if (index === cards.length - 1) {
+                        setTimeout(() => {
+                            finishCardGeneration();
+                        }, 1000);
+                    }
+                }, delay);
+                delay += 100;
+            });
+        }
+
+        function finishCardGeneration() {
+            // 24시간 카드 생성
+            generateTodayCards();
+            
+            // 애니메이션 화면 숨기기
+            document.getElementById('cards-generating').classList.remove('active');
+            
+            // UI 업데이트
+            document.getElementById('draw-cards-section').style.display = 'none';
+            document.getElementById('main-card-section').style.display = 'block';
+            document.getElementById('memo-section').style.display = 'block';
+            document.getElementById('hour-scroll-section').style.display = 'block';
+            
+            // 데이터 저장
+            isCardsDrawn = true;
+            saveUserData();
+            
+            // 현재 카드와 시간 스크롤 업데이트
+            updateMainCard();
+            generateHourScroll();
+            
+            // 성공 토스트
+            showToast('✨ 24시간 타로 카드가 생성되었습니다!', 'success');
+        }
+
+        function generateTodayCards() {
+            const today = new Date().toDateString();
+            todayCards[today] = {};
+            
+            // 각 시간대별로 랜덤 카드 할당
+            for (let hour = 0; hour < 24; hour++) {
+                const randomIndex = Math.floor(Math.random() * tarotCards.length);
+                const card = { ...tarotCards[randomIndex] };
+                card.reversed = Math.random() < 0.3; // 30% 확률로 역방향
+                todayCards[today][hour] = card;
+            }
+        }
+
+        function updateMainCard() {
+            const today = new Date().toDateString();
+            const currentCard = todayCards[today]?.[currentHour];
+            
+            if (!currentCard) return;
+            
+            // 시간 표시 업데이트
+            const timeText = formatHourText(currentHour);
+            document.getElementById('main-card-time').textContent = `현재 ${timeText} 카드`;
+            
+            // 카드명 업데이트
+            document.getElementById('main-card-name').textContent = currentCard.name;
+            
+            // 카드 이미지 업데이트
+            const mainCardElement = document.getElementById('main-tarot-card');
+            updateCardVisual(mainCardElement, currentCard);
+            
+            // 현재 시간 하이라이트
+            mainCardElement.classList.add('current-hour');
+            
+            // 메모 로드
+            loadCurrentMemo();
+        }
+
+        function updateCardVisual(cardElement, card) {
+            cardElement.innerHTML = `
+                <div class="tarot-card-front ${card.reversed ? 'reversed' : ''}">
+                    <div class="card-number">${card.number}</div>
+                    <div class="card-image">${card.emoji}</div>
+                    <div class="card-name">${card.name}</div>
+                </div>
+            `;
+            
+            if (card.reversed) {
+                cardElement.classList.add('reversed');
+            } else {
+                cardElement.classList.remove('reversed');
+            }
+        }
+
+        function generateHourScroll() {
+            const scrollContainer = document.getElementById('hour-scroll-section');
+            const today = new Date().toDateString();
+            
+            let html = '';
+            for (let hour = 0; hour < 24; hour++) {
+                const card = todayCards[today]?.[hour];
+                const timeText = formatHourText(hour, true);
+                const isCurrentHour = hour === currentHour;
+                const hasMemo = memos[`${today}-${hour}`]?.trim() !== '';
+                
+                html += `
+                    <div class="hour-card ${isCurrentHour ? 'current' : ''}" data-hour="${hour}">
+                        <div class="tarot-card ${isCurrentHour ? 'current-hour' : ''} ${hasMemo ? 'has-memo' : ''}" 
+                             onclick="openCardDetail(${hour})">
+                            ${card ? `
+                                <div class="tarot-card-front ${card.reversed ? 'reversed' : ''}">
+                                    <div style="font-size: 20px;">${card.emoji}</div>
+                                </div>
+                            ` : '<div class="tarot-card-back">🔮</div>'}
+                        </div>
+                        <div class="hour-time">${timeText}</div>
+                    </div>
+                `;
+            }
+            
+            scrollContainer.innerHTML = html;
+            
+            // 현재 시간으로 스크롤
+            setTimeout(() => {
+                const currentCard = scrollContainer.querySelector('.hour-card.current');
+                if (currentCard) {
+                    currentCard.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                }
+            }, 100);
+        }
+
+        function updateHourHighlight() {
+            // 시간 스크롤의 하이라이트 업데이트
+            document.querySelectorAll('.hour-card').forEach((card, index) => {
+                if (index === currentHour) {
+                    card.classList.add('current');
+                    card.querySelector('.tarot-card').classList.add('current-hour');
+                } else {
+                    card.classList.remove('current');
+                    card.querySelector('.tarot-card').classList.remove('current-hour');
+                }
+            });
+        }
+
+        function openCardDetail(hour) {
+            const today = new Date().toDateString();
+            const card = todayCards[today]?.[hour];
+            
+            if (!card) return;
+            
+            const modal = document.getElementById('card-detail-modal');
+            const modalCard = document.getElementById('modal-tarot-card');
+            const modalTime = document.getElementById('modal-card-time');
+            const modalName = document.getElementById('modal-card-name');
+            const modalMemo = document.getElementById('modal-memo');
+            
+            // 모달 내용 업데이트
+            modalTime.textContent = formatHourText(hour);
+            modalName.textContent = card.name;
+            updateCardVisual(modalCard, card);
+            
+            // 메모 로드
+            const memoKey = `${today}-${hour}`;
+            modalMemo.value = memos[memoKey] || '';
+            
+            // 현재 시간 저장 (네비게이션용)
+            modal.dataset.currentHour = hour;
+            
+            // 모달 표시
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('card-detail-modal');
+            const modalMemo = document.getElementById('modal-memo');
+            const hour = parseInt(modal.dataset.currentHour);
+            
+            // 메모 저장
+            if (modalMemo.value.trim()) {
+                const today = new Date().toDateString();
+                const memoKey = `${today}-${hour}`;
+                memos[memoKey] = modalMemo.value;
+                saveUserData();
+                
+                // 메모 dot 업데이트
+                updateMemoDots();
+            }
+            
+            modal.classList.remove('active');
+        }
+
+        function navigateHour(direction) {
+            const modal = document.getElementById('card-detail-modal');
+            let hour = parseInt(modal.dataset.currentHour);
+            
+            hour += direction;
+            if (hour < 0) hour = 23;
+            if (hour > 23) hour = 0;
+            
+            closeModal();
+            setTimeout(() => openCardDetail(hour), 100);
+        }
+
+        function loadCurrentMemo() {
+            const today = new Date().toDateString();
+            const memoKey = `${today}-${currentHour}`;
+            const currentMemoElement = document.getElementById('current-memo');
+            
+            currentMemoElement.value = memos[memoKey] || '';
+        }
+
+        function saveMemo() {
+            const today = new Date().toDateString();
+            const memoKey = `${today}-${currentHour}`;
+            const memoText = document.getElementById('current-memo').value;
+            
+            memos[memoKey] = memoText;
+            saveUserData();
+            updateMemoDots();
+            
+            showToast('✅ 메모가 저장되었습니다', 'success');
+        }
+
+        function autoSaveMemo() {
+            const today = new Date().toDateString();
+            const memoKey = `${today}-${currentHour}`;
+            const memoText = document.getElementById('current-memo').value;
+            
+            if (memoText.trim()) {
+                memos[memoKey] = memoText;
+                saveUserData();
+                updateMemoDots();
+            }
+        }
+
+        function updateMemoDots() {
+            const today = new Date().toDateString();
+            
+            document.querySelectorAll('.hour-card .tarot-card').forEach((card, hour) => {
+                const memoKey = `${today}-${hour}`;
+                const hasMemo = memos[memoKey]?.trim() !== '';
+                
+                if (hasMemo) {
+                    card.classList.add('has-memo');
+                } else {
+                    card.classList.remove('has-memo');
+                }
+            });
+        }
+
+        function formatHourText(hour, short = false) {
+            if (short) {
+                return hour === 0 ? '00' : hour.toString().padStart(2, '0');
+            }
+            
+            if (hour === 0) return '자정';
+            if (hour === 12) return '정오';
+            if (hour < 12) return `오전 ${hour}시`;
+            return `오후 ${hour - 12}시`;
+        }
+
+        function loadUserData() {
+            try {
+                const savedData = localStorage.getItem('tarot24h-data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    todayCards = data.todayCards || {};
+                    memos = data.memos || {};
+                    isCardsDrawn = data.isCardsDrawn || false;
+                    
+                    // 오늘 카드가 뽑혔는지 확인
+                    const today = new Date().toDateString();
+                    if (isCardsDrawn && todayCards[today]) {
+                        // UI 업데이트
+                        document.getElementById('draw-cards-section').style.display = 'none';
+                        document.getElementById('main-card-section').style.display = 'block';
+                        document.getElementById('memo-section').style.display = 'block';
+                        document.getElementById('hour-scroll-section').style.display = 'block';
+                        
+                        updateMainCard();
+                        generateHourScroll();
+                        updateMemoDots();
+                    }
+                }
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+            }
+        }
+
+        function saveUserData() {
+            try {
+                const data = {
+                    todayCards,
+                    memos,
+                    isCardsDrawn,
+                    lastSaved: new Date().toISOString()
+                };
+                localStorage.setItem('tarot24h-data', JSON.stringify(data));
+            } catch (error) {
+                console.error('데이터 저장 실패:', error);
+            }
+        }
+
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 스프레드 관련 함수들
+        function selectSpread(card) {
+            const spreadType = card.dataset.spread;
+            const cardCount = parseInt(card.dataset.count);
+            
+            currentSpread = {
+                type: spreadType,
+                name: card.querySelector('.spread-name').textContent,
+                count: cardCount,
+                cards: {}
+            };
+            
+            spreadProgress = 0;
+            currentSpreadCards = {};
+            
+            // 스프레드 화면으로 전환
+            document.getElementById('spread-selection-screen').style.display = 'none';
+            document.getElementById('active-spread-screen').style.display = 'block';
+            
+            // 헤더 업데이트
+            document.getElementById('current-spread-name').textContent = currentSpread.name;
+            updateSpreadProgress();
+            
+            // 스프레드 레이아웃 생성
+            generateSpreadLayout(spreadType, cardCount);
+        }
+
+        function generateSpreadLayout(spreadType, cardCount) {
+            const canvas = document.getElementById('spread-canvas');
+            canvas.innerHTML = '';
+            
+            const layout = document.createElement('div');
+            layout.className = `spread-layout ${spreadType}`;
+            
+            // 스프레드별 라벨
+            const labels = getSpreadLabels(spreadType);
+            
+            for (let i = 0; i < cardCount; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'card-slot';
+                slot.dataset.slotIndex = i;
+                
+                const label = document.createElement('div');
+                label.className = 'slot-label';
+                label.textContent = labels[i] || `카드 ${i + 1}`;
+                slot.appendChild(label);
+                
+                slot.addEventListener('click', () => drawSpreadCard(i));
+                layout.appendChild(slot);
+            }
+            
+            canvas.appendChild(layout);
+        }
+
+        function getSpreadLabels(spreadType) {
+            const labels = {
+                'celtic-cross': ['현재', '도전/기회', '먼 과거', '가능한 미래', '최근 과거', '가까운 미래', '자신', '외부 영향', '희망과 두려움', '최종 결과'],
+                'cup-relationship': ['나', '상대방', '관계', '과거', '현재', '미래', '조언'],
+                'five-card': ['중심', '동쪽', '남쪽', '서쪽', '북쪽'],
+                'four-timeline': ['과거', '현재', '미래', '조언'],
+                'three-card': ['과거', '현재', '미래'],
+                'one-card': ['오늘의 메시지']
+            };
+            return labels[spreadType] || [];
+        }
+
+        function drawSpreadCard(slotIndex) {
+            if (currentSpreadCards[slotIndex]) return; // 이미 뽑힌 카드
+            
+            // 카드 뽑기 애니메이션
+            showDrawCardModal(() => {
+                const randomIndex = Math.floor(Math.random() * tarotCards.length);
+                const card = { ...tarotCards[randomIndex] };
+                card.reversed = Math.random() < 0.3; // 30% 확률로 역방향
+                
+                // 이미 뽑힌 카드는 제외 (중복 방지)
+                const usedCards = Object.values(currentSpreadCards).map(c => c.name);
+                if (usedCards.includes(card.name)) {
+                    // 다른 카드 선택
+                    let attempts = 0;
+                    while (usedCards.includes(card.name) && attempts < 50) {
+                        const newIndex = Math.floor(Math.random() * tarotCards.length);
+                        Object.assign(card, tarotCards[newIndex]);
+                        card.reversed = Math.random() < 0.3;
+                        attempts++;
+                    }
+                }
+                
+                currentSpreadCards[slotIndex] = card;
+                updateSpreadSlot(slotIndex, card);
+                spreadProgress++;
+                updateSpreadProgress();
+                
+                // 모든 카드 완성 시
+                if (spreadProgress >= currentSpread.count) {
+                    document.getElementById('capture-spread').disabled = false;
+                    showToast('✨ 스프레드가 완성되었습니다!', 'success');
+                }
+            });
+        }
+
+        function showDrawCardModal(onComplete) {
+            const modal = document.getElementById('draw-card-modal');
+            const cardElement = document.getElementById('drawing-tarot-card');
+            
+            modal.classList.add('active');
+            cardElement.innerHTML = '<div class="tarot-card-back">🔮</div>';
+            cardElement.classList.add('card-flip');
+            
+            setTimeout(() => {
+                modal.classList.remove('active');
+                cardElement.classList.remove('card-flip');
+                if (onComplete) onComplete();
+            }, 1500);
+        }
+
+        function updateSpreadSlot(slotIndex, card) {
+            const slot = document.querySelector(`[data-slot-index="${slotIndex}"]`);
+            if (!slot) return;
+            
+            slot.innerHTML = '';
+            slot.classList.add('filled');
+            
+            const cardElement = document.createElement('div');
+            cardElement.className = `tarot-card ${card.reversed ? 'reversed' : ''}`;
+            updateCardVisual(cardElement, card);
+            
+            // 롱터치로 카드 뒤집기
+            let longTouchTimer;
+            cardElement.addEventListener('touchstart', (e) => {
+                longTouchTimer = setTimeout(() => {
+                    card.reversed = !card.reversed;
+                    cardElement.classList.toggle('reversed');
+                    updateCardVisual(cardElement, card);
+                    showToast(card.reversed ? '🔄 역방향으로 변경' : '🔄 정방향으로 변경');
+                }, 800);
+            });
+            
+            cardElement.addEventListener('touchend', () => {
+                clearTimeout(longTouchTimer);
+            });
+            
+            slot.appendChild(cardElement);
+        }
+
+        function updateSpreadProgress() {
+            if (!currentSpread) return;
+            document.getElementById('spread-progress').textContent = 
+                `${spreadProgress}/${currentSpread.count}`;
+        }
+
+        function backToSpreadSelection() {
+            if (spreadProgress > 0) {
+                if (!confirm('진행 중인 스프레드가 있습니다. 정말 나가시겠습니까?')) {
+                    return;
+                }
+            }
+            
+            document.getElementById('active-spread-screen').style.display = 'none';
+            document.getElementById('spread-selection-screen').style.display = 'block';
+            
+            // 상태 초기화
+            currentSpread = null;
+            currentSpreadCards = {};
+            spreadProgress = 0;
+        }
+
+        function resetCurrentSpread() {
+            if (!confirm('스프레드를 초기화하시겠습니까?')) return;
+            
+            currentSpreadCards = {};
+            spreadProgress = 0;
+            updateSpreadProgress();
+            document.getElementById('capture-spread').disabled = true;
+            
+            // 슬롯들 초기화
+            document.querySelectorAll('.card-slot').forEach((slot, index) => {
+                slot.classList.remove('filled');
+                const labels = getSpreadLabels(currentSpread.type);
+                slot.innerHTML = `<div class="slot-label">${labels[index] || `카드 ${index + 1}`}</div>`;
+            });
+            
+            showToast('🔄 스프레드가 초기화되었습니다');
+        }
+
+        function captureSpread() {
+            if (spreadProgress < currentSpread.count) {
+                showToast('⚠️ 모든 카드를 뽑아주세요');
+                return;
+            }
+            
+            // 간단한 캡처 시뮬레이션
+            showToast('📸 스프레드가 저장되었습니다!', 'success');
+            
+            // 저장된 스프레드 데이터 생성
+            const savedSpread = {
+                id: Date.now(),
+                type: currentSpread.type,
+                name: currentSpread.name,
+                cards: { ...currentSpreadCards },
+                createdAt: new Date().toISOString()
+            };
+            
+            // localStorage에 저장
+            saveSpreadData(savedSpread);
+            
+            // 3초 후 자동으로 일기 탭으로 이동
+            setTimeout(() => {
+                document.querySelector('[data-tab="diary"]').click();
+                showToast('📚 일기 탭에서 확인하세요');
+            }, 2000);
+        }
+
+        function saveSpreadData(spreadData) {
+            try {
+                const savedSpreads = JSON.parse(localStorage.getItem('saved-spreads') || '[]');
+                savedSpreads.unshift(spreadData);
+                
+                // 최대 20개만 보관
+                if (savedSpreads.length > 20) {
+                    savedSpreads.splice(20);
+                }
+                
+                localStorage.setItem('saved-spreads', JSON.stringify(savedSpreads));
+            } catch (error) {
+                console.error('스프레드 저장 실패:', error);
+            }
+        }
+
+        // 앱 생명주기 관리
+        window.addEventListener('beforeunload', function() {
+            saveUserData();
+        });
+
+        // 가시성 변경 시 저장
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                saveUserData();
+            }
+        });
+
+        // 터치 최적화
+        document.addEventListener('touchstart', function() {}, { passive: true });
+        
+        // 줌 방지
+        document.addEventListener('touchmove', function(e) {
+            if (e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>

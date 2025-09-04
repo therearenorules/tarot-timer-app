@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context API 타로 타이머 - 테스트</title>
+  <meta name="description" content="Context API 통합된 타로 타이머 앱 테스트">
+  
+  <!-- 외부 리소스 -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 글로벌 CSS -->
+  <style>
+    /* 기본 스타일 */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8e4ff 50%, #f0f8ff 100%);
+      min-height: 100vh;
+    }
+    
+    /* 커스텀 색상 */
+    :root {
+      --premium-gold: #d4af37;
+      --bright-gold: #f4d03f;
+      --deep-purple: #4a1a4f;
+      --midnight-blue: #1a1f3a;
+      --mystical-text: #2d3748;
+      --mystical-text-secondary: #718096;
+      --mystical-border: #e2e8f0;
+      --soft-lavender: #f7fafc;
+      --mystical-mist: #edf2f7;
+    }
+    
+    /* 애니메이션 */
+    @keyframes mystical-pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .mystical-glow {
+      box-shadow: 0 4px 14px 0 rgba(212, 175, 55, 0.15);
+      transition: box-shadow 0.3s ease;
+    }
+    
+    .mystical-glow:hover {
+      box-shadow: 0 8px 25px 0 rgba(212, 175, 55, 0.25);
+    }
+    
+    .shadow-mystical {
+      box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.3), 0 4px 6px -2px rgba(212, 175, 55, 0.1);
+    }
+    
+    .animate-mystical-pulse {
+      animation: mystical-pulse 2s ease-in-out infinite;
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    /* 커스텀 컴포넌트 스타일 */
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--mystical-border);
+      overflow: hidden;
+    }
+    
+    .card-content {
+      padding: 1.5rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--premium-gold) 0%, var(--bright-gold) 100%);
+      color: var(--midnight-blue);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-mystical);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--deep-purple) 0%, var(--midnight-blue) 100%);
+      color: white;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--mystical-text);
+      border: 1px solid var(--mystical-border);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-outline {
+      background: transparent;
+      color: var(--mystical-text);
+      border: 1px solid var(--mystical-border);
+    }
+  </style>
+  
+  <!-- Tailwind 설정 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'premium-gold': '#d4af37',
+            'bright-gold': '#f4d03f',
+            'deep-purple': '#4a1a4f',
+            'midnight-blue': '#1a1f3a',
+            'mystical-text': '#2d3748',
+            'mystical-text-secondary': '#718096',
+            'mystical-border': '#e2e8f0',
+            'soft-lavender': '#f7fafc',
+            'mystical-mist': '#edf2f7'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="root">
+    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-size: 18px; color: var(--mystical-text);">
+      <div style="text-align: center;">
+        <div style="animation: spin 1s linear infinite; width: 32px; height: 32px; border: 3px solid var(--mystical-border); border-top: 3px solid var(--premium-gold); border-radius: 50%; margin: 0 auto 16px;"></div>
+        앱 로딩 중...
+      </div>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useContext, createContext, useReducer, useCallback, useRef, Component } = React;
+    
+    // Mock 타로 데이터
+    const MOCK_TAROT_CARDS = [
+      { id: '0', name: 'The Fool', nameKr: '바보', meaning: '새로운 시작, 모험' },
+      { id: '1', name: 'The Magician', nameKr: '마법사', meaning: '의지력, 창조' },
+      { id: '2', name: 'The High Priestess', nameKr: '여교황', meaning: '직관, 신비' },
+      { id: '3', name: 'The Empress', nameKr: '여황제', meaning: '풍요, 모성' },
+      { id: '4', name: 'The Emperor', nameKr: '황제', meaning: '권위, 안정' },
+      { id: '5', name: 'The Hierophant', nameKr: '교황', meaning: '전통, 가르침' },
+      { id: '6', name: 'The Lovers', nameKr: '연인들', meaning: '사랑, 선택' },
+      { id: '7', name: 'The Chariot', nameKr: '전차', meaning: '의지, 승리' },
+      { id: '8', name: 'Strength', nameKr: '힘', meaning: '용기, 내적힘' },
+      { id: '9', name: 'The Hermit', nameKr: '은둔자', meaning: '성찰, 지혜' },
+      { id: '10', name: 'Wheel of Fortune', nameKr: '운명의 수레바퀴', meaning: '운명, 변화' },
+      { id: '11', name: 'Justice', nameKr: '정의', meaning: '균형, 공정' },
+      { id: '12', name: 'The Hanged Man', nameKr: '매달린 사람', meaning: '희생, 기다림' },
+      { id: '13', name: 'Death', nameKr: '죽음', meaning: '변화, 재생' },
+      { id: '14', name: 'Temperance', nameKr: '절제', meaning: '조화, 균형' },
+      { id: '15', name: 'The Devil', nameKr: '악마', meaning: '유혹, 속박' },
+      { id: '16', name: 'The Tower', nameKr: '탑', meaning: '파괴, 해방' },
+      { id: '17', name: 'The Star', nameKr: '별', meaning: '희망, 영감' },
+      { id: '18', name: 'The Moon', nameKr: '달', meaning: '환상, 불안' },
+      { id: '19', name: 'The Sun', nameKr: '태양', meaning: '성공, 기쁨' },
+      { id: '20', name: 'Judgement', nameKr: '심판', meaning: '재생, 각성' },
+      { id: '21', name: 'The World', nameKr: '세계', meaning: '완성, 성취' },
+    ];
+    
+    const generateDailyCards = () => {
+      const cards = [];
+      for (let i = 0; i < 24; i++) {
+        const randomIndex = Math.floor(Math.random() * MOCK_TAROT_CARDS.length);
+        cards.push(MOCK_TAROT_CARDS[randomIndex]);
+      }
+      return cards;
+    };
+    
+    const getCurrentHour = () => new Date().getHours();
+    const formatHour = (hour) => `${hour.toString().padStart(2, '0')}:00`;
+    const formatDate = (date) => date.toLocaleDateString('ko-KR');
+    
+    // Context API 구현
+    
+    // 1. Error Context
+    const ErrorContext = createContext(null);
+    
+    const ErrorProvider = ({ children }) => {
+      const [errors, setErrors] = useState([]);
+      
+      const reportError = useCallback((error) => {
+        const errorObj = {
+          id: Date.now() + Math.random(),
+          ...error,
+          timestamp: new Date()
+        };
+        setErrors(prev => [...prev.slice(-9), errorObj]);
+        console.error('🚨 Error:', errorObj);
+      }, []);
+      
+      const clearError = useCallback((id) => {
+        setErrors(prev => prev.filter(e => e.id !== id));
+      }, []);
+      
+      return React.createElement(ErrorContext.Provider, {
+        value: { errors, reportError, clearError }
+      }, children);
+    };
+    
+    const useError = () => {
+      const context = useContext(ErrorContext);
+      if (!context) throw new Error('useError must be used within ErrorProvider');
+      return context;
+    };
+    
+    const useErrorReporter = () => {
+      const { reportError } = useError();
+      
+      const reportAsyncError = useCallback((error, metadata) => {
+        reportError({
+          type: 'async',
+          severity: 'medium',
+          message: error.message,
+          metadata
+        });
+      }, [reportError]);
+      
+      return { reportAsyncError };
+    };
+    
+    // 2. Loading Context
+    const LoadingContext = createContext(null);
+    
+    const LoadingProvider = ({ children }) => {
+      const [loadingItems, setLoadingItems] = useState({});
+      
+      const startLoading = useCallback((key, options = {}) => {
+        const id = `${key}-${Date.now()}`;
+        const item = {
+          id,
+          key,
+          title: options.title || '로딩 중...',
+          priority: options.priority || 'medium',
+          progress: 0,
+          timestamp: new Date()
+        };
+        
+        setLoadingItems(prev => ({ ...prev, [id]: item }));
+        return id;
+      }, []);
+      
+      const updateProgress = useCallback((id, progress) => {
+        setLoadingItems(prev => ({
+          ...prev,
+          [id]: prev[id] ? { ...prev[id], progress } : null
+        }));
+      }, []);
+      
+      const finishLoading = useCallback((id) => {
+        setLoadingItems(prev => {
+          const { [id]: removed, ...rest } = prev;
+          return rest;
+        });
+      }, []);
+      
+      const isLoading = useCallback((key) => {
+        if (!key) return Object.keys(loadingItems).length > 0;
+        return Object.values(loadingItems).some(item => item.key === key);
+      }, [loadingItems]);
+      
+      return React.createElement(LoadingContext.Provider, {
+        value: { 
+          items: loadingItems, 
+          startLoading, 
+          updateProgress, 
+          finishLoading, 
+          isLoading,
+          activeCount: Object.keys(loadingItems).length
+        }
+      }, children);
+    };
+    
+    const useLoading = () => {
+      const context = useContext(LoadingContext);
+      if (!context) throw new Error('useLoading must be used within LoadingProvider');
+      return context;
+    };
+    
+    const useAsyncLoading = () => {
+      const { startLoading, finishLoading, updateProgress } = useLoading();
+      
+      const executeWithLoading = useCallback(async (key, asyncFn, options) => {
+        const loadingId = startLoading(key, options);
+        
+        try {
+          const progressUpdater = (progress) => updateProgress(loadingId, progress);
+          const result = await asyncFn(progressUpdater);
+          return result;
+        } finally {
+          finishLoading(loadingId);
+        }
+      }, [startLoading, finishLoading, updateProgress]);
+      
+      return { executeWithLoading };
+    };
+    
+    // 3. DevTools Context (간소화 버전)
+    const DevToolsContext = createContext(null);
+    
+    const DevToolsProvider = ({ children }) => {
+      const [isVisible, setIsVisible] = useState(false);
+      const [logs, setLogs] = useState([]);
+      
+      const log = useCallback((level, category, message, data) => {
+        const entry = {
+          id: Date.now() + Math.random(),
+          timestamp: new Date(),
+          level, category, message, data
+        };
+        setLogs(prev => [...prev.slice(-99), entry]);
+        console[level]?.(`[${category}] ${message}`, data || '');
+      }, []);
+      
+      const toggle = useCallback(() => setIsVisible(prev => !prev), []);
+      
+      // Ctrl+Shift+D 단축키
+      useEffect(() => {
+        const handleKey = (e) => {
+          if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+            e.preventDefault();
+            toggle();
+          }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+      }, [toggle]);
+      
+      return React.createElement(DevToolsContext.Provider, {
+        value: { isVisible, logs, log, toggle }
+      }, [
+        children,
+        isVisible && React.createElement(DevToolsPanel, { key: 'devtools' })
+      ]);
+    };
+    
+    const useDevTools = () => {
+      const context = useContext(DevToolsContext);
+      if (!context) throw new Error('useDevTools must be used within DevToolsProvider');
+      return context;
+    };
+    
+    // DevTools 패널 UI
+    const DevToolsPanel = () => {
+      const { logs } = useDevTools();
+      const { items: loadingItems } = useLoading();
+      const { errors } = useError();
+      const [activeTab, setActiveTab] = useState('logs');
+      
+      return React.createElement('div', {
+        style: {
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '50vh',
+          backgroundColor: '#1f2937',
+          color: '#f3f4f6',
+          borderTop: '1px solid #374151',
+          zIndex: 10000,
+          fontFamily: 'monospace',
+          fontSize: '12px',
+          display: 'flex',
+          flexDirection: 'column',
+        }
+      }, [
+        // Header
+        React.createElement('div', {
+          key: 'header',
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 12px',
+            backgroundColor: '#111827',
+            borderBottom: '1px solid #374151',
+          }
+        }, [
+          React.createElement('div', { 
+            key: 'left',
+            style: { display: 'flex', alignItems: 'center', gap: '16px' }
+          }, [
+            React.createElement('span', { 
+              key: 'title',
+              style: { fontWeight: 'bold', color: '#fbbf24' } 
+            }, '🛠️ DevTools'),
+            React.createElement('div', {
+              key: 'tabs',
+              style: { display: 'flex', gap: '4px' }
+            }, ['logs', 'loading', 'errors'].map(tab =>
+              React.createElement('button', {
+                key: tab,
+                onClick: () => setActiveTab(tab),
+                style: {
+                  padding: '4px 8px',
+                  backgroundColor: activeTab === tab ? '#374151' : 'transparent',
+                  color: activeTab === tab ? '#fbbf24' : '#9ca3af',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  textTransform: 'capitalize',
+                }
+              }, tab)
+            ))
+          ]),
+          React.createElement('span', {
+            key: 'right',
+            style: { fontSize: '10px', color: '#6b7280' }
+          }, 'Ctrl+Shift+D')
+        ]),
+        
+        // Content
+        React.createElement('div', {
+          key: 'content',
+          style: { flex: 1, overflow: 'auto', padding: '8px' }
+        }, 
+          activeTab === 'logs' ? 
+            logs.slice(-50).map(log =>
+              React.createElement('div', {
+                key: log.id,
+                style: { 
+                  padding: '4px 0', 
+                  borderBottom: '1px solid #374151',
+                  fontSize: '11px' 
+                }
+              }, [
+                React.createElement('div', {
+                  key: 'meta',
+                  style: { display: 'flex', gap: '8px', marginBottom: '2px' }
+                }, [
+                  React.createElement('span', {
+                    key: 'time',
+                    style: { color: '#6b7280' }
+                  }, log.timestamp.toLocaleTimeString()),
+                  React.createElement('span', {
+                    key: 'level',
+                    style: { 
+                      color: log.level === 'error' ? '#ef4444' : 
+                             log.level === 'warn' ? '#f59e0b' : '#3b82f6',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase'
+                    }
+                  }, log.level),
+                  React.createElement('span', {
+                    key: 'category',
+                    style: {
+                      backgroundColor: '#374151',
+                      color: '#9ca3af',
+                      padding: '1px 4px',
+                      borderRadius: '2px',
+                      fontSize: '9px',
+                    }
+                  }, log.category)
+                ]),
+                React.createElement('div', {
+                  key: 'message',
+                  style: { color: '#f3f4f6' }
+                }, log.message)
+              ])
+            ) :
+          activeTab === 'loading' ?
+            Object.values(loadingItems).map(item =>
+              React.createElement('div', {
+                key: item.id,
+                style: {
+                  padding: '8px',
+                  marginBottom: '8px',
+                  backgroundColor: '#374151',
+                  borderRadius: '4px',
+                }
+              }, [
+                React.createElement('div', {
+                  key: 'title',
+                  style: { color: '#fbbf24', fontWeight: 'bold', marginBottom: '4px' }
+                }, item.title),
+                typeof item.progress === 'number' && React.createElement('div', {
+                  key: 'progress',
+                  style: { display: 'flex', alignItems: 'center', gap: '8px' }
+                }, [
+                  React.createElement('div', {
+                    key: 'bar',
+                    style: {
+                      flex: 1,
+                      height: '4px',
+                      backgroundColor: '#4b5563',
+                      borderRadius: '2px',
+                    }
+                  }, React.createElement('div', {
+                    style: {
+                      width: `${item.progress}%`,
+                      height: '100%',
+                      backgroundColor: '#3b82f6',
+                      transition: 'width 0.3s ease',
+                    }
+                  })),
+                  React.createElement('span', {
+                    key: 'percentage',
+                    style: { color: '#9ca3af', fontSize: '10px' }
+                  }, `${item.progress}%`)
+                ])
+              ])
+            ) :
+          activeTab === 'errors' ?
+            errors.map(error =>
+              React.createElement('div', {
+                key: error.id,
+                style: {
+                  padding: '8px',
+                  marginBottom: '8px',
+                  backgroundColor: '#374151',
+                  borderRadius: '4px',
+                  borderLeft: '4px solid #ef4444',
+                }
+              }, [
+                React.createElement('div', {
+                  key: 'type',
+                  style: { color: '#fbbf24', fontWeight: 'bold', marginBottom: '4px' }
+                }, error.type || 'Error'),
+                React.createElement('div', {
+                  key: 'message',
+                  style: { color: '#f3f4f6', marginBottom: '4px' }
+                }, error.message)
+              ])
+            ) : null
+        )
+      ]);
+    };
+    
+    // 로딩 오버레이
+    const LoadingOverlay = () => {
+      const { items, activeCount } = useLoading();
+      
+      if (activeCount === 0) return null;
+      
+      const primaryItem = Object.values(items)[0];
+      
+      return React.createElement('div', {
+        style: {
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          backdropFilter: 'blur(4px)',
+        }
+      }, React.createElement('div', {
+        style: {
+          backgroundColor: 'white',
+          padding: '2rem',
+          borderRadius: '12px',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+          textAlign: 'center',
+          maxWidth: '400px',
+          width: '90%',
+        }
+      }, [
+        React.createElement('div', {
+          key: 'spinner',
+          style: {
+            width: '48px', height: '48px',
+            margin: '0 auto 1.5rem',
+            borderRadius: '50%',
+            border: '4px solid #e2e8f0',
+            borderTop: '4px solid var(--premium-gold)',
+            animation: 'spin 1s linear infinite',
+          }
+        }),
+        React.createElement('h3', {
+          key: 'title',
+          style: {
+            margin: '0 0 0.5rem',
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            color: 'var(--mystical-text)',
+          }
+        }, primaryItem?.title || '로딩 중...'),
+        typeof primaryItem?.progress === 'number' && React.createElement('div', {
+          key: 'progress',
+          style: { marginTop: '1rem' }
+        }, [
+          React.createElement('div', {
+            key: 'bar',
+            style: {
+              width: '100%', height: '8px',
+              backgroundColor: '#e2e8f0',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              marginBottom: '0.5rem',
+            }
+          }, React.createElement('div', {
+            style: {
+              width: `${primaryItem.progress}%`,
+              height: '100%',
+              backgroundColor: 'var(--premium-gold)',
+              transition: 'width 0.3s ease',
+            }
+          })),
+          React.createElement('div', {
+            key: 'text',
+            style: { fontSize: '0.8rem', color: 'var(--mystical-text-secondary)' }
+          }, `${primaryItem.progress}%`)
+        ])
+      ]));
+    };
+    
+    // Error Boundary
+    class ErrorBoundary extends Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+      }
+      
+      static getDerivedStateFromError(error) {
+        return { hasError: true };
+      }
+      
+      componentDidCatch(error, errorInfo) {
+        console.error('Error Boundary caught an error:', error, errorInfo);
+      }
+      
+      render() {
+        if (this.state.hasError) {
+          return React.createElement('div', {
+            style: {
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '400px',
+              padding: '2rem',
+              textAlign: 'center',
+              backgroundColor: '#fff5f5',
+              border: '1px solid #fed7d7',
+              borderRadius: '8px',
+              margin: '1rem',
+            }
+          }, [
+            React.createElement('div', {
+              key: 'emoji',
+              style: { fontSize: '3rem', marginBottom: '1rem' }
+            }, '😵'),
+            React.createElement('h2', {
+              key: 'title',
+              style: { color: '#e53e3e', marginBottom: '0.5rem', fontSize: '1.5rem' }
+            }, '앗! 문제가 발생했습니다'),
+            React.createElement('p', {
+              key: 'desc',
+              style: { color: '#718096', marginBottom: '1.5rem', maxWidth: '500px' }
+            }, '예상치 못한 오류가 발생했습니다. 페이지를 새로고침해주세요.'),
+            React.createElement('button', {
+              key: 'reload',
+              onClick: () => window.location.reload(),
+              className: 'btn btn-primary'
+            }, '페이지 새로고침')
+          ]);
+        }
+        
+        return this.props.children;
+      }
+    }
+    
+    // 메인 앱 컴포넌트
+    const TarotCardDisplay = ({ card, isRevealed = false, onClick, size = 'medium' }) => {
+      const { reportAsyncError } = useErrorReporter();
+      const { executeWithLoading } = useAsyncLoading();
+      
+      const sizeClasses = {
+        small: { width: '64px', height: '96px' },
+        medium: { width: '80px', height: '120px' },
+        large: { width: '128px', height: '192px' }
+      };
+      
+      const handleCardClick = async () => {
+        if (onClick) {
+          try {
+            await executeWithLoading(
+              'card-reveal',
+              async (updateProgress) => {
+                updateProgress?.(50);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                updateProgress?.(100);
+                onClick();
+              },
+              { title: '카드 공개 중...', priority: 'low' }
+            );
+          } catch (error) {
+            reportAsyncError(error, { card: card.id });
+          }
+        }
+      };
+      
+      return React.createElement('div', {
+        style: {
+          ...sizeClasses[size],
+          cursor: onClick ? 'pointer' : 'default',
+          transition: 'transform 0.3s ease',
+        },
+        onClick: handleCardClick,
+        onMouseEnter: (e) => { if (onClick) e.target.style.transform = 'scale(1.05)'; },
+        onMouseLeave: (e) => { if (onClick) e.target.style.transform = 'scale(1)'; }
+      }, React.createElement('div', {
+        className: 'card mystical-glow',
+        style: { height: '100%' }
+      }, React.createElement('div', {
+        className: 'card-content',
+        style: { 
+          padding: '8px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%'
+        }
+      }, isRevealed ? [
+        React.createElement('div', {
+          key: 'image',
+          style: {
+            width: '100%',
+            height: '70%',
+            background: 'linear-gradient(135deg, var(--premium-gold), var(--bright-gold))',
+            borderRadius: '4px',
+            marginBottom: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '12px',
+            fontWeight: 'bold'
+          }
+        }, card.nameKr),
+        React.createElement('div', {
+          key: 'name',
+          style: {
+            textAlign: 'center',
+            fontSize: size === 'small' ? '8px' : '10px',
+            color: 'var(--premium-gold)',
+            fontWeight: '500'
+          }
+        }, card.nameKr)
+      ] : React.createElement('div', {
+        style: {
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(135deg, var(--deep-purple), var(--midnight-blue))',
+          borderRadius: '4px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--premium-gold)'
+        }
+      }, [
+        React.createElement('div', {
+          key: 'icon',
+          style: { fontSize: size === 'small' ? '16px' : '24px', marginBottom: '4px' }
+        }, '🔮'),
+        React.createElement('div', {
+          key: 'pulse',
+          style: {
+            width: '80%',
+            height: '4px',
+            background: 'linear-gradient(to right, var(--premium-gold), var(--bright-gold))',
+            borderRadius: '2px'
+          },
+          className: 'animate-mystical-pulse'
+        })
+      ]))));
+    };
+    
+    const TimerTab = () => {
+      const { log } = useDevTools();
+      const { reportAsyncError } = useErrorReporter();
+      const { executeWithLoading } = useAsyncLoading();
+      const { isLoading } = useLoading();
+      
+      const [dailyCards, setDailyCards] = useState([]);
+      const [currentHour, setCurrentHour] = useState(getCurrentHour());
+      const [journal, setJournal] = useState('');
+      const [currentCard, setCurrentCard] = useState(null);
+      
+      // 일일 카드 생성
+      const initializeDailyCards = async () => {
+        try {
+          await executeWithLoading(
+            'daily-cards',
+            async (updateProgress) => {
+              updateProgress?.(25);
+              log('info', 'tarot', '일일 카드 생성 시작');
+              const cards = generateDailyCards();
+              updateProgress?.(75);
+              setDailyCards(cards);
+              if (cards.length > currentHour) {
+                setCurrentCard(cards[currentHour]);
+              }
+              updateProgress?.(100);
+              log('info', 'tarot', '일일 카드 생성 완료', { count: cards.length });
+            },
+            { title: '일일 카드 생성 중...', priority: 'medium' }
+          );
+        } catch (error) {
+          reportAsyncError(error, { context: 'daily-cards-init' });
+        }
+      };
+      
+      useEffect(() => {
+        initializeDailyCards();
+      }, []);
+      
+      // 저널 저장
+      const handleSaveJournal = async () => {
+        if (!currentCard || !journal.trim()) return;
+        
+        try {
+          await executeWithLoading(
+            'save-journal',
+            async (updateProgress) => {
+              updateProgress?.(30);
+              log('info', 'user', '저널 저장 시작', { card: currentCard.nameKr });
+              // 실제로는 서버에 저장
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              updateProgress?.(100);
+              log('info', 'user', '저널 저장 완료');
+              setJournal('');
+            },
+            { title: '저널 저장 중...', description: '소중한 생각을 기록하고 있습니다', priority: 'medium' }
+          );
+        } catch (error) {
+          reportAsyncError(error, { context: 'journal-save', card: currentCard.id });
+        }
+      };
+      
+      // 새 카드 뽑기
+      const handleDrawCard = async () => {
+        try {
+          await executeWithLoading(
+            'draw-card',
+            async (updateProgress) => {
+              log('info', 'user', '새 카드 뽑기 시작');
+              updateProgress?.(20);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              updateProgress?.(60);
+              const cards = generateDailyCards();
+              setDailyCards(cards);
+              updateProgress?.(80);
+              if (cards.length > currentHour) {
+                setCurrentCard(cards[currentHour]);
+              }
+              updateProgress?.(100);
+              log('info', 'user', '새 카드 뽑기 완료');
+            },
+            { title: '새로운 카드 뽑는 중...', description: '우주의 에너지가 카드를 선택하고 있습니다', priority: 'high' }
+          );
+        } catch (error) {
+          reportAsyncError(error, { context: 'card-draw' });
+        }
+      };
+      
+      return React.createElement('div', {
+        style: { maxWidth: '1024px', margin: '0 auto', padding: '24px' }
+      }, [
+        // 헤더
+        React.createElement('div', {
+          key: 'header',
+          style: { textAlign: 'center', marginBottom: '32px' }
+        }, [
+          React.createElement('div', {
+            key: 'title-section',
+            style: { display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }
+          }, [
+            React.createElement('span', {
+              key: 'icon',
+              style: { fontSize: '32px', marginRight: '12px' }
+            }, '🕐'),
+            React.createElement('h1', {
+              key: 'title',
+              style: {
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                background: 'linear-gradient(to right, var(--premium-gold), var(--bright-gold))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }
+            }, '시간별 타로')
+          ]),
+          React.createElement('div', {
+            key: 'badges',
+            style: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }
+          }, [
+            React.createElement('div', {
+              key: 'hour-badge',
+              className: 'badge badge-outline',
+              style: { display: 'flex', alignItems: 'center', gap: '8px' }
+            }, [
+              React.createElement('span', { key: 'star' }, '⭐'),
+              formatHour(currentHour)
+            ]),
+            React.createElement('div', {
+              key: 'date-badge',
+              className: 'badge badge-outline',
+              style: { display: 'flex', alignItems: 'center', gap: '8px' }
+            }, [
+              React.createElement('span', { key: 'sparkles' }, '✨'),
+              formatDate(new Date())
+            ])
+          ])
+        ]),
+        
+        // 현재 시간 카드
+        React.createElement('div', {
+          key: 'current-card',
+          style: { marginBottom: '32px' }
+        }, [
+          React.createElement('div', {
+            key: 'card-header',
+            style: { textAlign: 'center', marginBottom: '24px' }
+          }, [
+            React.createElement('h2', {
+              key: 'card-title',
+              style: { fontSize: '1.25rem', fontWeight: '600', color: 'var(--mystical-text)', marginBottom: '8px' }
+            }, '현재 시간의 카드'),
+            React.createElement('p', {
+              key: 'card-desc',
+              style: { color: 'var(--mystical-text-secondary)' }
+            }, `${formatHour(currentHour)} 의 안내`)
+          ]),
+          
+          React.createElement('div', {
+            key: 'card-display',
+            style: { display: 'flex', justifyContent: 'center', marginBottom: '24px' }
+          }, currentCard ? 
+            React.createElement(TarotCardDisplay, {
+              card: currentCard,
+              isRevealed: true,
+              size: 'large'
+            }) :
+            React.createElement('div', {
+              style: {
+                width: '128px', height: '192px',
+                background: 'linear-gradient(135deg, var(--deep-purple), var(--midnight-blue))',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--premium-gold)'
+              }
+            }, isLoading() ? 
+              React.createElement('div', { className: 'animate-spin', style: { fontSize: '32px' } }, '✨') :
+              React.createElement('span', { style: { fontSize: '32px' } }, '🔮')
+            )
+          ),
+          
+          // 액션 버튼
+          React.createElement('div', {
+            key: 'actions',
+            style: { display: 'flex', justifyContent: 'center', marginBottom: '24px' }
+          }, React.createElement('button', {
+            onClick: handleDrawCard,
+            disabled: isLoading(),
+            className: 'btn btn-primary',
+            style: { display: 'flex', alignItems: 'center', gap: '8px' }
+          }, [
+            React.createElement('span', { key: 'icon' }, '🔄'),
+            '새 카드 뽑기'
+          ])),
+          
+          // 저널
+          currentCard && React.createElement('div', {
+            key: 'journal',
+            className: 'card mystical-glow'
+          }, React.createElement('div', {
+            className: 'card-content'
+          }, [
+            React.createElement('div', {
+              key: 'journal-header',
+              style: { display: 'flex', alignItems: 'center', marginBottom: '16px' }
+            }, [
+              React.createElement('span', {
+                key: 'journal-icon',
+                style: { fontSize: '20px', color: 'var(--premium-gold)', marginRight: '8px' }
+              }, '📖'),
+              React.createElement('h3', {
+                key: 'journal-title',
+                style: { fontSize: '1.125rem', fontWeight: '600', color: 'var(--mystical-text)' }
+              }, '카드에 대한 생각')
+            ]),
+            
+            React.createElement('textarea', {
+              key: 'journal-input',
+              value: journal,
+              onChange: (e) => setJournal(e.target.value),
+              placeholder: '이 시간, 이 카드가 전하는 메시지에 대해 자유롭게 적어보세요...',
+              disabled: isLoading(),
+              style: {
+                width: '100%',
+                height: '128px',
+                padding: '16px',
+                backgroundColor: 'var(--soft-lavender)',
+                border: '1px solid var(--mystical-border)',
+                borderRadius: '8px',
+                resize: 'none',
+                fontSize: '14px',
+                lineHeight: '1.5',
+                color: 'var(--mystical-text)',
+                outline: 'none'
+              }
+            }),
+            
+            React.createElement('div', {
+              key: 'journal-actions',
+              style: { display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }
+            }, React.createElement('button', {
+              onClick: handleSaveJournal,
+              disabled: !journal.trim() || isLoading(),
+              className: 'btn btn-secondary',
+              style: { display: 'flex', alignItems: 'center', gap: '8px' }
+            }, [
+              React.createElement('span', { key: 'save-icon' }, '💾'),
+              '저장'
+            ]))
+          ]))
+        ]),
+        
+        // 24시간 카드 뷰
+        React.createElement('div', {
+          key: 'daily-cards',
+          className: 'card mystical-glow'
+        }, React.createElement('div', {
+          className: 'card-content'
+        }, [
+          React.createElement('div', {
+            key: 'daily-header',
+            style: { display: 'flex', alignItems: 'center', marginBottom: '24px' }
+          }, [
+            React.createElement('span', {
+              key: 'daily-icon',
+              style: { fontSize: '20px', color: 'var(--premium-gold)', marginRight: '8px' }
+            }, '🌙'),
+            React.createElement('h3', {
+              key: 'daily-title',
+              style: { fontSize: '1.125rem', fontWeight: '600', color: 'var(--mystical-text)' }
+            }, '오늘의 24시간 카드')
+          ]),
+          
+          React.createElement('div', {
+            key: 'cards-grid',
+            style: {
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(60px, 1fr))',
+              gap: '8px'
+            }
+          }, dailyCards.map((card, index) =>
+            React.createElement('div', {
+              key: index,
+              style: { textAlign: 'center' }
+            }, [
+              React.createElement('div', {
+                key: 'card',
+                style: { marginBottom: '4px' }
+              }, React.createElement(TarotCardDisplay, {
+                card,
+                isRevealed: index <= currentHour,
+                size: 'small'
+              })),
+              React.createElement('div', {
+                key: 'time',
+                style: { 
+                  fontSize: '10px', 
+                  color: 'var(--mystical-text-secondary)',
+                  fontWeight: index === currentHour ? 'bold' : 'normal',
+                  color: index === currentHour ? 'var(--premium-gold)' : 'var(--mystical-text-secondary)'
+                }
+              }, `${String(index).padStart(2, '0')}:00`)
+            ])
+          ))
+        ]))
+      ]);
+    };
+    
+    // 메인 앱
+    const App = () => {
+      return React.createElement('div', {
+        style: { 
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #f8f9ff 0%, #e8e4ff 50%, #f0f8ff 100%)'
+        }
+      }, [
+        // 네비게이션
+        React.createElement('nav', {
+          key: 'nav',
+          style: {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(8px)',
+            borderBottom: '1px solid var(--mystical-border)',
+            position: 'sticky',
+            top: 0,
+            zIndex: 50
+          }
+        }, React.createElement('div', {
+          style: {
+            maxWidth: '1536px',
+            margin: '0 auto',
+            padding: '0 16px'
+          }
+        }, React.createElement('div', {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px 0'
+          }
+        }, React.createElement('div', {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            backgroundColor: 'var(--premium-gold)',
+            color: 'var(--midnight-blue)',
+            borderRadius: '8px',
+            fontWeight: '600'
+          }
+        }, [
+          React.createElement('span', { key: 'icon' }, '🕐'),
+          React.createElement('span', { key: 'text' }, '타이머')
+        ])))),
+        
+        // 메인 콘텐츠
+        React.createElement('main', {
+          key: 'main',
+          style: { padding: '32px 0' }
+        }, React.createElement(TimerTab)),
+        
+        // DevTools 안내
+        React.createElement('div', {
+          key: 'devtools-info',
+          style: {
+            position: 'fixed',
+            top: '16px',
+            right: '16px',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '12px',
+            zIndex: 9999
+          }
+        }, [
+          React.createElement('div', { key: 'title', style: { fontWeight: 'bold', marginBottom: '4px' } }, '🛠️ 개발자 도구'),
+          React.createElement('div', { key: 'shortcut' }, 'Ctrl+Shift+D로 열기'),
+          React.createElement('div', { key: 'features', style: { fontSize: '10px', opacity: 0.8, marginTop: '4px' } }, 
+            '로그, 로딩상태, 에러 확인 가능')
+        ])
+      ]);
+    };
+    
+    // Provider들로 감싸기
+    const AppWithProviders = () => {
+      return React.createElement(DevToolsProvider, null,
+        React.createElement(ErrorProvider, null,
+          React.createElement(ErrorBoundary, null,
+            React.createElement(LoadingProvider, null, [
+              React.createElement(App, { key: 'app' }),
+              React.createElement(LoadingOverlay, { key: 'loading' })
+            ])
+          )
+        )
+      );
+    };
+    
+    // 앱 렌더링
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(React.createElement(AppWithProviders));
+  </script>
+</body>
+</html>

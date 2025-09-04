@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical UI Test - 타로 타이머 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 신비로운 애니메이션 */
+        @keyframes mystical-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+        
+        @keyframes mystical-glow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2);
+            }
+        }
+        
+        @keyframes mystical-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes mystical-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        
+        .animate-mystical-pulse {
+            animation: mystical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .animate-mystical-glow {
+            animation: mystical-glow 3s ease-in-out infinite;
+        }
+        
+        .animate-mystical-shimmer {
+            animation: mystical-shimmer 2s ease-in-out infinite;
+        }
+        
+        .animate-mystical-float {
+            animation: mystical-float 6s ease-in-out infinite;
+        }
+
+        /* Typography System */
+        :root {
+          /* Typography Scale */
+          --text-display-large: 32px;        /* Large displays, hero text */
+          --text-display-medium: 28px;       /* Medium displays */
+          --text-title-large: 24px;          /* Large titles, page headers */
+          --text-title-medium: 20px;         /* Medium titles, section headers */
+          --text-title-small: 18px;          /* Small titles, card headers */
+          --text-body-large: 16px;           /* Large body text */
+          --text-body-medium: 14px;          /* Standard body text */
+          --text-body-small: 12px;           /* Small body text */
+          --text-caption: 11px;              /* Captions, metadata */
+          --text-overline: 10px;             /* Overlines, labels */
+          
+          /* Font Weights */
+          --font-weight-regular: 400;        /* Regular text */
+          --font-weight-medium: 500;         /* Medium emphasis */
+          --font-weight-semibold: 600;       /* Strong emphasis */
+          --font-weight-bold: 700;           /* Bold text */
+          
+          /* Line Heights */
+          --line-height-tight: 1.2;          /* Tight spacing for displays */
+          --line-height-normal: 1.3;         /* Normal spacing for titles */
+          --line-height-relaxed: 1.4;        /* Relaxed spacing */
+          --line-height-loose: 1.5;          /* Loose spacing for body text */
+          --line-height-extra-loose: 1.6;    /* Extra loose for readability */
+        }
+
+        /* Typography Classes */
+        .display-large {
+          font-size: var(--text-display-large);
+          font-weight: var(--font-weight-semibold);
+          line-height: var(--line-height-tight);
+        }
+        
+        .title-medium {
+          font-size: var(--text-title-medium);
+          font-weight: var(--font-weight-medium);
+          line-height: var(--line-height-normal);
+        }
+        
+        .body-medium {
+          font-size: var(--text-body-medium);
+          font-weight: var(--font-weight-regular);
+          line-height: var(--line-height-loose);
+        }
+        
+        .body-small {
+          font-size: var(--text-body-small);
+          font-weight: var(--font-weight-regular);
+          line-height: var(--line-height-loose);
+        }
+        
+        .caption {
+          font-size: var(--text-caption);
+          font-weight: var(--font-weight-regular);
+          line-height: var(--line-height-relaxed);
+        }
+
+        /* Dark mode forced */
+        * {
+            color-scheme: dark;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #1a1f3a 100%);
+            min-height: 100vh;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            font-size: var(--text-body-medium);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-loose);
+        }
+
+        /* Scrollbar customization */
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Mystical Background Effects -->
+        <div class="absolute inset-0 opacity-50 animate-pulse pointer-events-none"
+             style="background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent)">
+        </div>
+        <div class="absolute top-10 left-10 w-2 h-2 rounded-full animate-ping"
+             style="background-color: #d4af37; animation-delay: 1000ms"></div>
+        <div class="absolute top-32 right-16 w-1 h-1 bg-white rounded-full animate-pulse"
+             style="animation-delay: 2000ms"></div>
+        <div class="absolute bottom-40 left-20 w-1.5 h-1.5 rounded-full animate-ping"
+             style="background-color: #d4af37; animation-delay: 500ms"></div>
+
+        <div class="relative z-10 container mx-auto px-6 py-8 max-w-md space-y-8">
+            
+            <!-- Mystical Header -->
+            <div class="text-center space-y-6 pt-8">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full"></div>
+                    <div class="relative space-y-2">
+                        <div class="flex items-center justify-center">
+                            <div class="relative">
+                                <!-- SVG Icon -->
+                                <svg class="h-14 w-14 text-yellow-400 animate-mystical-pulse" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4V4H4z"/>
+                                    <path d="M10 4h4v16h-4V4z"/>
+                                    <path d="M16 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4V4z"/>
+                                    <circle cx="6" cy="8" r="1" fill="white"/>
+                                    <circle cx="12" cy="12" r="1.5" fill="white"/>
+                                    <circle cx="18" cy="8" r="1" fill="white"/>
+                                </svg>
+                                <div class="absolute inset-0 bg-yellow-400/30 blur-lg rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                        
+                        <h1 class="display-large bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+                            타로 타이머
+                        </h1>
+                        
+                        <p class="body-small text-white/70 font-medium tracking-wide">
+                            2025년 1월 4일 토요일
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mystical Card Example -->
+            <div class="relative">
+                <div class="absolute -inset-4 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-2xl rounded-3xl"></div>
+                <div class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-yellow-400/20 rounded-xl p-6 shadow-2xl backdrop-blur-sm hover:border-yellow-400/40 hover:shadow-yellow-400/20 hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-mystical-glow">
+                    <!-- Card Image Placeholder -->
+                    <div class="flex justify-center">
+                        <div class="relative">
+                            <div class="absolute -inset-2 bg-yellow-400/30 blur-xl rounded-2xl"></div>
+                            <div class="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-400/50 bg-gray-800 flex items-center justify-center">
+                                <div class="text-yellow-400 text-center">
+                                    <svg class="h-16 w-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                    </svg>
+                                    <div class="title-medium text-white">The Star</div>
+                                    <div class="body-small text-yellow-400">별</div>
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                                
+                                <!-- Current hour badge -->
+                                <div class="absolute top-4 right-4">
+                                    <div class="bg-yellow-400/90 text-black border-none shadow-lg px-2 py-1 rounded-full caption flex items-center gap-1" style="font-weight: var(--font-weight-semibold);">
+                                        <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+                                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                                        </svg>
+                                        지금
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Details -->
+                    <div class="text-center space-y-4 p-4 bg-white/5 rounded-xl border border-white/10 mt-6">
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <div class="border-yellow-400/40 text-yellow-400 bg-yellow-400/10 px-2.5 py-0.5 caption rounded-full border" style="font-weight: var(--font-weight-semibold);">희망</div>
+                            <div class="border-yellow-400/40 text-yellow-400 bg-yellow-400/10 px-2.5 py-0.5 caption rounded-full border" style="font-weight: var(--font-weight-semibold);">영감</div>
+                            <div class="border-yellow-400/40 text-yellow-400 bg-yellow-400/10 px-2.5 py-0.5 caption rounded-full border" style="font-weight: var(--font-weight-semibold);">치유</div>
+                        </div>
+                        <p class="body-medium text-white/90 max-w-sm mx-auto">
+                            새로운 희망과 영감이 당신에게 찾아올 것입니다. 과거의 상처는 치유되고 밝은 미래가 기다리고 있습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mystical Button Examples -->
+            <div class="space-y-4">
+                <!-- Primary Button -->
+                <button class="w-full relative transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-gray-900 shadow-lg hover:shadow-xl transform hover:scale-105 px-4 py-2 body-large" style="font-weight: var(--font-weight-medium);">
+                    <span class="relative z-10 flex items-center justify-center gap-3">
+                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+                        </svg>
+                        24시간 카드 뽑기
+                    </span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg blur-sm opacity-75 animate-mystical-pulse -z-10"></div>
+                </button>
+                
+                <!-- Secondary Button -->
+                <button class="w-full relative transition-all duration-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 bg-gray-800 hover:bg-gray-700 text-yellow-400 border border-yellow-400/30 hover:border-yellow-400/60 px-4 py-2 body-large" style="font-weight: var(--font-weight-medium);">
+                    <span class="relative z-10 flex items-center justify-center gap-3">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <polyline points="1,4 1,10 7,10"/>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
+                        다시 뽑기
+                    </span>
+                </button>
+            </div>
+            
+            <!-- Mystical Progress Bar -->
+            <div class="relative">
+                <div class="w-full bg-gray-800 rounded-full h-3 shadow-inner border border-gray-700">
+                    <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 h-full rounded-full transition-all duration-1000 ease-out shadow-lg" 
+                         style="width: 75%">
+                        <div class="h-full bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full animate-mystical-shimmer"></div>
+                    </div>
+                </div>
+                <div class="text-center mt-2 body-small text-yellow-400" style="font-weight: var(--font-weight-medium);">
+                    18 / 24
+                </div>
+            </div>
+            
+            <!-- Mystical Quote -->
+            <div class="text-center p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm">
+                <p class="body-medium text-white/80 italic">
+                    "시간은 강물과 같다. 우리는 그 흐름 속에서 진실을 발견한다."
+                </p>
+            </div>
+            
+            <!-- Bottom padding for navigation -->
+            <div class="h-20"></div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="fixed bottom-0 left-0 right-0 z-50">
+            <!-- Glow effect -->
+            <div class="absolute -top-8 inset-x-0 h-8 pointer-events-none" 
+                 style="background: linear-gradient(to top, rgba(26, 31, 58, 0.8), transparent)"></div>
+            
+            <!-- Navigation -->
+            <div class="backdrop-blur-xl border-t shadow-2xl" 
+                 style="background: rgba(26, 31, 58, 0.95); border-top-color: rgba(212, 175, 55, 0.2)">
+                <div class="absolute inset-0 pointer-events-none" 
+                     style="background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent)"></div>
+                
+                <div class="container mx-auto max-w-md relative">
+                    <div class="grid w-full grid-cols-4 bg-transparent border-none rounded-none h-auto p-0">
+                        <!-- Timer Tab (Active) -->
+                        <button class="flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group text-yellow-400 bg-yellow-400/10">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300 scale-110 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-100" 
+                                     style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                                <div class="absolute -inset-1 rounded-full transition-opacity animate-pulse -z-10 opacity-100" 
+                                     style="background-color: rgba(212, 175, 55, 0.3)"></div>
+                            </div>
+                            <span class="caption" style="font-weight: var(--font-weight-medium);">타이머</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-100" 
+                                 style="background-color: #d4af37; box-shadow: 0 0 12px rgba(212, 175, 55, 0.5)"></div>
+                        </button>
+                        
+                        <!-- Spreads Tab -->
+                        <button class="flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-white/60">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                    <line x1="15" y1="9" x2="21" y2="9"/>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-0" 
+                                     style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                            </div>
+                            <span class="caption" style="font-weight: var(--font-weight-medium);">스프레드</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-0" 
+                                 style="background-color: #d4af37"></div>
+                        </button>
+                        
+                        <!-- Journal Tab -->
+                        <button class="flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-white/60">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-0" 
+                                     style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                            </div>
+                            <span class="caption" style="font-weight: var(--font-weight-medium);">저널</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-0" 
+                                 style="background-color: #d4af37"></div>
+                        </button>
+                        
+                        <!-- Settings Tab -->
+                        <button class="flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-white/60">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-0" 
+                                     style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                            </div>
+                            <span class="caption" style="font-weight: var(--font-weight-medium);">설정</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-0" 
+                                 style="background-color: #d4af37"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

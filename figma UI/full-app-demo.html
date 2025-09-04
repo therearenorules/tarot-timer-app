@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarot Timer App - Full Feature Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Typography Scale */
+            --text-display-large: 32px;
+            --text-display-medium: 28px;
+            --text-title-large: 24px;
+            --text-title-medium: 20px;
+            --text-title-small: 18px;
+            --text-body-large: 16px;
+            --text-body-medium: 14px;
+            --text-body-small: 12px;
+            --text-caption: 11px;
+            --text-overline: 10px;
+            
+            /* Font Weights */
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            
+            /* Line Heights */
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.3;
+            --line-height-relaxed: 1.4;
+            --line-height-loose: 1.5;
+            --line-height-extra-loose: 1.6;
+        }
+
+        /* 신비로운 애니메이션 */
+        @keyframes mystical-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+        
+        @keyframes mystical-glow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2);
+            }
+        }
+        
+        @keyframes mystical-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes mystical-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        
+        .animate-mystical-pulse {
+            animation: mystical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .animate-mystical-glow {
+            animation: mystical-glow 3s ease-in-out infinite;
+        }
+        
+        .animate-mystical-shimmer {
+            animation: mystical-shimmer 2s ease-in-out infinite;
+        }
+        
+        .animate-mystical-float {
+            animation: mystical-float 6s ease-in-out infinite;
+        }
+
+        /* Typography Classes */
+        .display-large {
+            font-size: var(--text-display-large);
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-tight);
+        }
+
+        .display-medium {
+            font-size: var(--text-display-medium);
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-tight);
+        }
+
+        .title-large {
+            font-size: var(--text-title-large);
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-normal);
+        }
+
+        .title-medium {
+            font-size: var(--text-title-medium);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
+        }
+
+        .title-small {
+            font-size: var(--text-title-small);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
+        }
+
+        .body-large {
+            font-size: var(--text-body-large);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-loose);
+        }
+
+        .body-medium {
+            font-size: var(--text-body-medium);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-loose);
+        }
+
+        .body-small {
+            font-size: var(--text-body-small);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-loose);
+        }
+
+        .caption {
+            font-size: var(--text-caption);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-relaxed);
+        }
+
+        .overline {
+            font-size: var(--text-overline);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-relaxed);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Mobile touch optimization */
+        .touch-optimization {
+            -webkit-tap-highlight-color: rgba(212, 175, 55, 0.2);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 44px; /* iOS accessibility guideline */
+            min-width: 44px;
+            touch-action: manipulation; /* Fast tap, prevents zoom on double-tap */
+            transition: all 0.2s ease;
+        }
+        
+        /* Active touch states for buttons */
+        .touch-optimization:active {
+            transform: scale(0.96);
+            background-color: rgba(212, 175, 55, 0.15) !important;
+        }
+        
+        /* Touch-friendly card interactions */
+        .touch-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .touch-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.4);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+        
+        /* Remove hover effects on touch-only devices */
+        @media (hover: none) and (pointer: coarse) {
+            .hover\\:scale-105:hover,
+            .hover\\:scale-\\[1\\.02\\]:hover {
+                transform: none !important;
+            }
+            .hover\\:animate-mystical-pulse:hover,
+            .hover\\:animate-mystical-glow:hover {
+                animation: none !important;
+            }
+            .hover\\:shadow-xl:hover,
+            .hover\\:shadow-2xl:hover {
+                box-shadow: none !important;
+            }
+            .hover\\:from-yellow-500:hover,
+            .hover\\:to-yellow-600:hover {
+                background: none !important;
+            }
+            .group:hover .group-hover\\:text-yellow-400 {
+                color: inherit !important;
+            }
+            .group:hover .group-hover\\:opacity-100 {
+                opacity: inherit !important;
+            }
+        }
+
+        /* Custom scrollbar */
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Gradient text utilities */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #f4d03f 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-mystical {
+            background: linear-gradient(135deg, #f4d03f 0%, #ffffff 50%, #f4d03f 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Tab switching animation */
+        .tab-content {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .demo-section {
+            min-height: 60vh;
+            padding: 2rem 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white " style="background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #1a1f3a 100%); font-family: 'Noto Sans KR', sans-serif;">
+    
+    <!-- Subtle Background Effects -->
+    <div class="fixed inset-0 opacity-30 pointer-events-none" style="background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.03), transparent)"></div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-md mx-auto min-h-screen">
+        
+
+        <!-- Tab Navigation -->
+        <div class="fixed bottom-0 left-0 right-0 z-50">
+            <!-- Glow effect -->
+            <div class="absolute -top-8 inset-x-0 h-8 pointer-events-none" style="background: linear-gradient(to top, rgba(26, 31, 58, 0.8), transparent)"></div>
+            
+            <!-- Navigation -->
+            <div class="backdrop-blur-xl border-t shadow-2xl" style="background: rgba(26, 31, 58, 0.95); border-top-color: rgba(212, 175, 55, 0.2);">
+                <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent)"></div>
+                
+                <div class="container mx-auto max-w-md relative">
+                    <div class="grid w-full grid-cols-4 bg-transparent border-none rounded-none h-auto p-0">
+                        <!-- Timer Tab -->
+                        <button id="timer-tab" class="tab-button flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-yellow-400 bg-yellow-400/10 touch-optimization" onclick="showTab('timer')">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300 scale-110 drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12,6 12,12 16,14"></polyline>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-100" style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                                <div class="absolute -inset-1 rounded-full transition-opacity animate-pulse -z-10 opacity-100" style="background-color: rgba(212, 175, 55, 0.3)"></div>
+                            </div>
+                            <span class="caption font-medium">타이머</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-100" style="background-color: #d4af37; box-shadow: 0 0 12px rgba(212, 175, 55, 0.5)"></div>
+                        </button>
+                        
+                        <!-- Spreads Tab -->
+                        <button id="spreads-tab" class="tab-button flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-white/60 touch-optimization" onclick="showTab('spreads')">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4V4H4z"/>
+                                    <path d="M10 4h4v16h-4V4z"/>
+                                    <path d="M16 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4V4z"/>
+                                    <circle cx="6" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                    <circle cx="12" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                    <circle cx="18" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-0" style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                                <div class="absolute -inset-1 rounded-full transition-opacity animate-pulse -z-10 opacity-0" style="background-color: rgba(212, 175, 55, 0.3)"></div>
+                            </div>
+                            <span class="caption font-medium">스프레드</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-0" style="background-color: #d4af37; box-shadow: 0 0 12px rgba(212, 175, 55, 0.5)"></div>
+                        </button>
+                        
+                        <!-- Journal Tab -->
+                        <button id="journal-tab" class="tab-button flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-white/60 touch-optimization" onclick="showTab('journal')">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-0" style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                                <div class="absolute -inset-1 rounded-full transition-opacity animate-pulse -z-10 opacity-0" style="background-color: rgba(212, 175, 55, 0.3)"></div>
+                            </div>
+                            <span class="caption font-medium">다이어리</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-0" style="background-color: #d4af37; box-shadow: 0 0 12px rgba(212, 175, 55, 0.5)"></div>
+                        </button>
+                        
+                        <!-- Settings Tab -->
+                        <button id="settings-tab" class="tab-button flex flex-col items-center gap-2 p-4 rounded-none bg-transparent border-none transition-all duration-300 group hover:text-white/80 text-white/60 touch-optimization" onclick="showTab('settings')">
+                            <div class="relative">
+                                <svg class="h-6 w-6 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                                <div class="absolute -inset-2 rounded-full transition-opacity blur-sm -z-10 opacity-0" style="background-color: rgba(212, 175, 55, 0.2)"></div>
+                                <div class="absolute -inset-1 rounded-full transition-opacity animate-pulse -z-10 opacity-0" style="background-color: rgba(212, 175, 55, 0.3)"></div>
+                            </div>
+                            <span class="caption font-medium">설정</span>
+                            <div class="h-0.5 w-8 rounded-full transition-opacity shadow-lg opacity-0" style="background-color: #d4af37; box-shadow: 0 0 12px rgba(212, 175, 55, 0.5)"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content Container -->
+        <div class="pb-24 px-6" id="content-container">
+
+            <!-- Timer Tab Content -->
+            <div id="timer-content" class="tab-content demo-section">
+                <div class="space-y-8">
+                    <!-- Header -->
+                    <div class="text-center space-y-4">
+                        <div class="flex items-center justify-center">
+                            <svg class="h-12 w-12 text-yellow-400 animate-mystical-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                        </div>
+                        <h1 class="display-large text-gradient-mystical">Tarot Timer</h1>
+                        <p class="body-small text-white/70">24시간 타로 여정을 시작하세요</p>
+                    </div>
+
+                    <!-- Initial State: Before Drawing Cards -->
+                    <div id="initial-state" class="space-y-8">
+                        <div class="text-center space-y-4">
+                            <div class="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-6">
+                                <div class="space-y-3">
+                                    <svg class="h-16 w-16 mx-auto text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4V4H4z"/>
+                                        <path d="M10 4h4v16h-4V4z"/>
+                                        <path d="M16 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4V4z"/>
+                                        <circle cx="6" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                        <circle cx="12" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                        <circle cx="18" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                    </svg>
+                                    <h2 class="title-large text-white">24시간의 신비로운 여정</h2>
+                                    <p class="body-medium text-white/70 max-w-sm mx-auto">
+                                        하루 24시간, 각 시간마다의 특별한 메시지를 담은 타로카드를 뽑아보세요.
+                                    </p>
+                                </div>
+                                
+                                <button id="draw-cards-btn" onclick="drawDailyCards()" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 animate-mystical-pulse">
+                                    24시간 타로 뽑기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards Drawn State: After Drawing Cards -->
+                    <div id="cards-drawn-state" class="space-y-8 hidden">
+
+                        <!-- New Current Time Header Design -->
+                        <div class="text-center space-y-3">
+                            <div class="flex items-center justify-center space-x-3">
+                                <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12,6 12,12 16,14"></polyline>
+                                </svg>
+                                <div class="title-medium text-white" id="current-time">오후 2:30</div>
+                                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            </div>
+                            <p class="body-small text-white/70">현재 시간의 타로카드</p>
+                        </div>
+
+                    <!-- Current Card Display -->
+                    <div class="relative">
+                        <div class="absolute -inset-4 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-2xl rounded-3xl"></div>
+                        <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl p-6 space-y-6">
+                            <!-- Card Image -->
+                            <div class="flex justify-center">
+                                <div class="relative">
+                                    <div class="absolute -inset-2 bg-yellow-400/30 blur-xl rounded-2xl"></div>
+                                    <div class="relative w-48 h-80 rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-400/50 animate-mystical-float">
+                                        <img src="assets/tarot-cards/classic-tarot/major_17_star.jpg" alt="타로 카드" class="w-full h-full object-cover transition-all duration-500">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card Name Below Image -->
+                            <div class="text-center">
+                                <h3 id="current-card-name" class="title-medium text-white">The Star</h3>
+                            </div>
+                            
+                            <!-- Card Details -->
+                            <div class="text-center space-y-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                                <div class="flex flex-wrap justify-center gap-2">
+                                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-yellow-400/40 text-yellow-400 bg-yellow-400/10">희망</span>
+                                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-yellow-400/40 text-yellow-400 bg-yellow-400/10">영감</span>
+                                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-yellow-400/40 text-yellow-400 bg-yellow-400/10">치유</span>
+                                </div>
+                                <p class="body-medium text-white/90 leading-relaxed max-w-sm mx-auto">
+                                    어둠 속에서도 희망의 빛을 찾는 시간입니다. 내면의 평화와 영적인 치유가 필요한 순간이에요.
+                                </p>
+                            </div>
+                            
+                            <!-- Current Time Memo Area -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        <h3 class="title-small text-white">메모</h3>
+                                    </div>
+                                    <button 
+                                        onclick="saveCurrentTimeMemo()" 
+                                        class="flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/20 transition-all duration-300 touch-optimization"
+                                    >
+                                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        저장
+                                    </button>
+                                </div>
+                                <textarea 
+                                    id="current-time-memo" 
+                                    placeholder="이 시간에 대한 생각이나 느낌을 적어보세요..."
+                                    class="w-full h-24 p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 body-small resize-none focus:outline-none focus:border-yellow-400/50 focus:bg-white/10 transition-all">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 24-Hour Cards Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="title-medium text-white flex items-center gap-2">
+                                <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12,6 12,12 16,14"></polyline>
+                                </svg>
+                                24시간 에너지 흐름
+                            </h2>
+                            <button onclick="redrawCards()" class="flex items-center px-3 py-0.5 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 bg-yellow-400/5 hover:bg-yellow-400/10 transition-all duration-300 touch-optimization">
+                                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                다시 뽑기
+                            </button>
+                        </div>
+                        
+                        <!-- Horizontal scroll of 24 cards -->
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 w-8 bg-gradient-to-r pointer-events-none z-10" style="background: linear-gradient(to right, #1a1f3a, transparent)"></div>
+                            <div class="absolute inset-y-0 right-0 w-8 bg-gradient-to-l pointer-events-none z-10" style="background: linear-gradient(to left, #1a1f3a, transparent)"></div>
+                            
+                            <div class="overflow-x-auto pb-2 scrollbar-none">
+                                <div class="flex gap-3 px-4" style="width: max-content">
+                                    <!-- Sample 24-hour cards -->
+                                    <!-- 24시간 전체 카드 (0시-23시) -->
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(0)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_00_fool.jpg" alt="0시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">자정</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(1)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_01_magician.jpg" alt="1시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">새벽 1시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(2)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_02_high_priestess.jpg" alt="2시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">새벽 2시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(3)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_03_empress.jpg" alt="3시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">새벽 3시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(4)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_04_emperor.jpg" alt="4시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">새벽 4시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(5)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_05_hierophant.jpg" alt="5시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">새벽 5시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(6)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_06_lovers.jpg" alt="6시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오전 6시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(7)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_07_chariot.jpg" alt="7시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오전 7시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(8)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_08_strength.jpg" alt="8시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오전 8시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(9)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_09_hermit.jpg" alt="9시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오전 9시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(10)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_10_wheel_of_fortune.jpg" alt="10시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오전 10시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(11)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_11_justice.jpg" alt="11시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오전 11시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(12)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_12_hanged_man.jpg" alt="12시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">정오</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(13)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_13_death.jpg" alt="13시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 1시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(14)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_14_temperance.jpg" alt="14시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 2시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(15)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_15_devil.jpg" alt="15시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 3시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(16)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_16_tower.jpg" alt="16시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 4시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(17)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_17_star.jpg" alt="17시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 5시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(18)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_18_moon.jpg" alt="18시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 6시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(19)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_19_sun.jpg" alt="19시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 7시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(20)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_20_judgement.jpg" alt="20시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 8시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(21)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/major_21_world.jpg" alt="21시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 9시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(22)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/minor_cups_ace.jpg" alt="22시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 10시</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 touch-optimization cursor-pointer p-2" onclick="selectCard(23)">
+                                        <div class="text-center space-y-2">
+                                            <div class="relative w-14 h-22 rounded-lg overflow-hidden shadow-lg transition-all duration-300">
+                                                <img src="assets/tarot-cards/classic-tarot/minor_cups_two.jpg" alt="23시" class="w-full h-full object-cover">
+                                            </div>
+                                            <p class="caption text-white/70">오후 11시</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Save Button -->
+                    <div class="relative">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400/40 to-yellow-500/40 blur-lg rounded-xl"></div>
+                        <button onclick="saveDailyTarot()" class="relative w-full py-4 text-lg font-bold transition-all duration-500 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-600 shadow-2xl shadow-yellow-400/30 hover:animate-mystical-glow rounded-xl touch-optimization">
+                            <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                            </svg>
+                            데일리 타로 저장하기
+                        </button>
+                    </div>
+                    </div>
+                    <!-- End of Cards Drawn State -->
+
+                </div>
+            </div>
+
+            <!-- Spreads Tab Content -->
+            <div id="spreads-content" class="tab-content demo-section hidden">
+                <div class="space-y-8">
+                    <div class="text-center space-y-4">
+                        <div class="flex items-center justify-center">
+                            <svg class="h-12 w-12 text-yellow-400 animate-mystical-pulse" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4V4H4z"/>
+                                <path d="M10 4h4v16h-4V4z"/>
+                                <path d="M16 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4V4z"/>
+                                <circle cx="6" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                <circle cx="12" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                                <circle cx="18" cy="8" r="1" fill="rgba(26, 31, 58, 1)"/>
+                            </svg>
+                        </div>
+                        <h1 class="display-large text-gradient-mystical">Spreads</h1>
+                        <p class="body-small text-white/70">다양한 상황에 맞는 타로 스프레드를 선택하세요</p>
+                    </div>
+
+                    <!-- Spread Cards -->
+                    <div class="space-y-6">
+                        <!-- 3-Card Spread -->
+                        <div class="relative group">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">3카드 스프레드</h3>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">3 Card Spread</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">과거, 현재, 미래의 연결고리를 살펴보는 기본적인 스프레드입니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Celtic Cross -->
+                        <div class="relative group">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-transparent to-yellow-400/20 blur-xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl touch-card rounded-2xl p-6 space-y-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <div class="relative">
+                                                <svg class="h-6 w-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                </svg>
+                                            </div>
+                                            <h3 class="title-medium text-white group-hover:text-yellow-400 transition-colors">켈틱 크로스</h3>
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-none shadow-lg gap-1">
+                                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                                                </svg>
+                                                프리미엄
+                                            </span>
+                                        </div>
+                                        <p class="body-small text-yellow-400/80">Celtic Cross</p>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p class="body-small text-white/90 leading-relaxed">복잡한 상황에 대한 깊이 있는 통찰을 제공하는 10카드 스프레드입니다.</p>
+                                </div>
+                                <button class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-3 text-base hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl shadow-yellow-400/20 group-hover:shadow-yellow-400/30 rounded-xl touch-optimization">
+                                    <svg class="h-4 w-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"></polygon>
+                                    </svg>
+                                    리딩 시작
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Premium Section -->
+                        <div class="relative">
+                            <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400/30 to-yellow-500/30 blur-xl rounded-2xl"></div>
+                            <div class="relative bg-white/10 backdrop-blur-lg border border-yellow-400/30 shadow-2xl rounded-2xl p-6 text-center space-y-4">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-center">
+                                        <div class="relative">
+                                            <svg class="h-12 w-12 text-yellow-400 animate-mystical-pulse" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                                            </svg>
+                                            <div class="absolute inset-0 bg-yellow-400/30 blur-lg rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <h3 class="title-large text-white">프리미엄 스프레드</h3>
+                                    <p class="body-medium text-white/70 leading-relaxed">더 깊고 정확한 타로 리딩을 경험해보세요</p>
+                                </div>
+                                <div class="flex justify-center">
+                                    <span class="inline-flex items-center rounded-full px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black gap-2">
+                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                        </svg>
+                                        활성화됨
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal Tab Content -->
+            <div id="journal-content" class="tab-content demo-section hidden">
+                <div class="space-y-8">
+                    <div class="text-center space-y-4">
+                        <div class="flex items-center justify-center">
+                            <svg class="h-12 w-12 text-yellow-400 animate-mystical-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                        </div>
+                        <h1 class="display-large text-gradient-mystical">Diary</h1>
+                        <p class="body-small text-white/70">당신의 타로 여정을 기록하고 되돌아보세요</p>
+                    </div>
+
+                    <!-- Section Toggle -->
+                    <div class="flex bg-white/5 rounded-xl p-1 border border-white/10">
+                        <button id="daily-btn" class="flex-1 py-3 px-4 rounded-lg body-small font-medium transition-all duration-300 bg-yellow-400 text-black shadow-lg touch-optimization" onclick="showJournalSection('daily')">
+                            데일리 타로일기
+                        </button>
+                        <button id="spreads-btn" class="flex-1 py-3 px-4 rounded-lg body-small font-medium transition-all duration-300 text-white/70 hover:text-white touch-optimization" onclick="showJournalSection('spreads')">
+                            스프레드 기록
+                        </button>
+                    </div>
+
+                    <!-- Daily Tarot Section -->
+                    <div id="daily-section">
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <h2 class="title-medium text-white flex items-center gap-2">
+                                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12,6 12,12 16,14"></polyline>
+                                    </svg>
+                                    데일리 타로일기
+                                </h2>
+                                <span id="diary-count" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">0개 기록</span>
+                            </div>
+                            
+                            <!-- Daily Diary Entry -->
+                            <div id="daily-diary-list" class="space-y-4">
+                                <!-- Sample diary entry -->
+                                <div class="bg-white/5 border border-white/10 touch-card rounded-2xl p-5 space-y-4">
+                                    <div class="flex items-start justify-between">
+                                        <!-- 날짜 -->
+                                        <div class="flex items-center gap-2">
+                                            <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            <span class="body-medium text-white">2025년 1월 4일 금요일</span>
+                                        </div>
+                                        <!-- 저장됨 표시 -->
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-green-500/20 text-green-400 border border-green-500/30">저장됨</span>
+                                    </div>
+                                    
+                                    <!-- 24시간 카드들 -->
+                                    <div class="flex gap-1 overflow-x-auto pb-2 scrollbar-none">
+                                        <div class="flex-shrink-0 w-7 h-12 rounded overflow-hidden border border-yellow-400/30 shadow-lg relative">
+                                            <img src="assets/tarot-cards/classic-tarot/major_19_sun.jpg" alt="카드" class="w-full h-full object-cover">
+                                            <!-- 메모 있을 때 별 표시 -->
+                                            <div class="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full flex items-center justify-center">
+                                                <svg class="w-1 h-1 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0 w-7 h-12 rounded overflow-hidden border border-yellow-400/30 shadow-lg">
+                                            <img src="assets/tarot-cards/classic-tarot/major_18_moon.jpg" alt="카드" class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex-shrink-0 w-7 h-12 rounded overflow-hidden border border-yellow-400/30 shadow-lg relative">
+                                            <img src="assets/tarot-cards/classic-tarot/major_21_world.jpg" alt="카드" class="w-full h-full object-cover">
+                                            <!-- 메모 있을 때 별 표시 -->
+                                            <div class="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full flex items-center justify-center">
+                                                <svg class="w-1 h-1 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0 w-7 h-12 rounded bg-white/10 border border-white/20 flex items-center justify-center">
+                                            <span class="text-xs text-white/60">+21</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 메모 개수와 보기 버튼 -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="h-3 w-3 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                            <span class="caption text-yellow-400">4개 시간대 메모</span>
+                                        </div>
+                                        <button onclick="viewDailyDiary('2025-01-04')" class="px-3 py-0.5 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 touch-optimization">
+                                            보기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spreads Section (hidden by default) -->
+                    <div id="spreads-section" class="hidden">
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <h2 class="title-medium text-white flex items-center gap-2">
+                                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    </svg>
+                                    스프레드 기록
+                                </h2>
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">6개 기록</span>
+                            </div>
+                            
+                            <!-- Spread Record -->
+                            <div class="bg-white/5 border border-white/10 touch-card rounded-2xl p-5 space-y-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="space-y-2 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                            </svg>
+                                            <span class="body-medium text-white group-hover:text-yellow-400 transition-colors">새로운 직장에 대한 결정</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 body-small">
+                                            <svg class="h-3 w-3 text-yellow-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            <span class="text-white/70">2024년 1월 15일 월요일</span>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-green-500/20 text-green-400 border border-green-500/30">저장됨</span>
+                                </div>
+
+                                <!-- Spread Badge -->
+                                <div class="flex items-center justify-center">
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs bg-yellow-400/20 text-yellow-400 border border-yellow-400/30">AB선택 스프레드</span>
+                                </div>
+                                
+                                <!-- Insights Preview -->
+                                <div class="p-3 bg-white/5 rounded-lg border border-white/10">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <svg class="h-3 w-3 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 5z"></path>
+                                        </svg>
+                                        <span class="caption text-yellow-400">인사이트</span>
+                                    </div>
+                                    <p class="body-small text-white/80 line-clamp-2 leading-relaxed">
+                                        두 선택지 모두 좋은 기회가 될 것 같습니다. A는 안정성을, B는 도전을 의미합니다.
+                                    </p>
+                                </div>
+                                
+                                <!-- Action Button -->
+                                <div class="pt-2">
+                                    <button class="w-full px-4 py-2 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 group-hover:border-yellow-400/50 touch-optimization">
+                                        <svg class="h-3 w-3 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                                        </svg>
+                                        보기
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab Content -->
+            <div id="settings-content" class="tab-content demo-section hidden">
+                <div class="space-y-8">
+                    <div class="text-center space-y-4">
+                        <div class="flex items-center justify-center">
+                            <svg class="h-12 w-12 text-yellow-400 animate-mystical-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <h1 class="display-large text-gradient-mystical">Setting</h1>
+                        <p class="body-small text-white/70">다양한 기능을 설정해보세요</p>
+                    </div>
+
+                    <!-- Premium Membership -->
+                    <div class="bg-white/5 border border-yellow-400/30 rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="title-small text-white">프리미엄 멤버십</h3>
+                                    <p class="body-small text-white/60">활성화</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center rounded-full px-3 py-1 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black text-xs font-semibold">활성화</span>
+                        </div>
+                        
+                        <div class="space-y-3 pl-9">
+                            <div class="flex items-center gap-2 body-small text-white/80">
+                                <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+                                프리미엄 스프레드
+                            </div>
+                            <div class="flex items-center gap-2 body-small text-white/80">
+                                <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+                                광고 없음
+                            </div>
+                            <div class="flex items-center gap-2 body-small text-white/80">
+                                <div class="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+                                무제한 저장
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Display & Theme -->
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+                        <h3 class="title-small text-white flex items-center gap-2">
+                            <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                            디스플레이 & 테마
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="body-medium text-white">다크 모드</p>
+                                    <p class="body-small text-white/60">신비로운 경험을 위해 항상 켜짐</p>
+                                </div>
+                                <!-- Toggle Switch (always on) -->
+                                <div class="w-10 h-6 bg-yellow-400 rounded-full relative">
+                                    <div class="w-4 h-4 bg-black rounded-full absolute top-1 right-1 transition-all duration-300"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="body-medium text-white">언어</p>
+                                    <p class="body-small text-white/60">한국어</p>
+                                </div>
+                                <button class="flex items-center px-3 py-1 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 touch-optimization">
+                                    <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                    </svg>
+                                    EN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+                        <h3 class="title-small text-white flex items-center gap-2">
+                            <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            알림
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="body-medium text-white">스프레드 완료</p>
+                                    <p class="body-small text-white/60">타로 리딩이 완료되면 알림을 받습니다</p>
+                                </div>
+                                <div class="w-10 h-6 bg-yellow-400 rounded-full relative">
+                                    <div class="w-4 h-4 bg-black rounded-full absolute top-1 right-1 transition-all duration-300"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Version Info -->
+                    <div class="text-center space-y-2 py-6">
+                        <p class="body-small text-white/60">버전 1.0.0</p>
+                        <p class="caption text-white/40">© 2025 Tarot Timer. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mystical Quote -->
+        <div class="text-center p-6 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm mx-6 mb-6">
+            <p class="text-white/80 italic leading-relaxed body-small">
+                "별들이 속삭이는 비밀을 들어보세요. 당신의 운명이 펼쳐집니다."
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = ['timer-content', 'spreads-content', 'journal-content', 'settings-content'];
+            tabContents.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+
+            // Show selected tab content
+            const selectedContent = document.getElementById(tabName + '-content');
+            if (selectedContent) {
+                selectedContent.classList.remove('hidden');
+                // Add animation
+                selectedContent.style.opacity = '0';
+                selectedContent.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    selectedContent.style.transition = 'all 0.5s ease-out';
+                    selectedContent.style.opacity = '1';
+                    selectedContent.style.transform = 'translateY(0)';
+                }, 10);
+            }
+
+            // Update tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                const glowDivs = button.querySelectorAll('div');
+                const indicator = button.querySelector('.h-0\\.5');
+                
+                // Reset all buttons
+                button.classList.remove('text-yellow-400', 'bg-yellow-400/10');
+                button.classList.add('text-white/60');
+                
+                glowDivs.forEach(div => {
+                    if (div.classList.contains('absolute') && div.classList.contains('-inset-2')) {
+                        div.classList.remove('opacity-100');
+                        div.classList.add('opacity-0');
+                    }
+                    if (div.classList.contains('animate-pulse')) {
+                        div.classList.remove('opacity-100');
+                        div.classList.add('opacity-0');
+                    }
+                });
+                
+                const svg = button.querySelector('svg');
+                if (svg) {
+                    svg.classList.remove('scale-110', 'drop-shadow-lg');
+                }
+                
+                if (indicator) {
+                    indicator.classList.remove('opacity-100');
+                    indicator.classList.add('opacity-0');
+                }
+            });
+
+            // Activate selected tab
+            const selectedTab = document.getElementById(tabName + '-tab');
+            if (selectedTab) {
+                selectedTab.classList.remove('text-white/60');
+                selectedTab.classList.add('text-yellow-400', 'bg-yellow-400/10');
+                
+                const glowDivs = selectedTab.querySelectorAll('div');
+                glowDivs.forEach(div => {
+                    if (div.classList.contains('absolute') && div.classList.contains('-inset-2')) {
+                        div.classList.remove('opacity-0');
+                        div.classList.add('opacity-100');
+                    }
+                    if (div.classList.contains('animate-pulse')) {
+                        div.classList.remove('opacity-0');
+                        div.classList.add('opacity-100');
+                    }
+                });
+                
+                const svg = selectedTab.querySelector('svg');
+                if (svg) {
+                    svg.classList.add('scale-110', 'drop-shadow-lg');
+                }
+                
+                const indicator = selectedTab.querySelector('.h-0\\.5');
+                if (indicator) {
+                    indicator.classList.remove('opacity-0');
+                    indicator.classList.add('opacity-100');
+                }
+            }
+        }
+
+        // Journal section switching
+        function showJournalSection(section) {
+            const dailyBtn = document.getElementById('daily-btn');
+            const spreadsBtn = document.getElementById('spreads-btn');
+            const dailySection = document.getElementById('daily-section');
+            const spreadsSection = document.getElementById('spreads-section');
+
+            if (section === 'daily') {
+                dailyBtn.classList.add('bg-yellow-400', 'text-black', 'shadow-lg');
+                dailyBtn.classList.remove('text-white/70', 'hover:text-white');
+                spreadsBtn.classList.remove('bg-yellow-400', 'text-black', 'shadow-lg');
+                spreadsBtn.classList.add('text-white/70', 'hover:text-white');
+                
+                dailySection.classList.remove('hidden');
+                spreadsSection.classList.add('hidden');
+            } else {
+                spreadsBtn.classList.add('bg-yellow-400', 'text-black', 'shadow-lg');
+                spreadsBtn.classList.remove('text-white/70', 'hover:text-white');
+                dailyBtn.classList.remove('bg-yellow-400', 'text-black', 'shadow-lg');
+                dailyBtn.classList.add('text-white/70', 'hover:text-white');
+                
+                spreadsSection.classList.remove('hidden');
+                dailySection.classList.add('hidden');
+            }
+        }
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const ampm = hours >= 12 ? '오후' : '오전';
+                const displayHours = hours % 12 || 12;
+                const displayMinutes = minutes.toString().padStart(2, '0');
+                timeElement.textContent = `${ampm} ${displayHours}:${displayMinutes}`;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 60000); // Update every minute
+            
+            // Load diary list on page load
+            refreshDiaryList();
+            console.log('📖 페이지 로드 완료, 일기 리스트 초기화됨');
+        });
+
+        // Draw daily cards functionality
+        function drawDailyCards() {
+            // Hide initial state and show drawn state
+            const initialState = document.getElementById('initial-state');
+            const cardsDrawnState = document.getElementById('cards-drawn-state');
+            
+            if (initialState && cardsDrawnState) {
+                initialState.classList.add('hidden');
+                cardsDrawnState.classList.remove('hidden');
+                
+                // Save state to localStorage
+                localStorage.setItem('dailyCardsDrawn', 'true');
+                localStorage.setItem('drawDate', new Date().toDateString());
+                
+                // Generate random cards for 24 hours
+                generateHourlyCards();
+                
+                console.log('24시간 타로카드가 뽑혔습니다!');
+            }
+        }
+        
+        // Complete 78-card tarot deck database
+        const allTarotCards = [
+            // Major Arcana (22 cards)
+            { name: 'The Fool', image: 'assets/tarot-cards/classic-tarot/major_00_fool.jpg', type: 'major' },
+            { name: 'The Magician', image: 'assets/tarot-cards/classic-tarot/major_01_magician.jpg', type: 'major' },
+            { name: 'The High Priestess', image: 'assets/tarot-cards/classic-tarot/major_02_high_priestess.jpg', type: 'major' },
+            { name: 'The Empress', image: 'assets/tarot-cards/classic-tarot/major_03_empress.jpg', type: 'major' },
+            { name: 'The Emperor', image: 'assets/tarot-cards/classic-tarot/major_04_emperor.jpg', type: 'major' },
+            { name: 'The Hierophant', image: 'assets/tarot-cards/classic-tarot/major_05_hierophant.jpg', type: 'major' },
+            { name: 'The Lovers', image: 'assets/tarot-cards/classic-tarot/major_06_lovers.jpg', type: 'major' },
+            { name: 'The Chariot', image: 'assets/tarot-cards/classic-tarot/major_07_chariot.jpg', type: 'major' },
+            { name: 'Strength', image: 'assets/tarot-cards/classic-tarot/major_08_strength.jpg', type: 'major' },
+            { name: 'The Hermit', image: 'assets/tarot-cards/classic-tarot/major_09_hermit.jpg', type: 'major' },
+            { name: 'Wheel of Fortune', image: 'assets/tarot-cards/classic-tarot/major_10_wheel_of_fortune.jpg', type: 'major' },
+            { name: 'Justice', image: 'assets/tarot-cards/classic-tarot/major_11_justice.jpg', type: 'major' },
+            { name: 'The Hanged Man', image: 'assets/tarot-cards/classic-tarot/major_12_hanged_man.jpg', type: 'major' },
+            { name: 'Death', image: 'assets/tarot-cards/classic-tarot/major_13_death.jpg', type: 'major' },
+            { name: 'Temperance', image: 'assets/tarot-cards/classic-tarot/major_14_temperance.jpg', type: 'major' },
+            { name: 'The Devil', image: 'assets/tarot-cards/classic-tarot/major_15_devil.jpg', type: 'major' },
+            { name: 'The Tower', image: 'assets/tarot-cards/classic-tarot/major_16_tower.jpg', type: 'major' },
+            { name: 'The Star', image: 'assets/tarot-cards/classic-tarot/major_17_star.jpg', type: 'major' },
+            { name: 'The Moon', image: 'assets/tarot-cards/classic-tarot/major_18_moon.jpg', type: 'major' },
+            { name: 'The Sun', image: 'assets/tarot-cards/classic-tarot/major_19_sun.jpg', type: 'major' },
+            { name: 'Judgement', image: 'assets/tarot-cards/classic-tarot/major_20_judgement.jpg', type: 'major' },
+            { name: 'The World', image: 'assets/tarot-cards/classic-tarot/major_21_world.jpg', type: 'major' },
+            
+            // Minor Arcana - Cups (실제 존재하는 파일만)
+            { name: 'Ace of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_ace.jpg', type: 'minor' },
+            { name: 'Two of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_02.jpg', type: 'minor' },
+            { name: 'Three of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_03.jpg', type: 'minor' },
+            { name: 'Four of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_04.jpg', type: 'minor' },
+            { name: 'Five of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_05.jpg', type: 'minor' },
+            { name: 'Six of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_06.jpg', type: 'minor' },
+            { name: 'Seven of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_07.jpg', type: 'minor' },
+            { name: 'Eight of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_08.jpg', type: 'minor' },
+            { name: 'Nine of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_09.jpg', type: 'minor' },
+            { name: 'Ten of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_10.jpg', type: 'minor' },
+            { name: 'Page of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_page.jpg', type: 'minor' },
+            { name: 'Knight of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_knight.jpg', type: 'minor' },
+            { name: 'Queen of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_queen.jpg', type: 'minor' },
+            { name: 'King of Cups', image: 'assets/tarot-cards/classic-tarot/minor_cups_king.jpg', type: 'minor' },
+            
+            // Minor Arcana - Pentacles (실제 존재하는 파일만)
+            { name: 'Ace of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_ace.jpg', type: 'minor' },
+            { name: 'Two of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_02.jpg', type: 'minor' },
+            { name: 'Three of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_03.jpg', type: 'minor' },
+            { name: 'Four of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_04.jpg', type: 'minor' },
+            { name: 'Five of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_05.jpg', type: 'minor' },
+            { name: 'Six of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_06.jpg', type: 'minor' },
+            { name: 'Seven of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_07.jpg', type: 'minor' },
+            { name: 'Eight of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_08.jpg', type: 'minor' },
+            { name: 'Nine of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_09.jpg', type: 'minor' },
+            { name: 'Ten of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_10.jpg', type: 'minor' },
+            { name: 'Page of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_page.jpg', type: 'minor' },
+            { name: 'Knight of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_knight.jpg', type: 'minor' },
+            { name: 'Queen of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_queen.jpg', type: 'minor' },
+            { name: 'King of Pentacles', image: 'assets/tarot-cards/classic-tarot/minor_pentacles_king.jpg', type: 'minor' },
+            
+            // Minor Arcana - Swords (실제 존재하는 파일만)
+            { name: 'Ace of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_ace.jpg', type: 'minor' },
+            { name: 'Two of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_02.jpg', type: 'minor' },
+            { name: 'Three of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_03.jpg', type: 'minor' },
+            { name: 'Four of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_04.jpg', type: 'minor' },
+            { name: 'Five of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_05.jpg', type: 'minor' },
+            { name: 'Six of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_06.jpg', type: 'minor' },
+            { name: 'Seven of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_07.jpg', type: 'minor' },
+            { name: 'Eight of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_08.jpg', type: 'minor' },
+            { name: 'Nine of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_09.jpg', type: 'minor' },
+            { name: 'Ten of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_10.jpg', type: 'minor' },
+            { name: 'Page of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_page.jpg', type: 'minor' },
+            { name: 'Knight of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_knight.jpg', type: 'minor' },
+            { name: 'Queen of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_queen.jpg', type: 'minor' },
+            { name: 'King of Swords', image: 'assets/tarot-cards/classic-tarot/minor_swords_king.jpg', type: 'minor' },
+            
+            // Minor Arcana - Wands (실제 존재하는 파일만)
+            { name: 'Ace of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_ace.jpg', type: 'minor' },
+            { name: 'Two of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_02.jpg', type: 'minor' },
+            { name: 'Three of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_03.jpg', type: 'minor' },
+            { name: 'Four of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_04.jpg', type: 'minor' },
+            { name: 'Five of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_05.jpg', type: 'minor' },
+            { name: 'Six of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_06.jpg', type: 'minor' },
+            { name: 'Seven of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_07.jpg', type: 'minor' },
+            { name: 'Eight of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_08.jpg', type: 'minor' },
+            { name: 'Nine of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_09.jpg', type: 'minor' },
+            { name: 'Ten of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_10.jpg', type: 'minor' },
+            { name: 'Page of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_page.jpg', type: 'minor' },
+            { name: 'Knight of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_knight.jpg', type: 'minor' },
+            { name: 'Queen of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_queen.jpg', type: 'minor' },
+            { name: 'King of Wands', image: 'assets/tarot-cards/classic-tarot/minor_wands_king.jpg', type: 'minor' }
+        ];
+
+        // Global variable to store currently selected 24 cards
+        let currentDailyCards = [];
+        
+        // Global variable to track current hour in popup
+        let currentPopupHour = 0;
+
+        // Fisher-Yates shuffle algorithm for random card selection
+        function shuffleArray(array) {
+            const shuffled = [...array]; // Create a copy
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Handle redraw button click
+        function redrawCards() {
+            console.log('🔄 다시 뽑기 버튼이 클릭되었습니다!');
+            
+            // Add visual feedback for card change
+            const timelineContainer = document.querySelector('.flex.space-x-4.overflow-x-auto');
+            if (timelineContainer) {
+                timelineContainer.style.opacity = '0.5';
+                timelineContainer.style.transition = 'opacity 0.3s ease';
+            }
+            
+            setTimeout(() => {
+                generateHourlyCards();
+                if (timelineContainer) {
+                    timelineContainer.style.opacity = '1';
+                }
+            }, 150);
+        }
+
+        // Generate random 24 cards from the full 78-card deck
+        function generateHourlyCards() {
+            console.log('🎯 generateHourlyCards() 함수 시작');
+            console.log('📝 전체 카드 수:', allTarotCards.length);
+            
+            // Check if allTarotCards is properly loaded
+            if (!allTarotCards || allTarotCards.length !== 78) {
+                console.error('❌ 타로카드 데이터베이스 오류! 카드 수:', allTarotCards?.length || 0);
+                return;
+            }
+            
+            console.log('🔄 78장의 카드 중에서 랜덤으로 24장을 선택하는 중...');
+            
+            // Shuffle all cards and select first 24
+            const shuffledCards = shuffleArray(allTarotCards);
+            console.log('✨ 셔플 완료, 처음 5장:', shuffledCards.slice(0, 5).map(c => c.name));
+            
+            currentDailyCards = shuffledCards.slice(0, 24).map(card => ({
+                ...card,
+                memo: '' // Initialize memo property for each card
+            }));
+            
+            console.log('📋 선택된 24장 카드 목록:');
+            currentDailyCards.forEach((card, index) => {
+                console.log(`  ${index}시: ${card.name}`);
+            });
+            
+            // Update the card display
+            console.log('🖼️ 카드 디스플레이 업데이트 시작...');
+            updateCardDisplay();
+            
+            console.log('✅ 24장의 카드가 선택되고 화면이 업데이트되었습니다!');
+        }
+
+        // Update the card display with newly generated random cards
+        function updateCardDisplay() {
+            if (currentDailyCards.length === 0) {
+                console.log('❌ 카드가 생성되지 않았습니다.');
+                return;
+            }
+
+            console.log('🖼️ 카드 디스플레이 업데이트 시작...');
+
+            // Get current hour and highlight current time card
+            const now = new Date();
+            const currentHour = now.getHours();
+            console.log('⏰ 현재 시간:', currentHour + '시');
+
+            // Update main current time card (larger display)
+            const mainCardImg = document.querySelector('#cards-drawn-state .w-48.h-80 img');
+            const mainCardTitle = document.getElementById('current-card-name');
+            const currentTimeMemo = document.getElementById('current-time-memo');
+            
+            if (mainCardImg && currentDailyCards[currentHour]) {
+                console.log('🎯 메인 카드 업데이트:', currentDailyCards[currentHour].name);
+                mainCardImg.src = currentDailyCards[currentHour].image;
+                mainCardImg.alt = currentDailyCards[currentHour].name;
+                
+                if (mainCardTitle) {
+                    mainCardTitle.textContent = currentDailyCards[currentHour].name;
+                    console.log('📝 카드명 업데이트:', currentDailyCards[currentHour].name);
+                }
+                
+                // Update memo area with saved memo
+                if (currentTimeMemo) {
+                    currentTimeMemo.value = currentDailyCards[currentHour].memo || '';
+                    console.log('📝 현재 시간 메모 로드:', currentDailyCards[currentHour].memo || '(비어있음)');
+                }
+            }
+
+            // Update 24-hour timeline cards
+            const timelineCards = document.querySelectorAll('.flex-shrink-0.touch-optimization');
+            let currentHourCard = null;
+            console.log('📋 타임라인 카드 수:', timelineCards.length);
+            
+            timelineCards.forEach((card, index) => {
+                if (currentDailyCards[index]) {
+                    const img = card.querySelector('img');
+                    const timeLabel = card.querySelector('.caption');
+                    
+                    if (img) {
+                        console.log(`📷 ${index}시 카드 업데이트:`, currentDailyCards[index].name);
+                        img.src = currentDailyCards[index].image;
+                        img.alt = currentDailyCards[index].name;
+                    }
+                    
+                    // Add/remove current hour highlight
+                    if (index === currentHour) {
+                        card.classList.add('ring-2', 'ring-yellow-400');
+                        currentHourCard = card;
+                        console.log('🟡 현재 시간 카드 강조:', index + '시');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-yellow-400');
+                    }
+                }
+            });
+
+            // Scroll current hour card to center
+            if (currentHourCard) {
+                console.log('🎯 현재 시간 카드로 스크롤 중...');
+                setTimeout(() => {
+                    currentHourCard.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest',
+                        inline: 'center' 
+                    });
+                    console.log('✅ 스크롤 완료');
+                }, 200);
+            } else {
+                console.log('⚠️ 현재 시간 카드를 찾을 수 없습니다.');
+            }
+
+            console.log('✅ 카드 디스플레이 업데이트 완료');
+        }
+
+        // Sample interactions
+        function selectCard(hour) {
+            console.log('카드 선택됨:', hour + '시');
+            
+            // Show popup modal with card details
+            showCardPopup(hour);
+        }
+        
+        // Show card popup modal
+        function showCardPopup(hour) {
+            // Store current hour for save function
+            currentPopupHour = hour;
+            
+            const popup = document.getElementById('card-popup');
+            const popupHour = document.getElementById('popup-hour');
+            const popupCard = document.getElementById('popup-card-image');
+            const popupMemo = document.getElementById('popup-memo');
+            
+            // Time labels for each hour
+            const timeLabels = {
+                0: '자정', 1: '새벽 1시', 2: '새벽 2시', 3: '새벽 3시', 4: '새벽 4시', 5: '새벽 5시',
+                6: '오전 6시', 7: '오전 7시', 8: '오전 8시', 9: '오전 9시', 10: '오전 10시', 11: '오전 11시',
+                12: '정오', 13: '오후 1시', 14: '오후 2시', 15: '오후 3시', 16: '오후 4시', 17: '오후 5시',
+                18: '오후 6시', 19: '오후 7시', 20: '오후 8시', 21: '오후 9시', 22: '오후 10시', 23: '오후 11시'
+            };
+            
+            // Get card info from current daily cards or default
+            const cardData = currentDailyCards[hour];
+            const timeLabel = timeLabels[hour] || (hour + '시');
+            
+            if (cardData) {
+                // Update popup content with actual card data
+                popupHour.textContent = timeLabel;
+                popupCard.src = cardData.image;
+                popupCard.alt = cardData.name;
+                popupMemo.value = cardData.memo || '';
+                
+                // Update popup title with card name
+                const popupTitle = document.querySelector('#card-popup .title-medium');
+                if (popupTitle) {
+                    popupTitle.textContent = cardData.name;
+                }
+            } else {
+                // Fallback if no card data available
+                popupHour.textContent = timeLabel;
+                popupCard.src = 'assets/tarot-cards/classic-tarot/major_00_fool.jpg';
+                popupCard.alt = 'Mystery Card';
+                popupMemo.value = '';
+                
+                const popupTitle = document.querySelector('#card-popup .title-medium');
+                if (popupTitle) {
+                    popupTitle.textContent = 'Mystery Card';
+                }
+            }
+            
+            // Show popup
+            popup.classList.remove('hidden');
+            popup.classList.add('flex');
+        }
+        
+        // Close card popup
+        function closeCardPopup() {
+            const popup = document.getElementById('card-popup');
+            popup.classList.add('hidden');
+            popup.classList.remove('flex');
+        }
+        
+        // Save memo for current time card (main display area)
+        function saveCurrentTimeMemo() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const memo = document.getElementById('current-time-memo').value;
+            
+            console.log('💾 현재 시간 메모 저장 시작:', currentHour + '시');
+            
+            // Save memo to currentDailyCards array
+            if (currentDailyCards[currentHour]) {
+                currentDailyCards[currentHour].memo = memo;
+                console.log(`✅ ${currentHour}시 메모 저장 완료:`, memo);
+                
+                // Show save confirmation
+                showMemoSaveConfirmation();
+            } else {
+                console.log('❌ 현재 시간에 해당하는 카드가 없습니다.');
+            }
+        }
+        
+        // Show memo save confirmation
+        function showMemoSaveConfirmation() {
+            const button = document.querySelector('button[onclick="saveCurrentTimeMemo()"]');
+            const originalHTML = button.innerHTML;
+            
+            // Show success state
+            button.innerHTML = `
+                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                완료
+            `;
+            button.classList.add('bg-green-500/20', 'border-green-400/30', 'text-green-400');
+            button.classList.remove('bg-yellow-400/10', 'border-yellow-400/30', 'text-yellow-400');
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.classList.remove('bg-green-500/20', 'border-green-400/30', 'text-green-400');
+                button.classList.add('bg-yellow-400/10', 'border-yellow-400/30', 'text-yellow-400');
+            }, 2000);
+        }
+
+        // Save memo for specific hour (popup modal)
+        function saveMemo() {
+            const memo = document.getElementById('popup-memo').value;
+            const hour = currentPopupHour;
+            
+            // Save memo to currentDailyCards array
+            if (currentDailyCards[hour]) {
+                currentDailyCards[hour].memo = memo;
+                console.log(`${hour}시 메모 저장:`, memo);
+                console.log('Updated card data:', currentDailyCards[hour]);
+            }
+            
+            // Close popup
+            closeCardPopup();
+        }
+
+        // Variables for diary view
+        let currentDiaryData = null;
+        let currentDiaryHour = 0;
+        
+        // localStorage key for daily tarot diary
+        const DIARY_STORAGE_KEY = 'dailyTarotDiary';
+        
+        // Get saved diary data from localStorage
+        function getSavedDiaryData() {
+            try {
+                const saved = localStorage.getItem(DIARY_STORAGE_KEY);
+                return saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                console.error('❌ 일기 데이터 로드 실패:', e);
+                return {};
+            }
+        }
+        
+        // Save diary data to localStorage
+        function saveDiaryData(diaryData) {
+            try {
+                localStorage.setItem(DIARY_STORAGE_KEY, JSON.stringify(diaryData));
+                console.log('💾 일기 데이터 저장 완료');
+                return true;
+            } catch (e) {
+                console.error('❌ 일기 데이터 저장 실패:', e);
+                return false;
+            }
+        }
+        
+        // Save current daily tarot to diary
+        function saveDailyTarot() {
+            console.log('💾 데일리 타로 저장 시작');
+            
+            // Check if cards are drawn
+            if (!currentDailyCards || currentDailyCards.length === 0) {
+                alert('먼저 24시간 타로 카드를 뽑아주세요!');
+                return;
+            }
+            
+            // Get current date
+            const now = new Date();
+            const dateKey = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+            const dateDisplay = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${['일', '월', '화', '수', '목', '금', '토'][now.getDay()]}요일`;
+            
+            // Get existing diary data
+            const diaryData = getSavedDiaryData();
+            
+            // Check if entry already exists for today
+            if (diaryData[dateKey]) {
+                const confirmOverwrite = confirm(`오늘(${dateDisplay}) 일기가 이미 존재합니다.\n\n기존 일기를 덮어쓰시겠습니까?`);
+                if (!confirmOverwrite) {
+                    console.log('❌ 사용자가 덮어쓰기를 취소했습니다.');
+                    return;
+                }
+            }
+            
+            // Prepare diary entry
+            const diaryEntry = {
+                date: dateDisplay,
+                dateKey: dateKey,
+                timestamp: now.toISOString(),
+                cards: currentDailyCards.map((card, hour) => ({
+                    hour: hour,
+                    name: card.name,
+                    image: card.image,
+                    type: card.type,
+                    memo: card.memo || ''
+                }))
+            };
+            
+            // Add/update entry
+            diaryData[dateKey] = diaryEntry;
+            
+            // Save to localStorage
+            if (saveDiaryData(diaryData)) {
+                // Show success message and update UI
+                showSaveSuccessMessage();
+                refreshDiaryList();
+                console.log('✅ 데일리 타로 저장 완료:', dateDisplay);
+                console.log('📊 저장된 카드 수:', diaryEntry.cards.length);
+                console.log('📝 메모 있는 카드:', diaryEntry.cards.filter(card => card.memo).length);
+            } else {
+                alert('저장에 실패했습니다. 다시 시도해주세요.');
+            }
+        }
+        
+        // Show save success message
+        function showSaveSuccessMessage() {
+            const button = document.querySelector('button[onclick="saveDailyTarot()"]');
+            const originalHTML = button.innerHTML;
+            
+            // Show success state
+            button.innerHTML = `
+                <svg class="h-5 w-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                저장 완료!
+            `;
+            button.classList.add('from-green-500', 'to-green-600');
+            button.classList.remove('from-yellow-400', 'to-yellow-500');
+            
+            // Reset after 3 seconds
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.classList.remove('from-green-500', 'to-green-600');
+                button.classList.add('from-yellow-400', 'to-yellow-500');
+            }, 3000);
+        }
+        
+        // Refresh diary list with latest data
+        function refreshDiaryList() {
+            const diaryData = getSavedDiaryData();
+            const diaryList = document.getElementById('daily-diary-list');
+            
+            if (!diaryList) {
+                console.log('📋 일기 리스트 요소를 찾을 수 없습니다');
+                return;
+            }
+            
+            // Get entries sorted by date (newest first)
+            const entries = Object.values(diaryData).sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+            
+            // Clear existing list
+            diaryList.innerHTML = '';
+            
+            if (entries.length === 0) {
+                diaryList.innerHTML = `
+                    <div class="text-center py-8 text-white/60">
+                        <svg class="h-12 w-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="body-small">아직 저장된 일기가 없습니다.<br>타이머에서 24시간 타로를 뽑고 저장해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Render entries
+            entries.forEach(entry => {
+                const memoCount = entry.cards.filter(card => card.memo && card.memo.trim() !== '').length;
+                const entryHTML = createDiaryEntryHTML(entry, memoCount);
+                diaryList.appendChild(entryHTML);
+            });
+            
+            // Update diary count
+            const countElement = document.getElementById('diary-count');
+            if (countElement) {
+                countElement.textContent = `${entries.length}개 기록`;
+            }
+        }
+        
+        // Create diary entry HTML element
+        function createDiaryEntryHTML(entry, memoCount) {
+            const div = document.createElement('div');
+            div.className = 'bg-white/5 border border-white/10 touch-card rounded-2xl p-5 space-y-4';
+            
+            // Generate card previews (show up to 5 cards, then +X indicator)
+            const visibleCards = entry.cards.slice(0, 5);
+            const remainingCards = Math.max(0, entry.cards.length - 5);
+            
+            const cardsHTML = visibleCards.map(card => `
+                <div class="flex-shrink-0 w-7 h-12 rounded overflow-hidden border border-yellow-400/30 shadow-lg relative">
+                    <img src="${card.image}" alt="${card.name}" class="w-full h-full object-cover">
+                    ${card.memo && card.memo.trim() !== '' ? `
+                        <div class="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <svg class="w-1 h-1 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            const remainingHTML = remainingCards > 0 ? `
+                <div class="flex-shrink-0 w-7 h-12 rounded bg-white/10 border border-white/20 flex items-center justify-center">
+                    <span class="text-xs text-white/60">+${remainingCards}</span>
+                </div>
+            ` : '';
+            
+            div.innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span class="body-medium text-white">${entry.date}</span>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs bg-green-500/20 text-green-400 border border-green-500/30">저장됨</span>
+                </div>
+                
+                <div class="flex gap-1 overflow-x-auto pb-2 scrollbar-none">
+                    ${cardsHTML}
+                    ${remainingHTML}
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-3 w-3 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <span class="caption text-yellow-400">${memoCount}개 시간대 메모</span>
+                    </div>
+                    <button onclick="viewDailyDiary('${entry.dateKey}')" class="px-3 py-0.5 text-sm rounded-lg border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 touch-optimization">
+                        보기
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // View daily diary popup
+        function viewDailyDiary(date) {
+            console.log('📖 Opening diary for:', date);
+            
+            // Load actual data from localStorage
+            const diaryData = getSavedDiaryData();
+            currentDiaryData = diaryData[date] || null;
+            
+            if (!currentDiaryData) {
+                console.error('❌ 해당 날짜의 데이터를 찾을 수 없습니다:', date);
+                alert('해당 날짜의 일기를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // Show popup
+            document.getElementById('diary-popup').classList.remove('hidden');
+            document.getElementById('diary-popup').classList.add('flex');
+            
+            // Update popup content
+            document.getElementById('diary-date').textContent = currentDiaryData.date;
+            
+            // Render all cards
+            renderDiaryCards();
+            
+            // Show first card (hour 0)
+            showDiaryCard(0);
+        }
+        
+        // Render all 24 cards in horizontal scroll (Mobile Optimized)
+        function renderDiaryCards() {
+            const cardsContainer = document.getElementById('diary-cards-container');
+            cardsContainer.innerHTML = '';
+            
+            currentDiaryData.cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden border-2 border-transparent shadow-lg cursor-pointer transition-all duration-300 relative touch-optimization';
+                cardElement.onclick = () => showDiaryCard(index);
+                cardElement.dataset.hour = index;
+                cardElement.style.scrollSnapAlign = 'start';
+                
+                const hasMemo = card.memo && card.memo.trim() !== '';
+                
+                cardElement.innerHTML = `
+                    <img src="${card.image}" alt="${card.name}" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/90 text-white text-xs py-0.5 px-1 text-center font-medium">
+                        ${index}시
+                    </div>
+                    ${hasMemo ? `
+                        <div class="absolute top-0.5 right-0.5 w-2.5 h-2.5 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <svg class="w-1.5 h-1.5 text-black" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            </svg>
+                        </div>
+                    ` : ''}
+                `;
+                
+                cardsContainer.appendChild(cardElement);
+            });
+        }
+        
+        // Show specific card and its memo
+        function showDiaryCard(hour) {
+            currentDiaryHour = hour;
+            const card = currentDiaryData.cards[hour];
+            
+            // Update active card highlight
+            document.querySelectorAll('#diary-cards-container > div').forEach((el, index) => {
+                if (index === hour) {
+                    el.classList.add('border-yellow-400', 'ring-2', 'ring-yellow-400/50');
+                    el.classList.remove('border-transparent');
+                    // Scroll to center
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    el.classList.remove('border-yellow-400', 'ring-2', 'ring-yellow-400/50');
+                    el.classList.add('border-transparent');
+                }
+            });
+            
+            // Update card details
+            document.getElementById('diary-card-name').textContent = card.name;
+            document.getElementById('diary-card-hour').textContent = `${hour}시`;
+            document.getElementById('diary-card-image').src = card.image;
+            document.getElementById('diary-card-image').alt = card.name;
+            
+            // Update memo
+            document.getElementById('diary-memo-text').value = card.memo || '';
+            
+            console.log(`📖 ${hour}시 카드 선택:`, card.name, '메모:', card.memo || '없음');
+        }
+        
+        // Save diary memo
+        function saveDiaryMemo() {
+            const memo = document.getElementById('diary-memo-text').value;
+            const card = currentDiaryData.cards[currentDiaryHour];
+            
+            // Update memo in current data
+            card.memo = memo;
+            
+            // Save to localStorage
+            const diaryData = getSavedDiaryData();
+            if (diaryData[currentDiaryData.dateKey]) {
+                diaryData[currentDiaryData.dateKey].cards[currentDiaryHour].memo = memo;
+                saveDiaryData(diaryData);
+                
+                // Refresh diary list to show updated memo count
+                refreshDiaryList();
+            }
+            
+            // Re-render cards to update star indicators
+            renderDiaryCards();
+            showDiaryCard(currentDiaryHour);
+            
+            // Show confirmation
+            showDiaryMemoSaveConfirmation();
+            
+            console.log(`💾 ${currentDiaryHour}시 메모 저장:`, memo);
+        }
+        
+        // Show diary memo save confirmation
+        function showDiaryMemoSaveConfirmation() {
+            const button = document.querySelector('button[onclick="saveDiaryMemo()"]');
+            const originalHTML = button.innerHTML;
+            
+            button.innerHTML = `
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                저장 완료
+            `;
+            button.classList.add('bg-green-500/20', 'border-green-400/30', 'text-green-400');
+            button.classList.remove('bg-yellow-400/10', 'border-yellow-400/30', 'text-yellow-400');
+            
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.classList.remove('bg-green-500/20', 'border-green-400/30', 'text-green-400');
+                button.classList.add('bg-yellow-400/10', 'border-yellow-400/30', 'text-yellow-400');
+            }, 2000);
+        }
+        
+        // Close diary popup
+        function closeDiaryPopup() {
+            document.getElementById('diary-popup').classList.add('hidden');
+            document.getElementById('diary-popup').classList.remove('flex');
+            currentDiaryData = null;
+            currentDiaryHour = 0;
+            console.log('📖 일기 팝업 닫기');
+        }
+    </script>
+
+    <!-- Card Popup Modal -->
+    <div id="card-popup" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-slate-900 to-slate-800 rounded-2xl border border-yellow-400/30 max-w-sm w-full space-y-6 p-6 animate-mystical-glow">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12,6 12,12 16,14"></polyline>
+                    </svg>
+                    <h3 id="popup-hour" class="title-medium text-white">자정</h3>
+                </div>
+                <button onclick="closeCardPopup()" class="text-white/60 hover:text-white transition-colors p-1">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Card Image -->
+            <div class="flex justify-center">
+                <div class="relative">
+                    <div class="absolute -inset-2 bg-yellow-400/30 blur-xl rounded-2xl"></div>
+                    <div class="relative w-32 h-48 rounded-xl overflow-hidden shadow-2xl border border-yellow-400/50">
+                        <img id="popup-card-image" src="assets/tarot-cards/classic-tarot/major_00_fool.jpg" alt="타로 카드" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Memo Area -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    <label class="title-small text-white">메모</label>
+                </div>
+                <textarea 
+                    id="popup-memo" 
+                    placeholder="이 시간에 대한 생각이나 느낌을 적어보세요..."
+                    class="w-full h-24 p-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 body-small resize-none focus:outline-none focus:border-yellow-400/50 focus:bg-white/10 transition-all">
+                </textarea>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="flex gap-3">
+                <button onclick="closeCardPopup()" class="flex-1 py-3 px-4 rounded-xl border border-white/20 text-white hover:bg-white/10 transition-all">
+                    닫기
+                </button>
+                <button onclick="saveMemo()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-semibold hover:from-yellow-500 hover:to-yellow-600 transition-all">
+                    저장
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diary View Popup Modal (Mobile Optimized) -->
+    <div id="diary-popup" class="fixed inset-0 bg-black/80 backdrop-blur-mystical z-50 hidden items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-slate-900 to-slate-800 rounded-2xl border border-yellow-400/30 max-w-md w-full max-h-[90vh] flex flex-col animate-mystical-glow">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                    <h2 id="diary-date" class="title-medium text-white">2025년 1월 4일 금요일</h2>
+                </div>
+                <button onclick="closeDiaryPopup()" class="text-white/60 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10 touch-optimization">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Top Section - 24시간 타로 카드 (가로 스크롤) -->
+            <div class="p-4 border-b border-white/10">
+                <div class="flex items-center gap-2 mb-3">
+                    <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12,6 12,12 16,14"></polyline>
+                    </svg>
+                    <h3 class="title-small text-white">24시간 타로 카드</h3>
+                </div>
+                
+                <!-- Cards Horizontal Scroll -->
+                <div class="relative">
+                    <div id="diary-cards-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none touch-optimization" style="scroll-snap-type: x mandatory;">
+                        <!-- Cards will be rendered here by JavaScript -->
+                    </div>
+                    
+                    <!-- Scroll indicators -->
+                    <div class="absolute top-0 left-0 w-6 h-full bg-gradient-to-r from-slate-900 to-transparent pointer-events-none opacity-50"></div>
+                    <div class="absolute top-0 right-0 w-6 h-full bg-gradient-to-l from-slate-900 to-transparent pointer-events-none opacity-50"></div>
+                </div>
+            </div>
+
+            <!-- Middle Section - 선택된 카드와 메모 -->
+            <div class="flex-1 p-4 overflow-y-auto">
+                <!-- Selected Card Info -->
+                <div class="text-center mb-4">
+                    <div class="flex items-center justify-center gap-2 mb-3">
+                        <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12,6 12,12 16,14"></polyline>
+                        </svg>
+                        <span id="diary-card-hour" class="title-small text-white">0시</span>
+                    </div>
+                    
+                    <!-- Card Image -->
+                    <div class="relative mb-3 inline-block">
+                        <div class="absolute -inset-1 bg-yellow-400/30 blur-xl rounded-xl"></div>
+                        <div class="relative w-20 h-32 rounded-lg overflow-hidden shadow-lg border border-yellow-400/50">
+                            <img id="diary-card-image" src="assets/tarot-cards/classic-tarot/major_00_fool.jpg" alt="타로 카드" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    
+                    <h4 id="diary-card-name" class="body-medium text-white">The Fool</h4>
+                </div>
+                
+                <!-- Memo Section -->
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        <label class="title-small text-white">메모</label>
+                    </div>
+                    
+                    <textarea 
+                        id="diary-memo-text" 
+                        placeholder="이 시간대에 대한 생각이나 느낌을 기록해보세요..."
+                        class="w-full h-24 p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 body-small resize-none focus:outline-none focus:border-yellow-400/50 focus:bg-white/10 transition-all">
+                    </textarea>
+                    
+                    <!-- Save Button -->
+                    <button 
+                        onclick="saveDiaryMemo()" 
+                        class="w-full py-2.5 px-4 rounded-lg bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/20 transition-all duration-300 flex items-center justify-center gap-2 touch-optimization">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        메모 저장
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Section - 안내문구 및 닫기 -->
+            <div class="p-4 border-t border-white/10 space-y-3">
+                <div class="flex items-center justify-center gap-2 text-white/60">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="caption text-center">카드를 터치해서 다른 시간대를 확인해보세요</span>
+                </div>
+                <button 
+                    onclick="closeDiaryPopup()" 
+                    class="w-full py-3 px-4 rounded-lg border border-white/20 text-white hover:bg-white/10 transition-all touch-optimization">
+                    닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

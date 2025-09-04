@@ -28,6 +28,7 @@ import {
   BookOpen,
   Settings as SettingsIcon,
   Moon,
+  TarotCards,
   Star,
   Sparkles,
   Zap,
@@ -44,19 +45,76 @@ import {
   HelpCircle
 } from './components/mystical-ui/icons';
 
-// Import UI components
+// Import UI components  
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Button,
-  Badge,
-  Textarea,
-  Input,
-  Switch,
+  MysticalCard as Card,
+  MysticalButton as Button,
+  MysticalInput as Input,
+  MysticalSwitch as Switch,
+  MysticalProgress,
+  MysticalModal,
+  MysticalTooltip,
+  IconButton,
   ImageWithFallback
 } from './components/mystical-ui/components';
+
+// Legacy components for compatibility
+interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
+interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "secondary" | "destructive" | "outline";
+  className?: string;
+}
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+
+const CardHeader: React.FC<CardHeaderProps> = ({ className = "", children, ...props }) => (
+  <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
+    {children}
+  </div>
+);
+
+const CardTitle: React.FC<CardTitleProps> = ({ className = "", children, ...props }) => (
+  <h3 className={`text-2xl font-semibold leading-none tracking-tight text-white ${className}`} {...props}>
+    {children}
+  </h3>
+);
+
+const CardContent: React.FC<CardContentProps> = ({ className = "", children, ...props }) => (
+  <div className={`p-6 pt-0 ${className}`} {...props}>
+    {children}
+  </div>
+);
+
+const Badge: React.FC<BadgeProps> = ({ 
+  className = "", 
+  variant = "default", 
+  children, 
+  ...props 
+}) => {
+  const variantStyles = {
+    default: "bg-yellow-400 text-black border-transparent",
+    secondary: "bg-gray-800 text-yellow-400 border-yellow-400/30",
+    destructive: "bg-red-500 text-white border-transparent", 
+    outline: "text-yellow-400 border-yellow-400/30 bg-transparent"
+  };
+  
+  return (
+    <div 
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${variantStyles[variant]} ${className}`} 
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+const Textarea: React.FC<TextareaProps> = ({ className = "", ...props }) => (
+  <textarea
+    className={`flex min-h-[80px] w-full rounded-md border border-yellow-400/20 bg-gray-800/50 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+    {...props}
+  />
+);
 
 // ==========================================
 // MAIN COMPONENTS
@@ -206,10 +264,10 @@ function Timer() {
     if (parts.length >= 2) {
       return (
         <div className="text-center">
-          <div className="text-sm text-yellow-400/80 font-medium tracking-wider uppercase">
+          <div className="overline text-yellow-400/80">
             {t('timer.currentHour')}
           </div>
-          <div className="text-3xl font-bold text-white mt-1">
+          <div className="display-large text-white mt-1">
             {parts[0]} {parts[1]}
           </div>
         </div>
@@ -217,7 +275,7 @@ function Timer() {
     }
     
     return (
-      <div className="text-3xl font-bold text-white">
+      <div className="display-large text-white">
         {timeText}
       </div>
     );
@@ -252,19 +310,19 @@ function Timer() {
         <div className="text-center space-y-6 pt-8">
           <div className="relative">
             <div className="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full"></div>
-            <div className="relative space-y-4">
+            <div className="relative space-y-2">
               <div className="flex items-center justify-center">
                 <div className="relative">
-                  <Moon className="h-12 w-12 text-yellow-400 animate-mystical-pulse" />
+                  <TarotCards className="h-14 w-14 text-yellow-400 animate-mystical-pulse" />
                   <div className="absolute inset-0 bg-yellow-400/30 blur-lg rounded-full animate-pulse"></div>
                 </div>
               </div>
               
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+              <h1 className="display-large bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
                 {t('timer.title')}
               </h1>
               
-              <p className="text-white/70 text-sm font-medium tracking-wide">
+              <p className="body-small text-white/70 tracking-wide">
                 {formatDate(currentTime)}
               </p>
               
@@ -287,20 +345,20 @@ function Timer() {
                 <div className="flex justify-center">
                   <div className="relative">
                     <div className="absolute -inset-2 bg-yellow-400/30 blur-xl rounded-2xl"></div>
-                    <div className="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-400/50">
+                    <div className="relative w-64 h-96 rounded-2xl overflow-hidden shadow-2xl border-2 border-yellow-400/50 animate-mystical-float">
                       <ImageWithFallback
                         src={selectedCard.imageUrl}
                         alt={language === 'ko' ? selectedCard.nameKr : selectedCard.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                       
                       {/* Card overlay info */}
                       <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="text-white font-bold text-xl drop-shadow-lg">
+                        <h3 className="title-medium text-white drop-shadow-lg">
                           {language === 'ko' ? selectedCard.nameKr : selectedCard.name}
                         </h3>
-                        <p className="text-white/90 text-sm mt-1 drop-shadow">
+                        <p className="body-small text-white/90 mt-1 drop-shadow">
                           {language === 'ko' ? selectedCard.name : selectedCard.nameKr}
                         </p>
                       </div>
@@ -326,7 +384,7 @@ function Timer() {
                       </Badge>
                     ))}
                   </div>
-                  <p className="text-white/90 leading-relaxed max-w-sm mx-auto">
+                  <p className="body-medium text-white/90 leading-relaxed max-w-sm mx-auto">
                     {language === 'ko' ? selectedCard.meaningKr : selectedCard.meaning}
                   </p>
                 </div>
@@ -348,17 +406,17 @@ function Timer() {
                       <div className="absolute inset-0 bg-yellow-400/30 blur-lg rounded-full"></div>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-white">
+                  <h3 className="title-large text-white">
                     {t('timer.revealDestiny')}
                   </h3>
-                  <p className="text-white/70 leading-relaxed">
+                  <p className="body-medium text-white/70 leading-relaxed">
                     {t('timer.cosmicMessage')}
                   </p>
                 </div>
                 <Button 
                   onClick={drawAll24Cards} 
                   disabled={isDrawingAll}
-                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-4 text-lg hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl disabled:opacity-50"
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold py-4 text-lg hover:from-yellow-500 hover:to-yellow-600 transition-all duration-500 shadow-2xl disabled:opacity-50 animate-mystical-pulse hover:animate-mystical-glow"
                 >
                   {isDrawingAll ? (
                     <div className="flex items-center gap-3">
@@ -381,7 +439,7 @@ function Timer() {
         {hasDrawnAll24Cards && dailyCards.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="title-medium text-white flex items-center gap-2">
                 <Clock className="h-5 w-5 text-yellow-400" />
                 {t('timer.energyFlow')}
               </h2>
@@ -420,8 +478,8 @@ function Timer() {
                   {dailyCards.map((card, index) => (
                     <div
                       key={`${card.id}-${index}`}
-                      className={`flex-shrink-0 cursor-pointer transition-all duration-500 ${
-                        selectedCardIndex === index ? 'scale-110 z-10' : 'hover:scale-105'
+                      className={`flex-shrink-0 cursor-pointer transition-all duration-500 hover:animate-mystical-pulse ${
+                        selectedCardIndex === index ? 'scale-110 z-10 animate-mystical-glow' : 'hover:scale-105'
                       }`}
                       onClick={() => handleCardClick(index)}
                     >
@@ -516,8 +574,8 @@ function Timer() {
                 disabled={isDailyTarotSaved}
                 className={`relative w-full py-4 text-lg font-bold transition-all duration-500 ${
                   isDailyTarotSaved 
-                    ? 'bg-green-500 text-white shadow-2xl shadow-green-500/30' 
-                    : 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-600 shadow-2xl shadow-yellow-400/30'
+                    ? 'bg-green-500 text-white shadow-2xl shadow-green-500/30 animate-mystical-pulse' 
+                    : 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-600 shadow-2xl shadow-yellow-400/30 hover:animate-mystical-glow'
                 }`}
               >
                 <Save className="h-5 w-5 mr-2" />
@@ -588,11 +646,11 @@ function Spreads({ onSpreadSelect }: SpreadsProps) {
                 </div>
               </div>
               
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+              <h1 className="display-large bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
                 {t('spreads.title')}
               </h1>
               
-              <p className="text-white/70 text-sm font-medium tracking-wide">
+              <p className="body-small text-white/70 tracking-wide">
                 {t('spreads.subtitle')}
               </p>
             </div>
@@ -618,7 +676,7 @@ function Spreads({ onSpreadSelect }: SpreadsProps) {
                           <Layout className="h-6 w-6 text-yellow-400" />
                           <div className="absolute inset-0 bg-yellow-400/30 blur-sm rounded-full"></div>
                         </div>
-                        <h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors">
+                        <h3 className="title-medium text-white group-hover:text-yellow-400 transition-colors">
                           {language === 'ko' ? spread.nameKr : spread.name}
                         </h3>
                         {spread.isPremium && (
@@ -632,7 +690,7 @@ function Spreads({ onSpreadSelect }: SpreadsProps) {
                         )}
                       </div>
                       
-                      <p className="text-sm text-yellow-400/80 font-medium tracking-wide">
+                      <p className="body-small text-yellow-400/80 tracking-wide">
                         {language === 'ko' ? spread.name : spread.nameKr}
                       </p>
                     </div>
@@ -640,7 +698,7 @@ function Spreads({ onSpreadSelect }: SpreadsProps) {
                   
                   {/* Description */}
                   <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-                    <p className="text-white/90 leading-relaxed text-sm">
+                    <p className="body-small text-white/90 leading-relaxed">
                       {language === 'ko' ? spread.descriptionKr : spread.description}
                     </p>
                   </div>
@@ -676,10 +734,10 @@ function Spreads({ onSpreadSelect }: SpreadsProps) {
                     <div className="absolute inset-0 bg-yellow-400/30 blur-lg rounded-full"></div>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="title-large text-white">
                   {t('spreads.premiumTitle')}
                 </h3>
-                <p className="text-white/70 leading-relaxed">
+                <p className="body-medium text-white/70 leading-relaxed">
                   {t('spreads.premiumDesc')}
                 </p>
               </div>
@@ -746,7 +804,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
       spreadName: '켈틱 크로스',
       date: new Date('2024-01-08').toISOString(),
       cards: [],
-      insights: '큰 변화의 시기가 다가오고 있습니다. 과거의 경험을 바탕으로 현명한 결정을 내리세요.',
+      insights: '큰 변화의 시기가 다가오고 있습니다. 과거의 경험을 바탕으로 현명한 결정을 내��세요.',
       savedAt: new Date('2024-01-08').toISOString()
     },
     {
@@ -894,11 +952,11 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                 </div>
               </div>
               
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+              <h1 className="display-large bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
                 {t('journal.title')}
               </h1>
               
-              <p className="text-white/70 text-sm font-medium tracking-wide">
+              <p className="body-small text-white/70 tracking-wide">
                 {t('journal.subtitle')}
               </p>
             </div>
@@ -933,7 +991,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
         {activeSection === 'daily' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="title-medium text-white flex items-center gap-2">
                 <Clock className="h-5 w-5 text-yellow-400" />
                 {t('journal.dailyReadings')}
               </h2>
@@ -953,8 +1011,8 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-white font-medium">{t('journal.noReadings')}</h3>
-                      <p className="text-white/60 text-sm leading-relaxed">
+                      <h3 className="title-small text-white">{t('journal.noReadings')}</h3>
+                      <p className="body-small text-white/60 leading-relaxed">
                         {t('journal.noReadingsDesc')}
                       </p>
                     </div>
@@ -968,7 +1026,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-yellow-400" />
-                            <span className="text-white font-medium">
+                            <span className="body-medium text-white">
                               {new Date(save.date).toLocaleDateString('ko-KR', {
                                 year: 'numeric',
                                 month: 'long',
@@ -977,7 +1035,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                               })}
                             </span>
                           </div>
-                          <p className="text-white/70 text-sm">
+                          <p className="body-small text-white/70">
                             24시간 타로 리딩
                           </p>
                         </div>
@@ -1007,7 +1065,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                       {/* 인사이트 미리보기 */}
                       {save.insights && (
                         <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                          <p className="text-white/80 text-sm line-clamp-2 leading-relaxed">
+                          <p className="body-small text-white/80 line-clamp-2 leading-relaxed">
                             {save.insights}
                           </p>
                         </div>
@@ -1017,7 +1075,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Clock className="h-3 w-3 text-yellow-400" />
-                          <span className="text-xs text-yellow-400 font-medium">
+                          <span className="caption text-yellow-400">
                             {Object.keys(save.memos || {}).length}개 시간대 메모
                           </span>
                         </div>
@@ -1045,7 +1103,7 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
         {activeSection === 'spreads' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="title-medium text-white flex items-center gap-2">
                 <Layout className="h-5 w-5 text-yellow-400" />
                 {t('journal.spreadRecords')}
               </h2>
@@ -1065,8 +1123,8 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-white font-medium">{t('journal.noSpreads')}</h3>
-                      <p className="text-white/60 text-sm leading-relaxed">
+                      <h3 className="title-small text-white">{t('journal.noSpreads')}</h3>
+                      <p className="body-small text-white/60 leading-relaxed">
                         {t('journal.noSpreadsDesc')}
                       </p>
                     </div>
@@ -1081,13 +1139,13 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center gap-2">
                             <Layout className="h-4 w-4 text-yellow-400" />
-                            <span className="text-white font-medium group-hover:text-yellow-400 transition-colors">
+                            <span className="body-medium text-white group-hover:text-yellow-400 transition-colors">
                               {spread.title}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-sm">
                             <Calendar className="h-3 w-3 text-yellow-400/70" />
-                            <span className="text-white/70">
+                            <span className="body-small text-white/70">
                               {new Date(spread.date).toLocaleDateString('ko-KR', {
                                 year: 'numeric',
                                 month: 'long',
@@ -1121,11 +1179,11 @@ function Journal({ onSavedSpreadSelect, onDailyTarotSelect }: JournalProps) {
                       <div className="p-3 bg-white/5 rounded-lg border border-white/10">
                         <div className="flex items-center gap-2 mb-2">
                           <Sparkles className="h-3 w-3 text-yellow-400" />
-                          <span className="text-xs text-yellow-400 font-medium">
+                          <span className="caption text-yellow-400">
                             {language === 'ko' ? '인사이트' : 'Insights'}
                           </span>
                         </div>
-                        <p className="text-white/80 text-sm line-clamp-2 leading-relaxed">
+                        <p className="body-small text-white/80 line-clamp-2 leading-relaxed">
                           {spread.insights}
                         </p>
                       </div>
@@ -1205,11 +1263,11 @@ function SettingsScreen() {
                 </div>
               </div>
               
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
+              <h1 className="display-large bg-gradient-to-r from-yellow-400 via-white to-yellow-400 bg-clip-text text-transparent">
                 {t('settings.title')}
               </h1>
               
-              <p className="text-white/70 text-sm font-medium tracking-wide">
+              <p className="body-small text-white/70 tracking-wide">
                 {t('settings.subtitle')}
               </p>
             </div>
@@ -1223,8 +1281,8 @@ function SettingsScreen() {
               <div className="flex items-center gap-3">
                 <Crown className="h-6 w-6 text-yellow-400" />
                 <div>
-                  <h3 className="text-white font-medium">{t('settings.premium')}</h3>
-                  <p className="text-white/60 text-sm">{t('settings.active')}</p>
+                  <h3 className="title-small text-white">{t('settings.premium')}</h3>
+                  <p className="body-small text-white/60">{t('settings.active')}</p>
                 </div>
               </div>
               <Badge className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black">
@@ -1233,15 +1291,15 @@ function SettingsScreen() {
             </div>
             
             <div className="space-y-3 pl-9">
-              <div className="flex items-center gap-2 text-sm text-white/80">
+              <div className="flex items-center gap-2 body-small text-white/80">
                 <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
                 {t('settings.premiumSpreads')}
               </div>
-              <div className="flex items-center gap-2 text-sm text-white/80">
+              <div className="flex items-center gap-2 body-small text-white/80">
                 <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
                 {t('settings.adFree')}
               </div>
-              <div className="flex items-center gap-2 text-sm text-white/80">
+              <div className="flex items-center gap-2 body-small text-white/80">
                 <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
                 {t('settings.unlimitedStorage')}
               </div>
@@ -1259,7 +1317,7 @@ function SettingsScreen() {
         {/* Display & Theme */}
         <Card className="bg-white/5 border border-white/10">
           <CardContent className="p-6 space-y-6">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="title-small text-white flex items-center gap-2">
               <Sun className="h-5 w-5 text-yellow-400" />
               {t('settings.displayTheme')}
             </h3>
@@ -1267,16 +1325,16 @@ function SettingsScreen() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">{t('settings.darkMode')}</p>
-                  <p className="text-white/60 text-sm">Always on for mystical experience</p>
+                  <p className="body-medium text-white">{t('settings.darkMode')}</p>
+                  <p className="body-small text-white/60">Always on for mystical experience</p>
                 </div>
                 <Switch checked={true} onCheckedChange={() => {}} />
               </div>
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">{t('settings.language')}</p>
-                  <p className="text-white/60 text-sm">
+                  <p className="body-medium text-white">{t('settings.language')}</p>
+                  <p className="body-small text-white/60">
                     {language === 'ko' ? t('settings.korean') : t('settings.english')}
                   </p>
                 </div>
@@ -1297,7 +1355,7 @@ function SettingsScreen() {
         {/* Notifications */}
         <Card className="bg-white/5 border border-white/10">
           <CardContent className="p-6 space-y-6">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="title-small text-white flex items-center gap-2">
               <Bell className="h-5 w-5 text-yellow-400" />
               {t('settings.notifications')}
             </h3>
@@ -1305,8 +1363,8 @@ function SettingsScreen() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">{t('settings.spreadCompletion')}</p>
-                  <p className="text-white/60 text-sm">{t('settings.spreadCompletionDesc')}</p>
+                  <p className="body-medium text-white">{t('settings.spreadCompletion')}</p>
+                  <p className="body-small text-white/60">{t('settings.spreadCompletionDesc')}</p>
                 </div>
                 <Switch checked={notifications} onCheckedChange={setNotifications} />
               </div>
@@ -1317,7 +1375,7 @@ function SettingsScreen() {
         {/* Sound & Haptics */}
         <Card className="bg-white/5 border border-white/10">
           <CardContent className="p-6 space-y-6">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="title-small text-white flex items-center gap-2">
               <Volume2 className="h-5 w-5 text-yellow-400" />
               {t('settings.soundHaptics')}
             </h3>
@@ -1325,16 +1383,16 @@ function SettingsScreen() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">{t('settings.soundEffects')}</p>
-                  <p className="text-white/60 text-sm">Mystical sounds and chimes</p>
+                  <p className="body-medium text-white">{t('settings.soundEffects')}</p>
+                  <p className="body-small text-white/60">Mystical sounds and chimes</p>
                 </div>
                 <Switch checked={soundEffects} onCheckedChange={setSoundEffects} />
               </div>
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-white">{t('settings.hapticFeedback')}</p>
-                  <p className="text-white/60 text-sm">{t('settings.hapticFeedbackDesc')}</p>
+                  <p className="body-medium text-white">{t('settings.hapticFeedback')}</p>
+                  <p className="body-small text-white/60">{t('settings.hapticFeedbackDesc')}</p>
                 </div>
                 <Switch checked={hapticFeedback} onCheckedChange={setHapticFeedback} />
               </div>
@@ -1345,7 +1403,7 @@ function SettingsScreen() {
         {/* Privacy & Security */}
         <Card className="bg-white/5 border border-white/10">
           <CardContent className="p-6 space-y-6">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="title-small text-white flex items-center gap-2">
               <Shield className="h-5 w-5 text-yellow-400" />
               {t('settings.privacySecurity')}
             </h3>
@@ -1373,7 +1431,7 @@ function SettingsScreen() {
         {/* Support & Info */}
         <Card className="bg-white/5 border border-white/10">
           <CardContent className="p-6 space-y-6">
-            <h3 className="text-white font-medium flex items-center gap-2">
+            <h3 className="title-small text-white flex items-center gap-2">
               <HelpCircle className="h-5 w-5 text-yellow-400" />
               {t('settings.support')}
             </h3>
@@ -1400,8 +1458,8 @@ function SettingsScreen() {
         
         {/* Version Info */}
         <div className="text-center space-y-2 py-6">
-          <p className="text-white/60 text-sm">{t('settings.version')}</p>
-          <p className="text-white/40 text-xs">{t('settings.copyright')}</p>
+          <p className="body-small text-white/60">{t('settings.version')}</p>
+          <p className="caption text-white/40">{t('settings.copyright')}</p>
         </div>
         
         {/* Mystical Quote */}
@@ -1583,7 +1641,7 @@ function AppContent() {
                           backgroundColor: 'rgba(212, 175, 55, 0.3)'
                         }} />
                       </div>
-                      <span className="text-xs font-medium">{t('nav.timer')}</span>
+                      <span className="caption font-medium">{t('nav.timer')}</span>
                       <div className={`h-0.5 w-8 rounded-full transition-opacity shadow-lg ${activeTab === 'timer' ? 'opacity-100' : 'opacity-0'}`} style={{
                         backgroundColor: '#d4af37',
                         boxShadow: '0 0 12px rgba(212, 175, 55, 0.5)'
@@ -1605,7 +1663,7 @@ function AppContent() {
                           backgroundColor: 'rgba(212, 175, 55, 0.3)'
                         }} />
                       </div>
-                      <span className="text-xs font-medium">{t('nav.spreads')}</span>
+                      <span className="caption font-medium">{t('nav.spreads')}</span>
                       <div className={`h-0.5 w-8 rounded-full transition-opacity shadow-lg ${activeTab === 'spreads' ? 'opacity-100' : 'opacity-0'}`} style={{
                         backgroundColor: '#d4af37',
                         boxShadow: '0 0 12px rgba(212, 175, 55, 0.5)'
@@ -1627,7 +1685,7 @@ function AppContent() {
                           backgroundColor: 'rgba(212, 175, 55, 0.3)'
                         }} />
                       </div>
-                      <span className="text-xs font-medium">{t('nav.journal')}</span>
+                      <span className="caption font-medium">{t('nav.journal')}</span>
                       <div className={`h-0.5 w-8 rounded-full transition-opacity shadow-lg ${activeTab === 'journal' ? 'opacity-100' : 'opacity-0'}`} style={{
                         backgroundColor: '#d4af37',
                         boxShadow: '0 0 12px rgba(212, 175, 55, 0.5)'
@@ -1649,7 +1707,7 @@ function AppContent() {
                           backgroundColor: 'rgba(212, 175, 55, 0.3)'
                         }} />
                       </div>
-                      <span className="text-xs font-medium">{t('nav.settings')}</span>
+                      <span className="caption font-medium">{t('nav.settings')}</span>
                       <div className={`h-0.5 w-8 rounded-full transition-opacity shadow-lg ${activeTab === 'settings' ? 'opacity-100' : 'opacity-0'}`} style={{
                         backgroundColor: '#d4af37',
                         boxShadow: '0 0 12px rgba(212, 175, 55, 0.5)'

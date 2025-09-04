@@ -12,3 +12,8 @@ export { MemoSheet } from './MemoSheet';
 export { TimerDisplay } from './TimerDisplay';
 export { MysticalBackground } from './MysticalBackground';
 export { TarotCard } from './TarotCard';
+
+// Enhanced UI Components matching design references
+export { Card, CardHeader, CardContent, CardFooter } from './Card';
+export { Layout, ScreenHeader, ContentSection } from './Layout';
+export { TabBar, TabBarItem } from './TabBar';

@@ -2,7 +2,7 @@
   "name": "tarot-timer-app",
   "version": "1.0.0",
   "description": "🔮 시간별 타로 카드와 함께하는 의미있는 하루",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "App.tsx",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -59,6 +59,7 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-svg": "^15.11.2",
     "react-native-view-shot": "4.0.3",
     "react-native-web": "^0.20.0",
     "seedrandom": "^3.0.5",
@@ -67,6 +68,11 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-nullish-coalescing-operator": "^7.27.1",
+    "@babel/plugin-transform-optional-chaining": "^7.27.1",
+    "@babel/plugin-transform-private-methods": "^7.27.1",
+    "@babel/plugin-transform-private-property-in-object": "^7.27.1",
     "@types/inquirer": "^9.0.7",
     "@types/react": "~19.0.10",
     "@types/seedrandom": "^3.0.8",

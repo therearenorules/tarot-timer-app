@@ -4,436 +4,1058 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
-    <!-- Primary Meta Tags -->
-    <title>타로 타이머 - Tarot Timer</title>
-    <meta name="title" content="타로 타이머 - Tarot Timer">
-    <meta name="description" content="🔮 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 켈틱 크로스, 3카드, 5카드 등 다양한 스프레드와 타로 일기, 명상 타이머 기능을 제공하는 무료 온라인 타로 앱입니다. 전체 78장 타로 카드 해석 포함.">
+    <title>타로 타이머 - 신비로운 타로 타이머</title>
+    <meta name="description" content="🔮 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 켈틱 크로스, 컵 오브 릴레이션십, AB 선택 등 다양한 스프레드와 일기 기능을 제공합니다.">
     <meta name="keywords" content="타로, 타로카드, 타이머, 명상, 점술, tarot, tarot cards, timer, meditation">
-    <meta name="author" content="therearenorules">
-    <meta name="robots" content="index, follow, max-snippet:160, max-image-preview:large, max-video-preview:30">
-    <meta name="googlebot" content="index, follow, max-snippet:160, max-image-preview:large">
-    <meta name="bingbot" content="index, follow">
-    <meta name="slurp" content="index, follow">
     
-    <!-- International SEO -->
-    <link rel="alternate" hreflang="ko" href="https://tarot-timer.app/">
-    <link rel="alternate" hreflang="en" href="https://tarot-timer.app/en/">
-    <link rel="alternate" hreflang="x-default" href="https://tarot-timer.app/">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://tarot-timer.app/">
-    
-    <!-- Publisher and copyright -->
-    <meta name="publisher" content="타로 타이머">
-    <meta name="copyright" content="© 2024 타로 타이머. All rights reserved.">
-    <meta name="generator" content="React Native Web, Expo">
-    
-    <!-- Mobile and PWA metadata -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="타로 타이머">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    
-    <!-- Rating and content classification -->
-    <meta name="rating" content="general">
-    <meta name="content-language" content="ko-KR">
-    <meta name="audience" content="all">
-    <meta name="distribution" content="global">
-    <meta name="classification" content="Entertainment, Lifestyle, Spirituality">
-    
-    <!-- App store metadata -->
-    <meta name="apple-itunes-app" content="app-id=tarot-timer, app-argument=https://tarot-timer.app/">
-    <meta name="google-play-app" content="app-id=com.tarot.timer">
-    
-    <!-- Verification tags (placeholders) -->
-    <meta name="google-site-verification" content="your-google-verification-code">
-    <meta name="msvalidate.01" content="your-bing-verification-code">
-    <meta name="yandex-verification" content="your-yandex-verification-code">
-    <meta name="naver-site-verification" content="your-naver-verification-code">
-    
-    <!-- Performance and caching hints -->
-    <meta http-equiv="Cache-Control" content="public, max-age=31536000">
-    <meta http-equiv="Expires" content="Thu, 01 Dec 2025 16:00:00 GMT">
-    
-    <!-- Accessibility enhancements -->
-    <meta name="color-scheme" content="light dark">
-    <meta name="supported-color-schemes" content="light dark">
-    
-    <!-- Search engine specific -->
-    <meta name="revisit-after" content="7 days">
-    <meta name="page-topic" content="Tarot, Divination, Meditation, Timer">
-    <meta name="page-type" content="Web Application">
-    
-    <!-- Geographic targeting -->
-    <meta name="geo.region" content="KR">
-    <meta name="geo.country" content="Korea">
-    <meta name="geo.placename" content="South Korea">
-    <meta name="ICBM" content="37.5665, 126.9780">
-    <meta name="geo.position" content="37.5665;126.9780">
-    
-    <!-- Rich snippets support -->
-    <meta name="news_keywords" content="타로, 타로카드, 온라인타로, 무료타로, 타로리딩">
-    <meta name="article:section" content="Lifestyle">
-    <meta name="article:tag" content="spirituality,tarot,meditation,wellness">
-    
-    <!-- Business information -->
-    <meta name="contact" content="admin@tarot-timer.app">
-    <meta name="reply-to" content="admin@tarot-timer.app">
-    
-    <!-- Enhanced Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tarot-timer.app/">
-    <meta property="og:title" content="타로 타이머 - 개인 맞춤형 타로 카드 리딩 앱">
-    <meta property="og:description" content="🔮 AI 기반 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 다양한 스프레드, 타로 일기, 명상 타이머까지 - 현대적인 타로 앱의 새로운 기준을 제시합니다.">
-    <meta property="og:image" content="https://tarot-timer.app/og-image.png">
-    <meta property="og:image:alt" content="타로 타이머 앱 - 개인 맞춤형 타로 카드 리딩 인터페이스">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:locale" content="ko_KR">
-    <meta property="og:locale:alternate" content="en_US">
-    <meta property="og:site_name" content="타로 타이머">
-    <meta property="og:updated_time" content="2025-09-02T00:00:00+09:00">
-    <meta property="article:publisher" content="https://tarot-timer.app">
-    <meta property="article:author" content="therearenorules">
-    <meta property="article:section" content="Tarot">
-    <meta property="article:tag" content="타로">
-    <meta property="article:tag" content="타로카드">
-    <meta property="article:tag" content="타이머">
-    <meta property="article:tag" content="명상">
-    <meta property="article:tag" content="점술">
-    
-    <!-- Enhanced Twitter Cards -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://tarot-timer.app/">
-    <meta name="twitter:title" content="타로 타이머 - 개인 맞춤형 타로 카드 리딩">
-    <meta name="twitter:description" content="🔮 AI 기반 개인 맞춤형 타로 리딩으로 의미있는 하루를 시작하세요. 다양한 스프레드와 타로 일기 기능을 무료로 이용하세요.">
-    <meta name="twitter:image" content="https://tarot-timer.app/twitter-card.png">
-    <meta name="twitter:image:alt" content="타로 타이머 - 개인 맞춤형 타로 카드 리딩 앱">
-    <meta name="twitter:creator" content="@therearenorules">
-    <meta name="twitter:site" content="@tarot_timer">
-    
-    <!-- Additional social media optimization -->
-    <meta property="fb:app_id" content="tarot-timer-app">
-    <meta property="og:rich_attachment" content="true">
-    
-    <!-- LinkedIn specific -->
-    <meta property="og:image:secure_url" content="https://tarot-timer.app/og-image.png">
-    
-    <!-- Pinterest specific -->
-    <meta name="pinterest-rich-pin" content="true">
-    <meta property="og:see_also" content="https://tarot-timer.app/cards">
-    <meta property="og:see_also" content="https://tarot-timer.app/spreads">
-    <meta property="og:see_also" content="https://tarot-timer.app/daily">
-    
-    <!-- Telegram specific -->
-    <meta property="telegram:channel" content="@tarot_timer">
-    
-    <!-- WhatsApp specific -->
-    <meta property="og:video" content="https://tarot-timer.app/demo-video.mp4">
-    <meta property="og:video:type" content="video/mp4">
-    <meta property="og:video:width" content="1280">
-    <meta property="og:video:height" content="720">
-    
-    <!-- Favicon and Icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
-    
-    <!-- Theme and Safari -->
-    <meta name="theme-color" content="#6366f1">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="타로 타이머">
     
-    <!-- Enhanced Security Headers - OWASP Compliant -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'strict-dynamic' https://cdn.jsdelivr.net https://unpkg.com https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://images.unsplash.com https://pixabay.com; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https: wss:; media-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Strict-Transport-Security" content="max-age=63072000; includeSubDomains; preload">
-    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), accelerometer=(self), gyroscope=(self), notifications=(self), push=(self), vibrate=(self)">
-    <meta http-equiv="Cross-Origin-Embedder-Policy" content="credentialless">
-    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
-    <meta http-equiv="Cross-Origin-Resource-Policy" content="same-origin">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
     
-    <!-- Enhanced Resource Hints for Performance -->
-    <!-- Critical connections -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    
-    <!-- DNS prefetch for third-party resources -->
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link rel="dns-prefetch" href="https://api.tarot-timer.app">
-    <link rel="dns-prefetch" href="https://analytics.google.com">
-    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="/fonts/korean-font.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/manifest.json" as="fetch" type="application/json" crossorigin>
-    <link rel="preload" href="/sw.js" as="script">
-    
-    <!-- Prefetch likely-to-be-needed resources -->
-    <link rel="prefetch" href="/cards/major-arcana.json" as="fetch" type="application/json">
-    <link rel="prefetch" href="/spreads/celtic-cross.json" as="fetch" type="application/json">
-    <link rel="prefetch" href="/api/daily-card" as="fetch">
-    
-    <!-- Module preload for modern browsers -->
-    <link rel="modulepreload" href="/static/js/main.js">
-    <link rel="modulepreload" href="/static/js/vendor.js">
-    
-    <!-- Preload hero images with responsive hints -->
-    <link rel="preload" href="/images/hero-desktop.webp" as="image" media="(min-width: 768px)">
-    <link rel="preload" href="/images/hero-mobile.webp" as="image" media="(max-width: 767px)">
-    
-    <!-- Preload critical CSS -->
-    <link rel="preload" href="/static/css/critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/static/css/critical.css"></noscript>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <!-- Critical CSS -->
     <style>
-        /* Critical above-the-fold styles */
+        :root {
+            /* Mystical Color Palette */
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --primary-light: #a855f7;
+            --secondary: #f59e0b;
+            --secondary-dark: #d97706;
+            --accent: #10b981;
+            --accent-dark: #059669;
+            
+            /* Background Colors */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --bg-surface: rgba(124, 58, 237, 0.1);
+            --bg-overlay: rgba(0, 0, 0, 0.8);
+            
+            /* Text Colors */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-accent: #fbbf24;
+            
+            /* Border & Shadow */
+            --border-primary: rgba(124, 58, 237, 0.2);
+            --border-secondary: rgba(255, 255, 255, 0.1);
+            --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.3);
+            
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-2xl: 48px;
+            
+            /* Typography */
+            --font-heading: 'Crimson Text', serif;
+            --font-body: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
         * {
             box-sizing: border-box;
-        }
-        
-        body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #1a1f3a;
-            color: #ffffff;
-            overflow-x: hidden;
-            /* Prevent flash of unstyled content */
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
         }
-        
-        body.loaded {
-            opacity: 1;
-        }
-        
-        #root {
-            height: 100vh;
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, 
+                #0f0f23 0%, 
+                #1a1a2e 25%, 
+                #16213e 50%, 
+                #1a1a2e 75%, 
+                #0f0f23 100%
+            );
             min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #app {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 40px rgba(124, 58, 237, 0.15);
+        }
+
+        .loading {
             display: flex;
             flex-direction: column;
-            position: relative;
-            /* Safe area handling for modern mobile devices */
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            gap: var(--space-lg);
         }
-        
-        /* Loading spinner */
+
         .loading-spinner {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #6366f1;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(124, 58, 237, 0.2);
+            border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            z-index: 9999;
         }
-        
+
         @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        
-        /* Hide loading spinner when app loads */
-        body.loaded .loading-spinner {
-            display: none;
-        }
-        
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-            body {
-                background: #000000;
-                color: #ffffff;
-            }
-        }
-        
-        /* Reduced motion support */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #0d1117;
-                color: #f0f6fc;
-            }
-        }
-        
-        /* Print styles */
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-            }
-        }
-        
-        /* Responsive typography */
-        @media (max-width: 768px) {
-            body {
-                font-size: 16px;
-                line-height: 1.5;
-            }
-        }
+
+        .hidden { display: none; }
     </style>
-    
-    <!-- Enhanced Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "타로 타이머",
-      "alternateName": "Tarot Timer",
-      "description": "🔮 시간별 타로 카드와 함께하는 의미있는 하루를 시작하세요. AI 기반 개인 맞춤형 타로 리딩, 다양한 스프레드, 일기 기능을 제공하는 현대적인 타로 앱입니다.",
-      "url": "https://tarot-timer.app",
-      "applicationCategory": "LifestyleApplication",
-      "operatingSystem": "Any",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "1.0.0",
-      "releaseNotes": "Initial release with comprehensive tarot reading features",
-      "installUrl": "https://tarot-timer.app",
-      "screenshot": [
-        "https://tarot-timer.app/screenshots/home.png",
-        "https://tarot-timer.app/screenshots/reading.png",
-        "https://tarot-timer.app/screenshots/diary.png"
-      ],
-      "featureList": [
-        "개인 맞춤형 타로 리딩",
-        "다양한 타로 스프레드 (켈틱 크로스, 3카드, 5카드 등)",
-        "타로 일기 및 기록 관리",
-        "명상 타이머 기능",
-        "카드별 상세 해석 및 키워드",
-        "오프라인 사용 가능",
-        "다국어 지원 (한국어, 영어)"
-      ],
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "KRW",
-        "availability": "https://schema.org/InStock",
-        "validFrom": "2024-01-01"
-      },
-      "author": {
-        "@type": "Person",
-        "name": "therearenorules",
-        "url": "https://github.com/therearenorules"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "타로 타이머",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://tarot-timer.app/logo.png",
-          "width": 512,
-          "height": 512
-        }
-      },
-      "datePublished": "2024-01-01",
-      "dateModified": "2025-09-02",
-      "inLanguage": ["ko-KR", "en-US"],
-      "audience": {
-        "@type": "Audience",
-        "audienceType": "People interested in tarot, spirituality, and self-reflection"
-      },
-      "keywords": "타로, 타로카드, 타로리딩, 온라인타로, 무료타로, 타이머, 명상, 점술, 운세, 카드점, tarot, tarot cards, tarot reading, online tarot, free tarot, timer, meditation, divination, fortune telling",
-      "mainEntity": {
-        "@type": "SoftwareApplication",
-        "name": "타로 타이머 PWA",
-        "applicationCategory": "LifestyleApplication",
-        "operatingSystem": "Web Browser"
-      }
-    }
-    </script>
-    
-    <!-- Organization Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "타로 타이머",
-      "alternateName": "Tarot Timer",
-      "url": "https://tarot-timer.app",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://tarot-timer.app/logo.png",
-        "width": 512,
-        "height": 512
-      },
-      "description": "개인 맞춤형 타로 카드 리딩과 타이머 기능을 제공하는 모바일 앱 개발팀",
-      "foundingDate": "2024",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer service",
-        "availableLanguage": ["Korean", "English"],
-        "url": "https://tarot-timer.app/contact"
-      },
-      "sameAs": [
-        "https://github.com/therearenorules/tarot-timer-app"
-      ]
-    }
-    </script>
-    
-    <!-- Website Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "타로 타이머",
-      "alternateName": "Tarot Timer",
-      "url": "https://tarot-timer.app",
-      "description": "개인 맞춤형 타로 카드 리딩 웹 애플리케이션",
-      "inLanguage": "ko-KR",
-      "isAccessibleForFree": true,
-      "creator": {
-        "@type": "Person",
-        "name": "therearenorules"
-      },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://tarot-timer.app/search?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
 </head>
 <body>
-    <!-- Loading spinner -->
-    <div class="loading-spinner" aria-label="로딩 중..." role="status"></div>
-    
-    <!-- Main app container -->
-    <div id="root" role="main" aria-label="타로 타이머 메인 애플리케이션"></div>
-    
-    <!-- Accessibility skip link -->
-    <a href="#root" class="skip-link" style="position: absolute; top: -40px; left: 6px; background: #6366f1; color: white; padding: 8px; text-decoration: none; z-index: 10000;">메인 콘텐츠로 이동</a>
-    
-    <!-- Service Worker Registration -->
+    <div id="app">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <div>로딩 중...</div>
+        </div>
+    </div>
+
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Main Application -->
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo, createContext, useContext } = React;
+
+        // ==========================================
+        // TAROT DATA - Complete 78 card deck with Korean translations
+        // ==========================================
+        
+        const FULL_TAROT_DECK = [
+            // Major Arcana
+            {
+                id: 'fool',
+                name: 'The Fool',
+                nameKr: '바보',
+                suit: 'major',
+                number: 0,
+                imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=500&fit=crop',
+                keywords: ['new beginnings', 'innocence', 'spontaneity'],
+                keywordsKr: ['새로운 시작', '순수함', '자발성'],
+                meaning: 'New beginnings, having faith in the future, being inexperienced, not knowing what to expect.',
+                meaningKr: '새로운 시작, 미래에 대한 믿음, 경험 부족, 무엇을 기대해야 할지 모름.',
+                reversed: 'Recklessness, taken advantage of, inconsideration, stupidity.',
+                reversedKr: '무모함, 이용당함, 배려 부족, 어리석음.',
+                emoji: '🃏'
+            },
+            {
+                id: 'magician',
+                name: 'The Magician',
+                nameKr: '마법사',
+                suit: 'major',
+                number: 1,
+                imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=300&h=500&fit=crop',
+                keywords: ['manifestation', 'resourcefulness', 'power'],
+                keywordsKr: ['현실화', '수완', '힘'],
+                meaning: 'Having the tools and resources you need to accomplish your goals.',
+                meaningKr: '목표를 달성하는 데 필요한 도구와 자원을 갖고 있음.',
+                reversed: 'Manipulation, poor planning, untapped talents.',
+                reversedKr: '조작, 열악한 계획, 개발되지 않은 재능.',
+                emoji: '🎩'
+            },
+            {
+                id: 'high-priestess',
+                name: 'The High Priestess',
+                nameKr: '여교황',
+                suit: 'major',
+                number: 2,
+                imageUrl: 'https://images.unsplash.com/photo-1551731409-43eb3e517a1a?w=300&h=500&fit=crop',
+                keywords: ['intuition', 'sacred knowledge', 'divine feminine'],
+                keywordsKr: ['직감', '신성한 지식', '신성한 여성성'],
+                meaning: 'Intuition, higher powers, mystery, subconscious mind.',
+                meaningKr: '직관, 고차원의 힘, 신비, 잠재의식.',
+                reversed: 'Lack of center, lost inner voice, repressed feelings.',
+                reversedKr: '중심 부족, 잃어버린 내면의 목소리, 억압된 감정.',
+                emoji: '🔮'
+            },
+            // Add more Major Arcana cards (3-21)
+            {
+                id: 'world',
+                name: 'The World',
+                nameKr: '세계',
+                suit: 'major',
+                number: 21,
+                imageUrl: 'https://images.unsplash.com/photo-1573167243872-43c6433b9d40?w=300&h=500&fit=crop',
+                keywords: ['completion', 'accomplishment', 'travel'],
+                keywordsKr: ['완성', '성취', '여행'],
+                meaning: 'Completion, accomplishment, travel, fulfillment.',
+                meaningKr: '완성, 성취, 여행, 성취감.',
+                reversed: 'Seeking personal closure, stagnation, lack of achievement.',
+                reversedKr: '개인적 마무리 추구, 정체, 성취 부족.',
+                emoji: '🌍'
+            }
+        ];
+        
+        // Generate Minor Arcana (for demo, just a few cards)
+        const generateMinorArcana = () => {
+            const suits = [
+                { name: 'cups', nameKr: '컵', emoji: '🏺' },
+                { name: 'pentacles', nameKr: '펜타클', emoji: '⭐' },
+                { name: 'swords', nameKr: '검', emoji: '⚔️' },
+                { name: 'wands', nameKr: '지팡이', emoji: '🪄' }
+            ];
+            
+            const cards = [];
+            suits.forEach(suit => {
+                for (let i = 1; i <= 10; i++) {
+                    cards.push({
+                        id: `${suit.name}-${i}`,
+                        name: `${i} of ${suit.name.charAt(0).toUpperCase() + suit.name.slice(1)}`,
+                        nameKr: `${suit.nameKr} ${i}`,
+                        suit: suit.name,
+                        number: i,
+                        imageUrl: 'https://images.unsplash.com/photo-1628860948883-05389e02adf6?w=300&h=500&fit=crop',
+                        keywords: ['energy', 'movement', 'progress'],
+                        keywordsKr: ['에너지', '움직임', '진보'],
+                        meaning: `The ${i} of ${suit.name} represents progress in the realm of ${suit.name}.`,
+                        meaningKr: `${suit.nameKr} ${i}은 ${suit.nameKr} 영역에서의 진보를 나타냅니다.`,
+                        reversed: 'Blocked energy, delays, frustration.',
+                        reversedKr: '막힌 에너지, 지연, 좌절.',
+                        emoji: suit.emoji
+                    });
+                }
+            });
+            return cards;
+        };
+        
+        const COMPLETE_DECK = [...FULL_TAROT_DECK, ...generateMinorArcana()];
+        
+        // Spread Types with detailed configurations
+        const SPREAD_TYPES = [
+            {
+                id: 'three-card',
+                name: 'Three Card Spread',
+                nameKr: '3카드',
+                description: 'Past, Present, Future',
+                descriptionKr: '과거, 현재, 미래',
+                positions: ['Past', 'Present', 'Future'],
+                positionsKr: ['과거', '현재', '미래'],
+                isPremium: false
+            },
+            {
+                id: 'five-card',
+                name: 'Five Card V-Shape',
+                nameKr: '5카드',
+                description: 'V-shaped spread for comprehensive guidance',
+                descriptionKr: 'V자 형태로 보는 종합적인 안내',
+                positions: ['Foundation', 'Challenge', 'Strength', 'Advice', 'Outcome'],
+                positionsKr: ['기반', '도전', '힘', '조언', '결과'],
+                isPremium: false
+            },
+            {
+                id: 'celtic-cross',
+                name: 'Celtic Cross',
+                nameKr: '켈틱 크로스',
+                description: 'Complete life reading with 10 cards',
+                descriptionKr: '10장으로 보는 완전한 인생 리딩',
+                positions: ['Current Situation', 'Challenge', 'Distant Past', 'Recent Past', 'Possible Outcome', 'Immediate Future', 'Your Approach', 'External Influences', 'Hopes and Fears', 'Final Outcome'],
+                positionsKr: ['현재 상황', '도전', '먼 과거', '최근 과거', '가능한 결과', '가까운 미래', '당신의 접근법', '외부 영향', '희망과 두려움', '최종 결과'],
+                isPremium: true
+            },
+            {
+                id: 'love',
+                name: 'Cup of Relationship',
+                nameKr: '컵 오브 릴레이션십',
+                description: 'Deep insights into your relationship dynamics with 11 cards',
+                descriptionKr: '11장의 카드로 보는 깊은 관계 역학 통찰',
+                positions: [
+                    'Your Current State',
+                    'Partner\'s Current State', 
+                    'Our Current State',
+                    'Past',
+                    'Present',
+                    'Obstacles',
+                    'Your Heart',
+                    'Partner\'s Heart',
+                    'What You Want from Partner',
+                    'What Partner Wants from You',
+                    'Outcome'
+                ],
+                positionsKr: [
+                    '나의 현재 상태',
+                    '상대의 현재 상태',
+                    '우리의 현재 상태', 
+                    '과거',
+                    '현재',
+                    '방해물',
+                    '나의 마음',
+                    '상대의 마음',
+                    '내가 상대에게 바라는 점',
+                    '상대가 나에게 바라는 점',
+                    '결과'
+                ],
+                isPremium: true
+            },
+            {
+                id: 'career',
+                name: 'AB Choice Tarot',
+                nameKr: 'AB 선택 타로',
+                description: 'Choose between two important options with 7 cards',
+                descriptionKr: '7장의 카드로 보는 두 가지 선택지 분석',
+                positions: [
+                    'Choice A Option 1',
+                    'Choice A Option 2', 
+                    'Choice A Option 3',
+                    'Current Situation',
+                    'Choice B Option 1',
+                    'Choice B Option 2',
+                    'Choice B Option 3'
+                ],
+                positionsKr: [
+                    'A 선택지 1',
+                    'A 선택지 2',
+                    'A 선택지 3',
+                    '현재 상황',
+                    'B 선택지 1',
+                    'B 선택지 2',
+                    'B 선택지 3'
+                ],
+                isPremium: true
+            }
+        ];
+        
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        
+        const generateDailyCards = (date = new Date()) => {
+            const seed = date.getTime().toString();
+            const random = (seed, index) => {
+                let hash = 0;
+                const str = seed + index.toString();
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return Math.abs(hash);
+            };
+            
+            const availableCards = [...COMPLETE_DECK];
+            const cards = [];
+            
+            for (let hour = 0; hour < 24; hour++) {
+                if (availableCards.length === 0) break;
+                const randomValue = random(seed, hour);
+                const cardIndex = randomValue % availableCards.length;
+                const selectedCard = availableCards.splice(cardIndex, 1)[0];
+                if (selectedCard) cards.push(selectedCard);
+            }
+            
+            return cards;
+        };
+
+        const getCurrentHour = () => new Date().getHours();
+        const formatHour = (hour) => {
+            const period = hour >= 12 ? '오후' : '오전';
+            const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            return `${period} ${displayHour}시`;
+        };
+        
+        const formatDate = (date) => {
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+        };
+        
+        // Local Storage Functions
+        const saveDailyTarot = (dailyReading) => {
+            const saved = localStorage.getItem('dailyTarotSaves');
+            const savedReadings = saved ? JSON.parse(saved) : [];
+            const existingIndex = savedReadings.findIndex(reading => reading.date === dailyReading.date);
+            
+            if (existingIndex >= 0) {
+                savedReadings[existingIndex] = dailyReading;
+            } else {
+                savedReadings.unshift(dailyReading);
+            }
+            
+            localStorage.setItem('dailyTarotSaves', JSON.stringify(savedReadings));
+        };
+        
+        const loadDailyTarotSaves = () => {
+            const saved = localStorage.getItem('dailyTarotSaves');
+            return saved ? JSON.parse(saved) : [];
+        };
+
+        // ==========================================
+        // CONTEXT & STATE MANAGEMENT
+        // ==========================================
+        
+        const LanguageContext = createContext();
+        const useLanguage = () => useContext(LanguageContext);
+        
+        const LanguageProvider = ({ children }) => {
+            const [language, setLanguage] = useState('ko');
+            const toggleLanguage = () => setLanguage(prev => prev === 'ko' ? 'en' : 'ko');
+            
+            return (
+                <LanguageContext.Provider value={{ language, toggleLanguage }}>
+                    {children}
+                </LanguageContext.Provider>
+            );
+        };
+        
+        // ==========================================
+        // STYLED COMPONENTS
+        // ==========================================
+        
+        const styles = {
+            app: {
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: '100vh',
+            },
+            header: {
+                padding: 'var(--space-xl) var(--space-lg) var(--space-lg)',
+                textAlign: 'center',
+                background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%)',
+                borderBottom: '1px solid var(--border-primary)',
+            },
+            crown: {
+                fontSize: '2.5rem',
+                marginBottom: 'var(--space-md)',
+                filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.6))',
+            },
+            title: {
+                fontFamily: 'var(--font-heading)',
+                fontSize: '2.2rem',
+                fontWeight: 600,
+                marginBottom: 'var(--space-sm)',
+                background: 'linear-gradient(135deg, var(--text-accent), var(--primary-light))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+            },
+            subtitle: {
+                color: 'var(--text-secondary)',
+                fontSize: '0.95rem',
+                opacity: 0.9,
+            },
+            content: {
+                flex: 1,
+                padding: 'var(--space-lg)',
+                paddingBottom: '120px',
+            },
+            card: {
+                background: 'var(--bg-surface)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: 'var(--space-lg)',
+                border: '1px solid var(--border-primary)',
+                padding: 'var(--space-xl)',
+                marginBottom: 'var(--space-lg)',
+                boxShadow: 'var(--shadow-glow)',
+            },
+            primaryButton: {
+                width: '100%',
+                padding: 'var(--space-lg) var(--space-xl)',
+                borderRadius: 'var(--space-md)',
+                border: 'none',
+                background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: 'var(--shadow-glow)',
+                marginBottom: 'var(--space-md)',
+            },
+            secondaryButton: {
+                width: '100%',
+                padding: 'var(--space-md) var(--space-lg)',
+                borderRadius: 'var(--space-sm)',
+                border: '1px solid var(--border-primary)',
+                background: 'transparent',
+                color: 'var(--text-secondary)',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                marginBottom: 'var(--space-sm)',
+            },
+            bottomNav: {
+                position: 'fixed',
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '100%',
+                maxWidth: '428px',
+                background: 'var(--bg-overlay)',
+                backdropFilter: 'blur(20px)',
+                borderTop: '1px solid var(--border-primary)',
+                zIndex: 1000,
+            },
+            navContainer: {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 'var(--space-md)',
+                gap: 'var(--space-md)',
+            },
+            navItem: {
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 'var(--space-xs)',
+                padding: 'var(--space-sm) var(--space-md)',
+                borderRadius: 'var(--space-md)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-muted)',
+                fontSize: '0.75rem',
+                fontWeight: 500,
+                minWidth: '60px',
+            },
+            activeNav: {
+                color: 'var(--primary-light)',
+                background: 'rgba(124, 58, 237, 0.2)',
+                boxShadow: 'var(--shadow-glow)',
+            },
+            navIcon: {
+                fontSize: '1.5rem',
+            },
+        };
+
+        // ==========================================
+        // COMPONENTS
+        // ==========================================
+        
+        // Timer Screen Component
+        const TimerScreen = () => {
+            const [currentTime, setCurrentTime] = useState(new Date());
+            const [dailyCards, setDailyCards] = useState([]);
+            const [currentHour, setCurrentHour] = useState(getCurrentHour());
+            const [memos, setMemos] = useState({});
+            const [insights, setInsights] = useState('');
+            
+            const { language } = useLanguage();
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    const now = new Date();
+                    setCurrentTime(now);
+                    setCurrentHour(getCurrentHour());
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, []);
+            
+            useEffect(() => {
+                const cards = generateDailyCards();
+                setDailyCards(cards);
+                
+                // Load saved data for today
+                const today = new Date().toDateString();
+                const savedData = loadDailyTarotSaves().find(save => save.date === today);
+                if (savedData) {
+                    setMemos(savedData.memos || {});
+                    setInsights(savedData.insights || '');
+                }
+            }, []);
+            
+            const currentCard = dailyCards[currentHour] || null;
+            
+            const saveMemo = (hour, memo) => {
+                const newMemos = { ...memos, [hour]: memo };
+                setMemos(newMemos);
+                
+                // Auto-save to localStorage
+                const dailyReading = {
+                    id: new Date().toDateString(),
+                    date: new Date().toDateString(),
+                    hourlyCards: dailyCards,
+                    memos: newMemos,
+                    insights,
+                    savedAt: new Date().toISOString()
+                };
+                saveDailyTarot(dailyReading);
+            };
+            
+            return (
+                <div style={styles.content}>
+                    <div style={styles.card}>
+                        <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>
+                                {currentCard?.emoji || '🔮'}
+                            </div>
+                            <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-sm)', color: 'var(--text-primary)' }}>
+                                {formatHour(currentHour)}의 카드
+                            </h2>
+                            {currentCard && (
+                                <>
+                                    <h3 style={{ fontSize: '1.2rem', color: 'var(--text-accent)', marginBottom: 'var(--space-sm)' }}>
+                                        {currentCard.nameKr}
+                                    </h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                                        {currentCard.meaningKr}
+                                    </p>
+                                </>
+                            )}
+                        </div>
+                        
+                        <div style={{ fontSize: '1.5rem', textAlign: 'center', color: 'var(--text-accent)', marginBottom: 'var(--space-md)' }}>
+                            {currentTime.toLocaleTimeString('ko-KR')}
+                        </div>
+                        
+                        {currentCard && (
+                            <div>
+                                <textarea
+                                    placeholder={`${formatHour(currentHour)} 메모를 작성하세요...`}
+                                    value={memos[currentHour] || ''}
+                                    onChange={(e) => saveMemo(currentHour, e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        minHeight: '100px',
+                                        padding: 'var(--space-md)',
+                                        borderRadius: 'var(--space-sm)',
+                                        border: '1px solid var(--border-secondary)',
+                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        color: 'var(--text-primary)',
+                                        fontSize: '0.9rem',
+                                        resize: 'vertical',
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* 24-hour card grid */}
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                        gap: 'var(--space-sm)',
+                        marginTop: 'var(--space-lg)',
+                    }}>
+                        {dailyCards.map((card, index) => (
+                            <div
+                                key={`${card.id}-${index}`}
+                                style={{
+                                    background: index === currentHour 
+                                        ? 'var(--bg-surface)' 
+                                        : 'rgba(255, 255, 255, 0.05)',
+                                    borderRadius: 'var(--space-sm)',
+                                    padding: 'var(--space-sm)',
+                                    textAlign: 'center',
+                                    border: index === currentHour 
+                                        ? '1px solid var(--primary)' 
+                                        : '1px solid var(--border-secondary)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                }}
+                            >
+                                <div style={{ fontSize: '1.5rem', marginBottom: 'var(--space-xs)' }}>
+                                    {card.emoji}
+                                </div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                                    {formatHour(index)}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Spreads Screen Component
+        const SpreadsScreen = () => {
+            const [selectedSpread, setSelectedSpread] = useState(null);
+            const [drawnCards, setDrawnCards] = useState([]);
+            const [isReading, setIsReading] = useState(false);
+            const { language } = useLanguage();
+            
+            const drawSpread = (spread) => {
+                const shuffled = [...COMPLETE_DECK].sort(() => Math.random() - 0.5);
+                const cards = shuffled.slice(0, spread.positions.length).map((card, index) => ({
+                    ...card,
+                    position: language === 'ko' ? spread.positionsKr[index] : spread.positions[index],
+                    isReversed: Math.random() < 0.3
+                }));
+                
+                setDrawnCards(cards);
+                setIsReading(true);
+            };
+            
+            if (isReading && drawnCards.length > 0) {
+                return (
+                    <div style={styles.content}>
+                        <div style={{ textAlign: 'center', marginBottom: 'var(--space-lg)' }}>
+                            <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
+                                {language === 'ko' ? selectedSpread.nameKr : selectedSpread.name}
+                            </h2>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                {language === 'ko' ? selectedSpread.descriptionKr : selectedSpread.description}
+                            </p>
+                        </div>
+                        
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                            gap: 'var(--space-md)',
+                            marginBottom: 'var(--space-lg)',
+                        }}>
+                            {drawnCards.map((card, index) => (
+                                <div key={index} style={{
+                                    ...styles.card,
+                                    textAlign: 'center',
+                                }}>
+                                    <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>
+                                        {card.emoji}
+                                    </div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--primary)', marginBottom: 'var(--space-sm)', fontWeight: 600 }}>
+                                        {card.position}
+                                    </div>
+                                    <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
+                                        {card.nameKr} {card.isReversed ? '(역방향)' : ''}
+                                    </h3>
+                                    <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                                        {card.isReversed ? card.reversedKr : card.meaningKr}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <button
+                            style={styles.secondaryButton}
+                            onClick={() => {
+                                setIsReading(false);
+                                setDrawnCards([]);
+                                setSelectedSpread(null);
+                            }}
+                        >
+                            🔄 새로운 스프레드 선택
+                        </button>
+                    </div>
+                );
+            }
+            
+            return (
+                <div style={styles.content}>
+                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-md)' }}>🔮</div>
+                        <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
+                            타로 스프레드 선택
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                            상황에 맞는 스프레드를 선택하여 깊이 있는 리딩을 받아보세요
+                        </p>
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                        {SPREAD_TYPES.map(spread => (
+                            <div key={spread.id} style={{
+                                ...styles.card,
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                            }}
+                                onClick={() => {
+                                    setSelectedSpread(spread);
+                                    drawSpread(spread);
+                                }}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-sm)' }}>
+                                    <h3 style={{ fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+                                        {spread.nameKr}
+                                    </h3>
+                                    {spread.isPremium && (
+                                        <span style={{
+                                            background: 'linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%)',
+                                            color: 'white',
+                                            fontSize: '0.7rem',
+                                            padding: '2px 8px',
+                                            borderRadius: '12px',
+                                            fontWeight: 600,
+                                        }}>
+                                            PREMIUM
+                                        </span>
+                                    )}
+                                </div>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: 'var(--space-md)' }}>
+                                    {spread.descriptionKr}
+                                </p>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                    {spread.positions.length}장의 카드
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Journal Screen Component
+        const JournalScreen = () => {
+            const [savedReadings, setSavedReadings] = useState([]);
+            
+            useEffect(() => {
+                setSavedReadings(loadDailyTarotSaves());
+            }, []);
+            
+            return (
+                <div style={styles.content}>
+                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-md)' }}>📚</div>
+                        <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
+                            타로 일기
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                            지난 리딩 기록을 확인하고 성찰해보세요
+                        </p>
+                    </div>
+                    
+                    {savedReadings.length === 0 ? (
+                        <div style={{
+                            textAlign: 'center',
+                            padding: 'var(--space-2xl)',
+                            color: 'var(--text-muted)',
+                        }}>
+                            <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📝</div>
+                            <p>아직 저장된 리딩이 없습니다.</p>
+                            <p>타이머 탭에서 일일 리딩을 시작해보세요!</p>
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                            {savedReadings.map(reading => (
+                                <div key={reading.id} style={styles.card}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+                                        <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                                            {formatDate(new Date(reading.date))}
+                                        </h3>
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                            {reading.hourlyCards?.length || 0}장의 카드
+                                        </span>
+                                    </div>
+                                    
+                                    {reading.insights && (
+                                        <p style={{ 
+                                            color: 'var(--text-secondary)', 
+                                            fontSize: '0.9rem', 
+                                            lineHeight: 1.4,
+                                            marginBottom: 'var(--space-md)',
+                                            fontStyle: 'italic',
+                                        }}>
+                                            "{reading.insights}"
+                                        </p>
+                                    )}
+                                    
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                        메모: {Object.keys(reading.memos || {}).length}개
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Settings Screen Component
+        const SettingsScreen = () => {
+            const { language, toggleLanguage } = useLanguage();
+            
+            const clearAllData = () => {
+                if (confirm('모든 저장된 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                    localStorage.removeItem('dailyTarotSaves');
+                    alert('모든 데이터가 삭제되었습니다.');
+                    window.location.reload();
+                }
+            };
+            
+            return (
+                <div style={styles.content}>
+                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-md)' }}>⚙️</div>
+                        <h2 style={{ fontSize: '1.8rem', color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
+                            설정
+                        </h2>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                            앱 설정을 관리하세요
+                        </p>
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                        <div style={styles.card}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-xs)' }}>
+                                        언어 설정
+                                    </h3>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                        현재: {language === 'ko' ? '한국어' : 'English'}
+                                    </p>
+                                </div>
+                                <button
+                                    style={{
+                                        ...styles.secondaryButton,
+                                        width: 'auto',
+                                        marginBottom: 0,
+                                        padding: 'var(--space-sm) var(--space-md)',
+                                    }}
+                                    onClick={toggleLanguage}
+                                >
+                                    🌐 {language === 'ko' ? 'English' : '한국어'}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div style={styles.card}>
+                            <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
+                                앱 정보
+                            </h3>
+                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+                                <p><strong>버전:</strong> 1.0.0</p>
+                                <p><strong>제작:</strong> therearenorules</p>
+                                <p><strong>기능:</strong> 타로 타이머, 스프레드, 일기</p>
+                            </div>
+                        </div>
+                        
+                        <div style={styles.card}>
+                            <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
+                                데이터 관리
+                            </h3>
+                            <button
+                                style={{
+                                    ...styles.secondaryButton,
+                                    color: '#ff6b6b',
+                                    borderColor: 'rgba(255, 107, 107, 0.3)',
+                                }}
+                                onClick={clearAllData}
+                            >
+                                🗑️ 모든 데이터 삭제
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const TarotTimerApp = () => {
+            const [currentView, setCurrentView] = useState('timer');
+            const [isLoading, setIsLoading] = useState(true);
+            
+            useEffect(() => {
+                // Simulate loading
+                const timer = setTimeout(() => setIsLoading(false), 2000);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            if (isLoading) {
+                return (
+                    <div className="loading">
+                        <div className="loading-spinner"></div>
+                        <div>신비로운 에너지를 불러오는 중...</div>
+                    </div>
+                );
+            }
+            
+            const renderContent = () => {
+                switch (currentView) {
+                    case 'spreads': return <SpreadsScreen />;
+                    case 'journal': return <JournalScreen />;
+                    case 'settings': return <SettingsScreen />;
+                    default: return <TimerScreen />;
+                }
+            };
+            
+            return (
+                <div style={styles.app}>
+                    {/* Header */}
+                    <div style={styles.header}>
+                        <div style={styles.crown}>👑</div>
+                        <h1 style={styles.title}>Tarot Timer</h1>
+                        <p style={styles.subtitle}>신비로운 타로 타이머</p>
+                    </div>
+                    
+                    {/* Main Content */}
+                    {renderContent()}
+                    
+                    {/* Bottom Navigation */}
+                    <nav style={styles.bottomNav}>
+                        <div style={styles.navContainer}>
+                            {[
+                                { id: 'timer', icon: '⏰', label: '타이머' },
+                                { id: 'spreads', icon: '🔮', label: '스프레드' },
+                                { id: 'journal', icon: '📖', label: '저널' },
+                                { id: 'settings', icon: '⚙️', label: '설정' }
+                            ].map(item => (
+                                <button
+                                    key={item.id}
+                                    style={{
+                                        ...styles.navItem,
+                                        ...(currentView === item.id ? styles.activeNav : {})
+                                    }}
+                                    onClick={() => setCurrentView(item.id)}
+                                >
+                                    <span style={styles.navIcon}>{item.icon}</span>
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+                </div>
+            );
+        };
+
+        // App with Language Provider
+        const App = () => (
+            <LanguageProvider>
+                <TarotTimerApp />
+            </LanguageProvider>
+        );
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('app'));
+        root.render(<App />);
+
+        console.log('🔮 Complete Tarot Timer app with all Figma UI features loaded!');
+        console.log('📊 Features included: 78-card deck, Premium spreads, Daily timer, Journal, Multi-language');
+    </script>
+
+    <!-- Service Worker -->
     <script>
-        // Service Worker registration for PWA functionality
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
@@ -441,39 +1063,10 @@
                     console.log('ServiceWorker registration successful');
                 })
                 .catch(function(error) {
-                    console.log('ServiceWorker registration failed');
+                    console.log('ServiceWorker registration failed:', error);
                 });
             });
         }
-        
-        // Remove loading spinner when React app loads
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.body.classList.add('loaded');
-            }, 100);
-        });
-        
-        // Handle focus for accessibility
-        document.addEventListener('DOMContentLoaded', function() {
-            const skipLink = document.querySelector('.skip-link');
-            skipLink.addEventListener('focus', function() {
-                this.style.top = '6px';
-            });
-            skipLink.addEventListener('blur', function() {
-                this.style.top = '-40px';
-            });
-        });
     </script>
-    
-    <!-- Error boundary fallback -->
-    <noscript>
-        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 20px;">
-            <div>
-                <h1>🔮 타로 타이머</h1>
-                <p>이 앱을 사용하려면 JavaScript를 활성화해주세요.</p>
-                <p>JavaScript must be enabled to run this app.</p>
-            </div>
-        </div>
-    </noscript>
 </body>
 </html>

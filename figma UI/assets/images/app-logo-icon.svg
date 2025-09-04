@@ -1,0 +1,55 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simplified App Icon Version -->
+  
+  <!-- Main Circle -->
+  <circle cx="32" cy="32" r="30" fill="url(#iconGradient)" stroke="url(#iconBorder)" stroke-width="2" />
+  
+  <!-- Three Cards Simplified -->
+  <g transform="translate(32, 32)">
+    <!-- Left Card -->
+    <g transform="rotate(-12) translate(-10, 0)">
+      <rect x="-4" y="-8" width="8" height="12" rx="1" fill="#2a2f4a" 
+            stroke="#d4af37" stroke-width="1" />
+      <circle cx="0" cy="-2" r="1" fill="#d4af37" />
+      <rect x="-2" y="2" width="4" height="0.5" fill="#d4af37" />
+    </g>
+    
+    <!-- Center Card -->
+    <g transform="translate(0, -1)">
+      <rect x="-4" y="-8" width="8" height="12" rx="1" fill="#2a2f4a" 
+            stroke="#f4d03f" stroke-width="1.2" />
+      <path d="M0,-4 L1,-1 L3,-1 L1,0.5 L1.5,3 L0,1.5 L-1.5,3 L-1,0.5 L-3,-1 L-1,-1 Z" 
+            fill="#f4d03f" />
+    </g>
+    
+    <!-- Right Card -->
+    <g transform="rotate(12) translate(10, 0)">
+      <rect x="-4" y="-8" width="8" height="12" rx="1" fill="#2a2f4a" 
+            stroke="#d4af37" stroke-width="1" />
+      <circle cx="0" cy="-2" r="1" fill="#d4af37" />
+      <rect x="-2" y="2" width="4" height="0.5" fill="#d4af37" />
+    </g>
+  </g>
+  
+  <!-- Corner Sparkles -->
+  <g opacity="0.9">
+    <path d="M16,12 L16.5,13.5 L18,14 L16.5,14.5 L16,16 L15.5,14.5 L14,14 L15.5,13.5 Z" fill="#f4d03f" />
+    <path d="M48,12 L48.5,13.5 L50,14 L48.5,14.5 L48,16 L47.5,14.5 L46,14 L47.5,13.5 Z" fill="#d4af37" />
+    <path d="M12,48 L12.5,49.5 L14,50 L12.5,50.5 L12,52 L11.5,50.5 L10,50 L11.5,49.5 Z" fill="#d4af37" />
+    <path d="M52,48 L52.5,49.5 L54,50 L52.5,50.5 L52,52 L51.5,50.5 L50,50 L51.5,49.5 Z" fill="#f4d03f" />
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="iconGradient" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#4a1a4f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f3a;stop-opacity:1" />
+    </radialGradient>
+    
+    <linearGradient id="iconBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f4d03f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,290 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 14px;
+  
+  /* Typography Scale */
+  --text-display-large: 32px;        /* Large displays, hero text */
+  --text-display-medium: 28px;       /* Medium displays */
+  --text-title-large: 24px;          /* Large titles, page headers */
+  --text-title-medium: 20px;         /* Medium titles, section headers */
+  --text-title-small: 18px;          /* Small titles, card headers */
+  --text-body-large: 16px;           /* Large body text */
+  --text-body-medium: 14px;          /* Standard body text */
+  --text-body-small: 12px;           /* Small body text */
+  --text-caption: 11px;              /* Captions, metadata */
+  --text-overline: 10px;             /* Overlines, labels */
+  
+  /* Font Weights */
+  --font-weight-regular: 400;        /* Regular text */
+  --font-weight-medium: 500;         /* Medium emphasis */
+  --font-weight-semibold: 600;       /* Strong emphasis */
+  --font-weight-bold: 700;           /* Bold text */
+  
+  /* Line Heights */
+  --line-height-tight: 1.2;          /* Tight spacing for displays */
+  --line-height-normal: 1.3;         /* Normal spacing for titles */
+  --line-height-relaxed: 1.4;        /* Relaxed spacing */
+  --line-height-loose: 1.5;          /* Loose spacing for body text */
+  --line-height-extra-loose: 1.6;    /* Extra loose for readability */
+  
+  /* Light Mode Color Tokens */
+  --background: #ffffff;
+  --foreground: #1a1f3a;
+  --card: #ffffff;
+  --card-foreground: #1a1f3a;
+  --primary: #4a1a4f;
+  --primary-foreground: #ffffff;
+  --secondary: #fafafa;
+  --secondary-foreground: #4a1a4f;
+  --accent: #d4af37;
+  --accent-foreground: #1a1f3a;
+  --border: #e8e1e8;
+  --premium-gold: #d4af37;
+  --deep-purple: #4a1a4f;
+  --midnight-blue: #1a1f3a;
+  --radius: 8px;
+}
+
+.dark {
+  /* Dark Mode Color Tokens (항상 활성화) */
+  --background: #0f0f1a;
+  --foreground: #ffffff;
+  --card: #1a1f3a;
+  --card-foreground: #ffffff;
+  --primary: #4a1a4f;
+  --secondary: #1a1f3a;
+  --secondary-foreground: #c8b8d4;
+  --accent: #f4d03f;
+  --accent-foreground: #0f0f1a;
+  --border: #2a2f4a;
+  --premium-gold: #f4d03f;
+}
+
+/* 신비로운 애니메이션 */
+@keyframes mystical-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+@keyframes mystical-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2);
+  }
+}
+
+@keyframes mystical-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes mystical-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+.animate-mystical-pulse {
+  animation: mystical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-mystical-glow {
+  animation: mystical-glow 3s ease-in-out infinite;
+}
+
+.animate-mystical-shimmer {
+  animation: mystical-shimmer 2s ease-in-out infinite;
+}
+
+.animate-mystical-float {
+  animation: mystical-float 6s ease-in-out infinite;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* 텍스트 클램핑 유틸리티 */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* 카스텀 스크롤바 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.5);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.8);
+}
+
+/* 글로우 효과 유틸리티 */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.glow-gold-strong {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+}
+
+/* 블러 백드롭 개선 */
+.backdrop-blur-mystical {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* 그라데이션 텍스트 유틸리티 */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #f4d03f 0%, #d4af37 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-mystical {
+  background: linear-gradient(135deg, #f4d03f 0%, #ffffff 50%, #f4d03f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 모바일 터치 최적화 */
+@media (max-width: 768px) {
+  .touch-optimization {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* 접근성 개선 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-mystical-pulse,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin {
+    animation: none;
+  }
+}
+
+/* Typography Classes */
+.display-large {
+  font-size: var(--text-display-large);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--foreground);
+}
+
+.display-medium {
+  font-size: var(--text-display-medium);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--foreground);
+}
+
+.title-large {
+  font-size: var(--text-title-large);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  color: var(--foreground);
+}
+
+.title-medium {
+  font-size: var(--text-title-medium);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--foreground);
+}
+
+.title-small {
+  font-size: var(--text-title-small);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  color: var(--foreground);
+}
+
+.body-large {
+  font-size: var(--text-body-large);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-loose);
+  color: var(--foreground);
+}
+
+.body-medium {
+  font-size: var(--text-body-medium);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-loose);
+  color: var(--foreground);
+}
+
+.body-small {
+  font-size: var(--text-body-small);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-loose);
+  color: var(--foreground);
+}
+
+.caption {
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-relaxed);
+  color: var(--foreground);
+}
+
+.overline {
+  font-size: var(--text-overline);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-relaxed);
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 다크모드 강제 적용 */
+* {
+  color-scheme: dark;
+}
+
+body {
+  background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #1a1f3a 100%);
+  min-height: 100vh;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--text-body-medium);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-loose);
+}
