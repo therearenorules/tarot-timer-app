@@ -1,5 +1,6 @@
 /**
- * Spreads Tab Screen - Phase 5: Spread Layout System
+ * Spreads Tab Screen - Enhanced Navigation Structure
+ * 탭 네비게이션 구조를 유지하면서 인라인 스프레드 화면 표시
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -9,7 +10,8 @@ import {
   StyleSheet, 
   Dimensions, 
   Alert,
-  StatusBar
+  StatusBar,
+  TouchableOpacity
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, FeatureErrorBoundary } from '@/components';
@@ -19,6 +21,7 @@ import { SPREAD_SELECTION_CARDS } from '@/assets/spreads';
 import { SpreadBoard } from '@/components/spreads/SpreadBoard';
 import { SpreadLayout } from '@/assets/spreads';
 import { handleError, createAppError, ErrorType, ErrorSeverity } from '@/lib/errorHandling';
+import { Icon } from '@/components/ui/Icon';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -35,7 +38,7 @@ interface SpreadCard {
 export default function SpreadsScreen() {
   // const spreadStore = useSpreadStore();
   const [selectedSpreadId, setSelectedSpreadId] = useState<string | null>(null);
-  const [showSpreadSelection, setShowSpreadSelection] = useState(true);
+  const [currentView, setCurrentView] = useState<'list' | 'reading'>('list');
   const boardRef = useRef<View>(null);
 
   // Mock spread store for now
@@ -81,7 +84,7 @@ export default function SpreadsScreen() {
     try {
       // await spreadActions.startNewSpread(spreadId, { timelineEnabled });
       setSelectedSpreadId(spreadId);
-      setShowSpreadSelection(false);
+      setCurrentView('reading');
     } catch (error) {
       // const appError = createAppError(
       //   ErrorType.USER_ACTION,
@@ -157,7 +160,7 @@ export default function SpreadsScreen() {
           style: 'destructive',
           onPress: () => {
             spreadActions.clearCurrentSpread();
-            setShowSpreadSelection(true);
+            setCurrentView('list');
             setSelectedSpreadId(null);
           }
         }
@@ -166,104 +169,137 @@ export default function SpreadsScreen() {
   };
 
   const renderSpreadSelection = () => (
-    <ScrollView style={styles.selectionContainer} showsVerticalScrollIndicator={false}>
-      <Text variant="h2" style={styles.title}>
-        스프레드 선택
-      </Text>
-      <Text variant="body" color={theme.colors.textSecondary} style={styles.subtitle}>
-        타로 리딩을 시작할 스프레드 레이아웃을 선택하세요
-      </Text>
+    <View style={styles.container}>
+      {/* Header Section */}
+      <View style={styles.headerSection}>
+        <View style={styles.headerIcon}>
+          <Icon name="layout" size={48} color={theme.colors.premiumGold} />
+        </View>
+        <Text variant="h1" style={styles.headerTitle}>
+          Spreads
+        </Text>
+        <Text variant="body" style={styles.headerSubtitle}>
+          다양한 상황에 맞는 타로 스프레드를 선택하세요
+        </Text>
+      </View>
 
-      <View style={styles.spreadsGrid}>
+      {/* Scrollable Spreads List */}
+      <ScrollView 
+        style={styles.spreadsScrollView} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.spreadsContainer}
+      >
         {SPREAD_SELECTION_CARDS.map((spread) => (
           <SpreadCard
             key={spread.id}
             spread={spread}
             onPress={() => handleStartSpread(spread.id)}
             onPressWithTimeline={() => {
-              // Assume all spreads can have timeline for now
               handleStartSpread(spread.id, true);
             }}
           />
         ))}
-      </View>
 
-      {/* Statistics Section */}
-      <View style={styles.statsSection}>
-        <Text variant="h3" style={styles.statsTitle}>
-          나의 통계
-        </Text>
-        <SpreadStats />
-      </View>
-    </ScrollView>
+        {/* Statistics Section */}
+        <View style={styles.statsSection}>
+          <Text variant="h3" style={styles.statsTitle}>
+            나의 통계
+          </Text>
+          <SpreadStats />
+        </View>
+      </ScrollView>
+    </View>
   );
 
-  const renderSpreadBoard = () => {
-    if (!spreadStore.currentLayout) return null;
+  const renderSpreadReading = () => {
+    // Mock spread data for UI demonstration
+    const selectedSpread = SPREAD_SELECTION_CARDS.find(s => s.id === selectedSpreadId);
+    if (!selectedSpread) return null;
 
     return (
-      <View style={styles.boardContainer}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Button
-              title="← New Spread"
-              onPress={handleBackToSelection}
-              style={styles.backButton}
-              variant="text"
+      <View style={styles.readingContainer}>
+        {/* Fixed Top Header */}
+        <View style={styles.fixedHeader}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={handleBackToSelection}
+          >
+            <Icon name="arrow-left" size={20} color={theme.colors.premiumGold} />
+          </TouchableOpacity>
+          
+          <View style={styles.headerInfo}>
+            <Text variant="h3" style={styles.spreadName}>
+              {selectedSpread.name}
+            </Text>
+            <Text variant="caption" style={styles.spreadProgress}>
+              {spreadStore.drawnCards.length} / {selectedSpread.cardCount} cards
+            </Text>
+          </View>
+        </View>
+
+        {/* Scrollable Content Area */}
+        <ScrollView 
+          style={styles.scrollableContent}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+        >
+          {/* Reading Title Input */}
+          <View style={styles.titleInputSection}>
+            <Text variant="body" style={styles.inputLabel}>
+              리딩 제목
+            </Text>
+            <View style={styles.titleInputContainer}>
+              <Text style={styles.titleInput}>
+                오늘의 타로 리딩
+              </Text>
+            </View>
+          </View>
+
+          {/* Spread Board Area */}
+          <View style={styles.spreadBoardArea} ref={boardRef}>
+            <SpreadBoard
+              layout={spreadStore.currentLayout}
+              drawnCards={spreadStore.drawnCards}
+              timelineCards={spreadStore.timelineCards}
+              onCardDraw={handleCardDraw}
+              onCardFlip={handleCardFlip}
+              onCardPress={handleCardPress}
+              isDrawingMode={spreadStore.isDrawingMode}
+              showTimeline={spreadStore.isTimelineMode}
+              isZoomEnabled={true}
+              showLabels={true}
+              highlightNextPosition={true}
             />
           </View>
 
-          <View style={styles.headerCenter}>
-            <Text variant="h3" style={styles.spreadTitle}>
-              {spreadStore.currentLayout?.name || 'Spread'}
-            </Text>
-            <Text variant="caption" color={theme.colors.textSecondary}>
-              {spreadStore.drawnCards.length} / {spreadStore.currentLayout?.cardCount || 0} cards
-            </Text>
-          </View>
+          {/* Additional spacing for fixed buttons */}
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
 
-          <View style={styles.headerRight}>
-            {spreadStore.timelineEnabled && (
-              <Button
-                title="Timeline"
-                onPress={() => {}}
-                style={spreadStore.isTimelineMode ?
-                  {...styles.timelineButton, ...styles.timelineButtonActive} :
-                  styles.timelineButton
-                }
-                variant={spreadStore.isTimelineMode ? "primary" : "outline"}
-              />
-            )}
-          </View>
-        </View>
-
-        {/* Spread Board */}
-        <View style={styles.boardWrapper} ref={boardRef}>
-          <SpreadBoard
-            layout={spreadStore.currentLayout}
-            drawnCards={spreadStore.drawnCards}
-            timelineCards={spreadStore.timelineCards}
-            onCardDraw={handleCardDraw}
-            onCardFlip={handleCardFlip}
-            onCardPress={handleCardPress}
-            isDrawingMode={spreadStore.isDrawingMode}
-            showTimeline={spreadStore.isTimelineMode}
-            isZoomEnabled={true}
-            showLabels={true}
-            highlightNextPosition={true}
-          />
-        </View>
-
-        {/* Actions */}
-        <View style={styles.actions}>
-          <Button
-            title="📸 Capture & Save"
+        {/* Fixed Bottom Buttons */}
+        <View style={styles.fixedButtons}>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.primaryButton]}
+            onPress={() => handleCardDraw(0)}
+          >
+            <Text style={styles.primaryButtonText}>카드 뽑기</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.secondaryButton]}
             onPress={handleCaptureAndSave}
-            style={styles.actionButton}
-            variant="primary"
-            disabled={spreadStore.drawnCards.length === 0}
-          />
+          >
+            <Text style={styles.secondaryButtonText}>저장</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.secondaryButton]}
+            onPress={() => {
+              spreadActions.clearCurrentSpread();
+            }}
+          >
+            <Text style={styles.secondaryButtonText}>다시뽑기</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -316,14 +352,14 @@ export default function SpreadsScreen() {
             { 
               location: 'SpreadsScreen',
               componentStack: errorInfo.componentStack,
-              showSpreadSelection,
+              currentView,
               selectedSpreadId 
             }
           );
           handleError(appError);
         }}
       >
-        {showSpreadSelection ? renderSpreadSelection() : renderSpreadBoard()}
+        {currentView === 'list' ? renderSpreadSelection() : renderSpreadReading()}
       </FeatureErrorBoundary>
     </SafeAreaView>
   );
@@ -348,33 +384,66 @@ interface SpreadCardProps {
 
 function SpreadCard({ spread, onPress, onPressWithTimeline }: SpreadCardProps) {
   const hasTimeline = spread.cardCount >= 3; // Simple rule: 3+ card spreads can have timeline
+  const isPremium = spread.difficulty === 'advanced';
 
   return (
-    <View style={styles.spreadCard}>
-      <Text variant="h4" style={styles.spreadCardTitle}>
-        {spread.name}
-      </Text>
-      <Text variant="caption" color={theme.colors.textSecondary} style={styles.spreadCardInfo}>
-        {spread.cardCount} cards • {spread.description || 'Traditional spread'}
-      </Text>
-      
-      <View style={styles.spreadCardActions}>
-        <Button
-          title="Start"
-          onPress={onPress}
-          style={styles.spreadCardButton}
-          variant="primary"
-        />
-        {hasTimeline && onPressWithTimeline && (
-          <Button
-            title="+ Timeline"
-            onPress={onPressWithTimeline}
-            style={styles.timelineSpreadButton}
-            variant="outline"
-          />
-        )}
+    <TouchableOpacity onPress={onPress} activeOpacity={0.9}>
+      <View style={styles.spreadCard}>
+        {/* Glow Effect Background */}
+        <View style={styles.spreadCardGlow} />
+        
+        <View style={styles.spreadCardContent}>
+          {/* Header with icon and title */}
+          <View style={styles.spreadCardHeader}>
+            <View style={styles.spreadCardIconContainer}>
+              <Icon 
+                name="layout" 
+                size={24} 
+                color={theme.colors.premiumGold} 
+              />
+            </View>
+            <View style={styles.spreadCardTitleContainer}>
+              <Text variant="h4" style={styles.spreadCardTitle}>
+                {spread.name}
+              </Text>
+              {isPremium && (
+                <View style={styles.premiumBadge}>
+                  <Icon name="star" size={12} color={theme.colors.background} />
+                  <Text style={styles.premiumBadgeText}>프리미엄</Text>
+                </View>
+              )}
+              {!isPremium && (
+                <View style={styles.basicBadge}>
+                  <Text style={styles.basicBadgeText}>기본</Text>
+                </View>
+              )}
+            </View>
+          </View>
+          
+          {/* Subtitle */}
+          <Text variant="caption" style={styles.spreadCardSubtitle}>
+            {spread.description}
+          </Text>
+          
+          {/* Description Box */}
+          <View style={styles.spreadCardDescription}>
+            <Text style={styles.spreadCardDescriptionText}>
+              {spread.cardCount}장의 카드를 사용하는 {spread.difficulty} 레벨 스프레드입니다.
+            </Text>
+          </View>
+          
+          {/* Start Button */}
+          <TouchableOpacity 
+            style={styles.startButton}
+            onPress={onPress}
+            activeOpacity={0.8}
+          >
+            <Icon name="zap" size={16} color={theme.colors.background} />
+            <Text style={styles.startButtonText}>리딩 시작</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -434,50 +503,150 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   
-  // Selection Screen
-  selectionContainer: {
-    flex: 1,
-    padding: 20,
+  // Header Section
+  headerSection: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 20,
   },
-  title: {
+  headerIcon: {
+    marginBottom: 16,
+  },
+  headerTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: theme.colors.premiumGold,
     textAlign: 'center',
     marginBottom: 8,
   },
-  subtitle: {
+  headerSubtitle: {
+    color: theme.colors.textSecondary,
     textAlign: 'center',
-    marginBottom: 30,
+    opacity: 0.8,
   },
-  spreadsGrid: {
-    gap: 16,
+  
+  // Spreads List
+  spreadsScrollView: {
+    flex: 1,
   },
+  spreadsContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+    gap: 24,
+  },
+  
+  // Spread Card
   spreadCard: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: theme.colors.mystical.border,
-    // 신비로운 그림자 효과 적용
-    shadowColor: theme.colors.mystical.shadow,
-    shadowOffset: { width: 0, height: 4 },
+    position: 'relative',
+    marginBottom: 24,
+  },
+  spreadCardGlow: {
+    position: 'absolute',
+    top: -8,
+    left: -8,
+    right: -8,
+    bottom: -8,
+    backgroundColor: `${theme.colors.premiumGold}20`,
+    borderRadius: 24,
+    opacity: 0,
+  },
+  spreadCardContent: {
+    backgroundColor: `${theme.colors.surface}E6`,
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: `${theme.colors.border}40`,
+    shadowColor: theme.colors.premiumGold,
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  spreadCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  spreadCardIconContainer: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  spreadCardTitleContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  spreadCardTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: theme.colors.text,
+    flex: 1,
+  },
+  premiumBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.premiumGold,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  premiumBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: theme.colors.background,
+  },
+  basicBadge: {
+    backgroundColor: `${theme.colors.primary}40`,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: `${theme.colors.primary}60`,
+  },
+  basicBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: theme.colors.primary,
+  },
+  spreadCardSubtitle: {
+    color: `${theme.colors.premiumGold}CC`,
+    marginBottom: 16,
+    fontSize: 12,
+  },
+  spreadCardDescription: {
+    backgroundColor: `${theme.colors.background}80`,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: `${theme.colors.border}20`,
+    marginBottom: 20,
+  },
+  spreadCardDescriptionText: {
+    color: `${theme.colors.text}E6`,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  startButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.premiumGold,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: theme.colors.premiumGold,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
-  spreadCardTitle: {
-    marginBottom: 8,
-  },
-  spreadCardInfo: {
-    marginBottom: 16,
-  },
-  spreadCardActions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  spreadCardButton: {
-    flex: 1,
-  },
-  timelineSpreadButton: {
-    flex: 1,
+  startButtonText: {
+    color: theme.colors.background,
+    fontSize: 16,
+    fontWeight: '700',
   },
   
   // Statistics
@@ -504,52 +673,136 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Board Screen
-  boardContainer: {
+  // Reading Screen - 3-Layer Fixed Layout
+  readingContainer: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
-  header: {
+  
+  // Fixed Top Header
+  fixedHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: `${theme.colors.background}E6`,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerCenter: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  headerRight: {
-    flex: 1,
-    alignItems: 'flex-end',
+    borderBottomColor: `${theme.colors.border}20`,
+    backdropFilter: 'blur(10px)',
+    zIndex: 10,
   },
   backButton: {
-    alignSelf: 'flex-start',
+    padding: 8,
+    marginRight: 12,
+    backgroundColor: `${theme.colors.surface}80`,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: `${theme.colors.border}40`,
   },
-  spreadTitle: {
+  headerInfo: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  spreadName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.text,
     marginBottom: 2,
   },
-  timelineButton: {
-    paddingHorizontal: 16,
+  spreadProgress: {
+    color: theme.colors.textSecondary,
+    fontSize: 12,
   },
-  timelineButtonActive: {
-    backgroundColor: theme.colors.primary,
-  },
-  boardWrapper: {
+  
+  // Scrollable Content
+  scrollableContent: {
     flex: 1,
   },
-  actions: {
-    padding: 16,
-    backgroundColor: theme.colors.surface,
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 80, // Space for fixed buttons
+  },
+  
+  // Title Input Section
+  titleInputSection: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    color: theme.colors.textSecondary,
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  titleInputContainer: {
+    backgroundColor: `${theme.colors.surface}80`,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: `${theme.colors.border}40`,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  titleInput: {
+    color: theme.colors.text,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  
+  // Spread Board Area
+  spreadBoardArea: {
+    marginVertical: 24,
+    minHeight: 400,
+  },
+  
+  // Bottom Spacer
+  bottomSpacer: {
+    height: 20,
+  },
+  
+  // Fixed Bottom Buttons
+  fixedButtons: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: `${theme.colors.background}F0`,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: `${theme.colors.border}20`,
+    backdropFilter: 'blur(10px)',
+    gap: 12,
+    zIndex: 10,
   },
   actionButton: {
-    width: '100%',
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButton: {
+    backgroundColor: theme.colors.premiumGold,
+    shadowColor: theme.colors.premiumGold,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  primaryButtonText: {
+    color: theme.colors.background,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  secondaryButton: {
+    backgroundColor: `${theme.colors.surface}80`,
+    borderWidth: 1,
+    borderColor: `${theme.colors.border}60`,
+  },
+  secondaryButtonText: {
+    color: theme.colors.text,
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
