@@ -11,9 +11,40 @@ export { CurrentCardHeader } from './CurrentCardHeader';
 export { MemoSheet } from './MemoSheet';
 export { TimerDisplay } from './TimerDisplay';
 export { MysticalBackground } from './MysticalBackground';
-export { TarotCard } from './TarotCard';
 
 // Enhanced UI Components matching design references
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
 export { Layout, ScreenHeader, ContentSection } from './Layout';
 export { TabBar, TabBarItem } from './TabBar';
+
+// ===== NEW REACT NATIVE UI COMPONENTS =====
+// HTML 기반 디자인을 React Native로 완전히 변환한 컴포넌트들
+
+export { TarotCard } from './TarotCard';
+export type { TarotCardProps } from './TarotCard';
+
+export { TimeDisplay } from './TimeDisplay';
+export type { TimeDisplayProps } from './TimeDisplay';
+
+export { TabNavigation } from './TabNavigation';  
+export type { TabNavigationProps, TabItem } from './TabNavigation';
+
+export { MemoPad } from './MemoPad';
+export type { MemoPadProps } from './MemoPad';
+
+// Re-export design tokens for convenience
+export { 
+  colors, 
+  typography, 
+  spacing, 
+  layout, 
+  radius, 
+  shadows, 
+  animation,
+  components,
+  presets,
+  utils 
+} from '../../constants/DesignTokens';
+
+// Re-export animations
+export { TarotAnimations, AnimationUtils } from '../../constants/Animations';
