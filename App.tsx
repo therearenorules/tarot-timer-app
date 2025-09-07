@@ -1,12 +1,12 @@
 /**
- * Main App Entry Point - Component Testing
+ * Main App Entry Point - Phase 2 Home Screen
  */
 
 import React from 'react';
-import { ComponentTestScreen } from './src/screens/test/ComponentTestScreen';
+import { HomeScreen } from './src/screens/HomeScreen';
 
 export default function App() {
-  console.log('🔮 Tarot Timer App - Component Testing Mode');
+  console.log('🔮 Tarot Timer App - Phase 2 Home Screen');
   
-  return <ComponentTestScreen />;
+  return <HomeScreen />;
 }

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 Tarot Timer - 홈 화면 미리보기</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #0f172a 50%, #1e3a8a 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .timer-widget {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            animation: mystical-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes mystical-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+        
+        .timer-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .timer-time {
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d4af37;
+        }
+        
+        .selected-card-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .selected-card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+        
+        .selected-card-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
+            margin-bottom: 16px;
+        }
+        
+        .cards-section {
+            margin-bottom: 30px;
+        }
+        
+        .cards-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 16px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .cards-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+        
+        .hour-card {
+            width: 80px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .hour-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .hour-card.revealed {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-color: #d4af37;
+        }
+        
+        .hour-card.selected {
+            border-color: #d4af37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            animation: mystical-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes mystical-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); }
+        }
+        
+        .hour-card.future {
+            opacity: 0.6;
+        }
+        
+        .card-placeholder {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .card-content {
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 5px;
+        }
+        
+        .hour-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .hour-label.current {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        
+        .hour-label.selected {
+            color: #d4af37;
+        }
+        
+        .current-indicator {
+            position: absolute;
+            top: -8px;
+            background: #d4af37;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        
+        .memo-section {
+            margin-bottom: 30px;
+        }
+        
+        .memo-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #d4af37;
+            border-radius: 16px;
+            padding: 20px;
+            animation: mystical-glow 3s ease-in-out infinite;
+        }
+        
+        .memo-textarea {
+            width: 100%;
+            min-height: 80px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .memo-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .memo-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .memo-count {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .memo-save {
+            background: #d4af37;
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .memo-save:hover {
+            background: #fbbf24;
+            transform: translateY(-1px);
+        }
+        
+        .stats-section {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .stat-divider {
+            width: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 20px;
+        }
+        
+        .progress-bar {
+            text-align: center;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+        
+        .progress-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 진행률 표시 -->
+        <div class="progress-bar">
+            <div class="progress-title">🚀 Phase 2 진행중</div>
+            <div class="progress-text">홈 화면 구현 - HTML 디자인 완벽 재현</div>
+        </div>
+
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="title">🔮 오늘의 타로</div>
+            <div class="timer-widget">
+                <div class="timer-label">다음 카드까지</div>
+                <div class="timer-time">23:47</div>
+            </div>
+        </div>
+
+        <!-- 선택된 카드 정보 -->
+        <div class="selected-card-info">
+            <div class="selected-card-title">14:00 시간</div>
+            <div class="selected-card-description">오늘 오후의 에너지와 메시지를 담은 카드입니다. 새로운 관점으로 상황을 바라보세요.</div>
+        </div>
+
+        <!-- 24시간 카드 스크롤 -->
+        <div class="cards-section">
+            <div class="section-title">24시간 타로 타이머</div>
+            <div class="cards-container" id="cardsContainer">
+                <!-- 카드들이 JavaScript로 생성됩니다 -->
+            </div>
+        </div>
+
+        <!-- 메모 영역 -->
+        <div class="memo-section">
+            <div class="section-title">14:00 메모</div>
+            <div class="memo-container">
+                <textarea class="memo-textarea" placeholder="14시의 느낌과 생각을 기록해보세요..." id="memoTextarea">오후의 햇살이 따뜻하게 느껴집니다. 카드가 말하는 새로운 관점이 무엇인지 궁금해집니다.</textarea>
+                <div class="memo-footer">
+                    <div class="memo-count" id="memoCount">14 words • 67/500 chars</div>
+                    <button class="memo-save" onclick="saveMemo()">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 오늘의 통계 -->
+        <div class="stats-section">
+            <div class="stat-item">
+                <div class="stat-number">15</div>
+                <div class="stat-label">공개된 카드</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-number">9</div>
+                <div class="stat-label">남은 카드</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">작성한 메모</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currentHour = 14;
+        let selectedHour = currentHour;
+
+        // 24시간 카드 생성
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            for (let hour = 0; hour < 24; hour++) {
+                const cardContainer = document.createElement('div');
+                cardContainer.className = 'card-container';
+
+                const card = document.createElement('div');
+                card.className = 'hour-card';
+                
+                if (hour < currentHour) {
+                    card.classList.add('revealed');
+                    card.innerHTML = `
+                        <div class="card-content">
+                            🌟<br>
+                            <small>Card ${hour}</small>
+                        </div>
+                    `;
+                } else if (hour === currentHour) {
+                    card.classList.add('revealed');
+                    card.innerHTML = `
+                        <div class="current-indicator">NOW</div>
+                        <div class="card-content">
+                            ✨<br>
+                            <small>Current</small>
+                        </div>
+                    `;
+                } else {
+                    card.classList.add('future');
+                    card.innerHTML = '<div class="card-placeholder">?</div>';
+                }
+
+                if (hour === selectedHour) {
+                    card.classList.add('selected');
+                }
+
+                card.addEventListener('click', () => selectHour(hour));
+
+                const label = document.createElement('div');
+                label.className = 'hour-label';
+                if (hour === currentHour) label.classList.add('current');
+                if (hour === selectedHour) label.classList.add('selected');
+                label.textContent = `${hour.toString().padStart(2, '0')}:00`;
+
+                cardContainer.appendChild(card);
+                cardContainer.appendChild(label);
+                container.appendChild(cardContainer);
+            }
+        }
+
+        function selectHour(hour) {
+            if (hour <= currentHour) {
+                selectedHour = hour;
+                generateCards();
+                updateSelectedCardInfo();
+                updateMemoSection();
+            }
+        }
+
+        function updateSelectedCardInfo() {
+            const title = document.querySelector('.selected-card-title');
+            const description = document.querySelector('.selected-card-description');
+            
+            title.textContent = `${selectedHour.toString().padStart(2, '0')}:00 시간`;
+            
+            const messages = [
+                '새로운 시작과 가능성이 열리는 시간입니다.',
+                '직관을 믿고 내면의 목소리에 귀 기울여보세요.',
+                '균형과 조화를 찾는 것이 중요한 시간입니다.',
+                '창조적인 에너지가 흐르는 시간입니다.',
+                '안정과 실용성을 추구하는 시간입니다.',
+                '소통과 관계에 집중하는 시간입니다.',
+                '선택의 기로에서 지혜로운 결정을 내려야 하는 시간입니다.',
+                '의지력과 결단력이 필요한 시간입니다.',
+                '내면의 힘을 발견하는 시간입니다.',
+                '성찰과 내적 탐구의 시간입니다.',
+                '변화와 전환점을 맞이하는 시간입니다.',
+                '공정함과 균형을 추구하는 시간입니다.',
+                '새로운 관점으로 상황을 바라보는 시간입니다.',
+                '변화에 적응하고 유연성을 발휘하는 시간입니다.',
+                '절제와 인내가 필요한 시간입니다.',
+                '해방과 자유를 추구하는 시간입니다.',
+                '영감과 통찰이 찾아오는 시간입니다.',
+                '환상을 걷어내고 진실을 마주하는 시간입니다.',
+                '희망과 치유의 에너지가 흐르는 시간입니다.',
+                '각성과 새로운 깨달음의 시간입니다.',
+                '완성과 성취를 향해 나아가는 시간입니다.',
+                '모든 경험이 통합되는 시간입니다.',
+                '하루의 마무리와 반성의 시간입니다.',
+                '내일을 위한 준비와 휴식의 시간입니다.'
+            ];
+            
+            description.textContent = messages[selectedHour];
+        }
+
+        function updateMemoSection() {
+            const title = document.querySelector('.memo-section .section-title');
+            const placeholder = document.getElementById('memoTextarea');
+            
+            title.textContent = `${selectedHour.toString().padStart(2, '0')}:00 메모`;
+            placeholder.placeholder = `${selectedHour}시의 느낌과 생각을 기록해보세요...`;
+        }
+
+        function updateMemoCount() {
+            const textarea = document.getElementById('memoTextarea');
+            const counter = document.getElementById('memoCount');
+            const text = textarea.value;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            
+            counter.textContent = `${words} words • ${chars}/500 chars`;
+        }
+
+        function saveMemo() {
+            const saveBtn = document.querySelector('.memo-save');
+            saveBtn.textContent = 'Saved!';
+            saveBtn.style.background = '#10b981';
+            
+            setTimeout(() => {
+                saveBtn.textContent = 'Save';
+                saveBtn.style.background = '#d4af37';
+            }, 1500);
+            
+            console.log(`메모 저장: ${selectedHour}시 -`, document.getElementById('memoTextarea').value);
+        }
+
+        // 타이머 업데이트
+        function updateTimer() {
+            const now = new Date();
+            const nextHour = new Date(now);
+            nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+            
+            const diff = nextHour - now;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            const timerDisplay = document.querySelector('.timer-time');
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 이벤트 리스너
+        document.getElementById('memoTextarea').addEventListener('input', updateMemoCount);
+
+        // 초기화
+        generateCards();
+        updateSelectedCardInfo();
+        updateMemoSection();
+        updateMemoCount();
+        updateTimer();
+        setInterval(updateTimer, 1000);
+
+        console.log('🔮 Tarot Timer App - Phase 2 Home Screen Loaded');
+    </script>
+</body>
+</html>
