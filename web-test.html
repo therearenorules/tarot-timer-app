@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 Tarot Timer - 컴포넌트 테스트</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #0f172a 50%, #1e3a8a 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .section {
+            margin-bottom: 60px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 30px;
+            padding-left: 20px;
+            border-left: 3px solid #d4af37;
+        }
+        
+        .component-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .card-demo {
+            width: 120px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card-demo:hover {
+            transform: scale(1.02);
+            border-color: #d4af37;
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+        }
+        
+        .card-demo.revealed {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-color: #d4af37;
+        }
+        
+        .card-demo.flipped {
+            background: #d4af37;
+            color: #0f172a;
+        }
+        
+        .card-placeholder {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .card-name {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px;
+            border-radius: 8px;
+        }
+        
+        .timer-demo {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .timer-demo.mystical {
+            border-color: #d4af37;
+            animation: mystical-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes mystical-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+        
+        .timer-time {
+            font-family: monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #d4af37;
+            margin: 10px 0;
+        }
+        
+        .timer-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tab-demo {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px 20px 0 0;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .tab-demo.mystical {
+            border-top-color: #d4af37;
+            box-shadow: 0 -4px 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .tab-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab-item.active {
+            color: #d4af37;
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 25%;
+            right: 25%;
+            height: 2px;
+            background: #d4af37;
+            border-radius: 2px;
+        }
+        
+        .tab-icon {
+            font-size: 1.5rem;
+        }
+        
+        .tab-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .tab-item.active .tab-label {
+            color: #d4af37;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .memo-demo {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        
+        .memo-demo.mystical {
+            border-color: #d4af37;
+            animation: mystical-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes mystical-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); }
+        }
+        
+        .memo-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .memo-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .memo-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .memo-count {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .memo-save {
+            background: #d4af37;
+            color: #0f172a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .memo-save:hover {
+            background: #fbbf24;
+            transform: translateY(-1px);
+        }
+        
+        .status {
+            text-align: center;
+            padding: 30px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            margin: 40px 0;
+        }
+        
+        .status-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        
+        .status-text {
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🔮 컴포넌트 테스트</div>
+            <div class="subtitle">HTML → React Native 변환 결과 미리보기</div>
+        </div>
+        
+        <div class="status">
+            <div class="status-title">✅ Phase 1 완료</div>
+            <div class="status-text">4개 핵심 컴포넌트가 성공적으로 생성되었습니다</div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">1. TarotCard 컴포넌트</div>
+            <div class="component-demo">
+                <div class="card-demo">
+                    <div class="card-placeholder">?</div>
+                </div>
+                <div class="card-demo revealed">
+                    <div style="font-size: 0.9rem; text-align: center; padding: 10px;">
+                        🌟<br>The Fool<br><small>새로운 시작</small>
+                    </div>
+                    <div class="card-name">The Fool</div>
+                </div>
+                <div class="card-demo flipped">
+                    <div style="text-align: center;">
+                        <div style="border: 2px solid #0f172a; border-radius: 8px; padding: 10px; margin: 10px;">
+                            <div style="font-size: 0.8rem; font-weight: bold; letter-spacing: 2px;">TAROT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">2. TimeDisplay 컴포넌트</div>
+            <div class="component-demo">
+                <div class="timer-demo">
+                    <div class="timer-label">기본</div>
+                    <div class="timer-time">05:23</div>
+                </div>
+                <div class="timer-demo mystical">
+                    <div class="timer-label">신비로운</div>
+                    <div class="timer-time">03:45</div>
+                </div>
+                <div class="timer-demo" style="border-color: #f59e0b;">
+                    <div class="timer-label">경고</div>
+                    <div class="timer-time" style="color: #f59e0b;">00:45</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">3. TabNavigation 컴포넌트</div>
+            <div style="margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 15px; color: rgba(255, 255, 255, 0.7);">기본 스타일</div>
+                <div class="tab-demo">
+                    <div class="tab-item active">
+                        <div class="tab-icon">🎴</div>
+                        <div class="tab-label">카드</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">⏰</div>
+                        <div class="tab-label">타이머</div>
+                        <div class="badge">3</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">📖</div>
+                        <div class="tab-label">일기</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">⚙️</div>
+                        <div class="tab-label">설정</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="text-align: center; margin-bottom: 15px; color: rgba(255, 255, 255, 0.7);">신비로운 스타일</div>
+                <div class="tab-demo mystical">
+                    <div class="tab-item active">
+                        <div class="tab-icon">🎴</div>
+                        <div class="tab-label">카드</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">⏰</div>
+                        <div class="tab-label">타이머</div>
+                        <div class="badge">3</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">📖</div>
+                        <div class="tab-label">일기</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">⚙️</div>
+                        <div class="tab-label">설정</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">4. MemoPad 컴포넌트</div>
+            <div>
+                <div style="text-align: center; margin-bottom: 15px; color: rgba(255, 255, 255, 0.7);">기본 메모패드</div>
+                <div class="memo-demo">
+                    <textarea class="memo-textarea" placeholder="생각을 적어보세요...">HTML 디자인을 React Native로 완벽하게 변환했습니다. 신비로운 애니메이션과 함께 타로의 미학을 그대로 담았습니다.</textarea>
+                    <div class="memo-footer">
+                        <div class="memo-count">23 words • 89/1000 chars</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="text-align: center; margin-bottom: 15px; color: rgba(255, 255, 255, 0.7);">신비로운 메모패드</div>
+                <div class="memo-demo mystical">
+                    <textarea class="memo-textarea" placeholder="타로 해석을 기록해보세요..."></textarea>
+                    <div class="memo-footer">
+                        <div class="memo-count">0 words • 0/1000 chars</div>
+                        <button class="memo-save">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.6);">
+            <p>🎯 진행률: 40% (Phase 1 완료)</p>
+            <p>다음: Phase 2 백엔드 연동</p>
+        </div>
+    </div>
+    
+    <script>
+        // 간단한 인터랙션 추가
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 같은 탭 그룹 내의 다른 탭들에서 active 제거
+                const parent = this.closest('.tab-demo');
+                parent.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                // 클릭된 탭에 active 추가
+                this.classList.add('active');
+            });
+        });
+        
+        // 카드 클릭 효과
+        document.querySelectorAll('.card-demo').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+        
+        // 메모 저장 버튼
+        document.querySelectorAll('.memo-save').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.textContent = 'Saved!';
+                this.style.background = '#10b981';
+                setTimeout(() => {
+                    this.textContent = 'Save';
+                    this.style.background = '#d4af37';
+                }, 1000);
+            });
+        });
+        
+        console.log('🔮 Tarot Timer App - Component Test Page Loaded');
+    </script>
+</body>
+</html>
