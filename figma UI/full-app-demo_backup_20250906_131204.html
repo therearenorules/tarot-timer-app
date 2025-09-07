@@ -452,90 +452,6 @@
                 transform: scale(1);
             }
         }
-
-        /* =====================================
-           🎯 Card Popup Modal Styles
-           ===================================== */
-        
-        .card-popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .card-popup-overlay.active {
-            opacity: 1;
-        }
-
-        .card-popup-content {
-            max-width: 90vw;
-            max-height: 90vh;
-            transform: scale(0.8) translateY(30px);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-        }
-
-        .card-popup-overlay.active .card-popup-content {
-            transform: scale(1) translateY(0);
-        }
-
-        .card-popup-image {
-            max-width: 300px;
-            max-height: 500px;
-            border-radius: 16px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                0 8px 24px rgba(212, 175, 55, 0.2);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .card-popup-close {
-            position: absolute;
-            top: -15px;
-            right: -15px;
-            width: 40px;
-            height: 40px;
-            background: rgba(212, 175, 55, 0.2);
-            border: 2px solid rgba(212, 175, 55, 0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #d4af37;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(8px);
-        }
-
-        .card-popup-close:hover {
-            background: rgba(212, 175, 55, 0.3);
-            border-color: rgba(212, 175, 55, 0.8);
-            transform: scale(1.1);
-        }
-
-        .card-popup-info {
-            position: absolute;
-            bottom: -60px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: white;
-            background: rgba(26, 31, 58, 0.8);
-            backdrop-filter: blur(8px);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-        }
     </style>
 </head>
 <body class="min-h-screen text-white " style="background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #1a1f3a 100%); font-family: 'Noto Sans KR', sans-serif;">
@@ -1572,22 +1488,6 @@
         </div>
     </div>
 
-    <!-- Card Popup Modal -->
-    <div id="cardPopupOverlay" class="card-popup-overlay" onclick="closeCardPopup()">
-        <div class="card-popup-content" onclick="event.stopPropagation()">
-            <button class="card-popup-close" onclick="closeCardPopup()">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-            <img id="cardPopupImage" class="card-popup-image" src="" alt="">
-            <div class="card-popup-info">
-                <div id="cardPopupName" class="title-medium text-yellow-400 mb-1"></div>
-                <div id="cardPopupPosition" class="body-small text-white/70"></div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Tab switching functionality
         function showTab(tabName) {
@@ -1785,13 +1685,13 @@
             'celtic-cross': {
                 name: '켈틱 크로스',
                 cardCount: 10,
-                positions: ['현재 상황', '방해물', '문제의 핵심', '과거', '현재', '미래', '질문자 관점', '외부 상황', '질문자 바람, 두려움', '최종 예측'],
+                positions: ['현재 상황', '도전/장애', '먼 과거', '최근 과거', '가능한 결과', '가까운 미래', '당신의 접근법', '외부 영향', '희망과 두려움', '최종 결과'],
                 layout: 'celtic-cross'
             },
             'cup-of-relationship': {
                 name: '컵 오브 릴레이션십',
                 cardCount: 11,
-                positions: ['나의 현재 상태', '상대의 현재 상태', '우리의 현재 상태', '과거', '현재', '방해물', '나의 마음', '상대의 마음', '내가 상대에 바라는 점', '상대가 나에게 바라는 점', '결과'],
+                positions: ['나의 현재 상태', '상대의 현재 상태', '우리의 현재 상태', '과거', '현재', '방해물', '나의 마음', '상대의 마음', '내가 상대에게 바라는 점', '상대가 나에게 바라는 점', '결과'],
                 layout: 'cup-shape'
             },
             'ab-choice': {
@@ -2055,16 +1955,6 @@
             container.appendChild(middleSection);
             container.appendChild(bottomSection);
 
-            // 1카드 스프레드의 탭 투 드로우 기능 활성화
-            setTimeout(() => {
-                const tapToDrawCard = container.querySelector('.tap-to-draw');
-                if (tapToDrawCard) {
-                    tapToDrawCard.addEventListener('click', () => {
-                        drawSpreadCards(spreadId);
-                    });
-                }
-            }, 100);
-            
             return container;
         }
 
@@ -2077,7 +1967,7 @@
                 case 'single':
                     layoutHTML = `
                         <div class="w-full h-full flex justify-center items-center p-4">
-                            <div class="card-slot cursor-pointer tap-to-draw" data-position="0">
+                            <div class="card-slot cursor-pointer" data-position="0">
                                 <div class="w-64 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 440px;">
                                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                     <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
@@ -2085,6 +1975,7 @@
                                         <div class="text-yellow-400/60 text-lg font-medium">TAP TO DRAW</div>
                                     </div>
                                 </div>
+                                <div class="text-center mt-3 text-sm text-white/70 font-medium">${spread.positions[0]}</div>
                             </div>
                         </div>
                     `;
@@ -2118,7 +2009,7 @@
                         <div class="w-full h-full flex flex-col items-center justify-center gap-2 p-4">
                             <div class="flex gap-12">
                                 <div class="card-slot cursor-pointer" data-position="0">
-                                    <div class="w-19 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 132px;">
+                                    <div class="w-24 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 165px;">
                                         <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                         <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
                                         <div class="w-full h-full flex items-center justify-center">
@@ -2126,28 +2017,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-slot cursor-pointer" data-position="2">
-                                    <div class="w-19 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 132px;">
-                                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
-                                        <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <div class="text-yellow-400/60 text-xs font-medium">4</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-1">
-                                <div class="card-slot cursor-pointer" data-position="1">
-                                    <div class="w-19 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 132px;">
-                                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
-                                        <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
-                                        <div class="w-full h-full flex items-center justify-center">
-                                            <div class="text-yellow-400/60 text-xs font-medium">2</div>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="card-slot cursor-pointer" data-position="4">
-                                    <div class="w-19 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 132px;">
+                                    <div class="w-24 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 165px;">
                                         <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                         <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
                                         <div class="w-full h-full flex items-center justify-center">
@@ -2156,8 +2027,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-slot cursor-pointer" data-position="3">
-                                <div class="w-19 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 132px;">
+                            <div class="flex gap-1">
+                                <div class="card-slot cursor-pointer" data-position="1">
+                                    <div class="w-24 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 165px;">
+                                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
+                                        <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <div class="text-yellow-400/60 text-xs font-medium">2</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-slot cursor-pointer" data-position="3">
+                                    <div class="w-24 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 165px;">
+                                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
+                                        <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <div class="text-yellow-400/60 text-xs font-medium">4</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-slot cursor-pointer" data-position="2">
+                                <div class="w-24 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 165px;">
                                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                     <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
                                     <div class="w-full h-full flex items-center justify-center">
@@ -2272,18 +2163,7 @@
                             </div>
                             
                             <!-- Card 3 -->
-                            <div class="card card-3 card-slot cursor-pointer" data-position="4">
-                                <div class="w-full h-full bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
-                                    <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <div class="text-yellow-400/60 text-xs font-medium">4</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Card 4 -->
-                            <div class="card card-4 card-slot cursor-pointer" data-position="2">
+                            <div class="card card-3 card-slot cursor-pointer" data-position="2">
                                 <div class="w-full h-full bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden">
                                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                     <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
@@ -2293,8 +2173,19 @@
                                 </div>
                             </div>
                             
+                            <!-- Card 4 -->
+                            <div class="card card-4 card-slot cursor-pointer" data-position="3">
+                                <div class="w-full h-full bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
+                                    <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <div class="text-yellow-400/60 text-xs font-medium">4</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Card 5 -->
-                            <div class="card card-5 card-slot cursor-pointer" data-position="3">
+                            <div class="card card-5 card-slot cursor-pointer" data-position="4">
                                 <div class="w-full h-full bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden">
                                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                     <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
@@ -2310,7 +2201,7 @@
                                     <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                     <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
                                     <div class="w-full h-full flex items-center justify-center">
-                                        <div class="text-yellow-400/60 text-xs font-medium">5</div>
+                                        <div class="text-yellow-400/60 text-xs font-medium">6</div>
                                     </div>
                                 </div>
                             </div>
@@ -2422,7 +2313,7 @@
                                 
                                 <!-- 세 번째 줄: 카드 5 -->
                                 <div class="flex justify-center">
-                                    <div class="card-slot cursor-pointer" data-position="2">
+                                    <div class="card-slot cursor-pointer" data-position="4">
                                         <div class="w-16 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 112px;">
                                             <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                             <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
@@ -2436,7 +2327,7 @@
                                 <!-- 네 번째 줄: 카드 4와 6 (3,2번 카드 위쪽 정렬) -->
                                 <div class="flex gap-2">
                                     <div class="w-16"></div> <!-- 1번 카드 자리 -->
-                                    <div class="card-slot cursor-pointer" data-position="4">
+                                    <div class="card-slot cursor-pointer" data-position="3">
                                         <div class="w-16 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 112px;">
                                             <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                             <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
@@ -2467,7 +2358,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-slot cursor-pointer" data-position="3">
+                                    <div class="card-slot cursor-pointer" data-position="2">
                                         <div class="w-16 bg-gradient-to-b from-indigo-900/20 via-purple-800/20 to-indigo-900/20 border border-yellow-400/20 rounded-xl shadow-2xl hover:shadow-yellow-400/10 transition-all duration-300 relative overflow-hidden" style="height: 112px;">
                                             <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent"></div>
                                             <div class="absolute inset-1 border border-yellow-400/10 rounded-lg"></div>
@@ -2544,15 +2435,9 @@
         // Animate card drawing
         function animateCardDraw(spread) {
             const cardSlots = document.querySelectorAll('.card-slot');
-            
-            // Sort card slots by data-position for proper order
-            const sortedSlots = Array.from(cardSlots).sort((a, b) => {
-                return parseInt(a.dataset.position) - parseInt(b.dataset.position);
-            });
-            
             let delay = 0;
 
-            sortedSlots.forEach((slot, index) => {
+            cardSlots.forEach((slot, index) => {
                 setTimeout(() => {
                     const card = currentSpreadCards[index];
                     const cardElement = slot.querySelector('div');
@@ -2584,13 +2469,10 @@
                         }
                         
                         // Use enhanced image loading system for consistency
-                        const position = currentSpread ? currentSpread.positions[index] : null;
                         createEnhancedCardImage(card, cardElement, {
                             showLoading: true,
                             enableFlip: false,
-                            size: 'normal',
-                            enablePopup: true,
-                            position: position
+                            size: 'normal'
                         });
                     }, 100);
                 }, delay);
@@ -2701,13 +2583,7 @@
         // Helper functions for redraw and save
         function clearCurrentCards() {
             const cardSlots = document.querySelectorAll('.card-slot');
-            
-            // Sort card slots by data-position for proper order
-            const sortedSlots = Array.from(cardSlots).sort((a, b) => {
-                return parseInt(a.dataset.position) - parseInt(b.dataset.position);
-            });
-            
-            sortedSlots.forEach((slot, index) => {
+            cardSlots.forEach((slot, index) => {
                 // Reset to original card placeholder with correct styling based on layout
                 const placeholder = slot.querySelector('div');
                 if (placeholder) {
@@ -3992,9 +3868,7 @@
                 showLoading = true,
                 enableFlip = false,
                 size = 'normal', // 'small', 'normal', 'large'
-                onLoadComplete = null,
-                enablePopup = true, // 팝업 클릭 활성화 여부
-                position = null // 카드 포지션 정보
+                onLoadComplete = null
             } = options;
 
             // 컨테이너 스타일 설정
@@ -4102,24 +3976,6 @@
                 }
             };
 
-            // 팝업 클릭 이벤트 추가
-            if (enablePopup) {
-                containerElement.style.cursor = 'pointer';
-                containerElement.addEventListener('click', () => {
-                    showCardPopup(card, position);
-                });
-                
-                // 호버 효과 추가
-                containerElement.addEventListener('mouseenter', () => {
-                    containerElement.style.transform = 'scale(1.05)';
-                    containerElement.style.transition = 'transform 0.2s ease';
-                });
-                
-                containerElement.addEventListener('mouseleave', () => {
-                    containerElement.style.transform = 'scale(1)';
-                });
-            }
-
             return containerElement;
         }
 
@@ -4176,47 +4032,6 @@
                 const successCount = results.filter(r => r.status === 'fulfilled').length;
                 console.log(`✅ 프리로딩 완료: ${successCount}/${preloadPromises.length} 성공`);
             });
-        }
-
-        // 카드 팝업 관련 함수들
-        function showCardPopup(card, position = null) {
-            const overlay = document.getElementById('cardPopupOverlay');
-            const image = document.getElementById('cardPopupImage');
-            const name = document.getElementById('cardPopupName');
-            const positionText = document.getElementById('cardPopupPosition');
-            
-            // 팝업 내용 설정
-            image.src = card.image;
-            image.alt = card.name;
-            name.textContent = card.name;
-            positionText.textContent = position ? `포지션: ${position}` : '타로카드';
-            
-            // 팝업 표시
-            overlay.style.display = 'flex';
-            setTimeout(() => {
-                overlay.classList.add('active');
-            }, 10);
-            
-            // ESC 키로 닫기
-            document.addEventListener('keydown', handleEscapeKey);
-        }
-
-        function closeCardPopup() {
-            const overlay = document.getElementById('cardPopupOverlay');
-            overlay.classList.remove('active');
-            
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 300);
-            
-            // ESC 키 이벤트 제거
-            document.removeEventListener('keydown', handleEscapeKey);
-        }
-
-        function handleEscapeKey(event) {
-            if (event.key === 'Escape') {
-                closeCardPopup();
-            }
         }
 
         // 앱 초기화 시 프리로딩 실행
