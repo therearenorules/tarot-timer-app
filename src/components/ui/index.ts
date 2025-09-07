@@ -32,6 +32,9 @@ export type { TabNavigationProps, TabItem } from './TabNavigation';
 export { MemoPad } from './MemoPad';
 export type { MemoPadProps } from './MemoPad';
 
+export { GradientBackground } from './GradientBackground';
+export type { GradientBackgroundProps } from './GradientBackground';
+
 // Re-export design tokens for convenience
 export { 
   colors, 

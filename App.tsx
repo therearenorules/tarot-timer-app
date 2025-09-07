@@ -8,8 +8,9 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { SpreadScreen } from './src/screens/SpreadScreen';
 import { JournalScreen } from './src/screens/JournalScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
-import { TabNavigation } from './src/components/ui/TabNavigation';
+import { TabNavigation, GradientBackground, LoadingScreen } from './src/components/ui';
 import { colors } from './src/constants/DesignTokens';
+import { useFonts } from './src/hooks/useFonts';
 
 type TabScreen = 'home' | 'spread' | 'journal' | 'settings';
 
@@ -21,9 +22,15 @@ const tabs = [
 ];
 
 export default function App() {
-  console.log('🔮 Tarot Timer App - Phase 2 Complete');
+  console.log('🔮 Tarot Timer App - Phase 4 Visual Enhancement');
   
+  const { isReady: fontsReady } = useFonts();
   const [activeTab, setActiveTab] = useState<TabScreen>('home');
+
+  // 폰트가 로드되지 않았다면 로딩 화면 표시
+  if (!fontsReady) {
+    return <LoadingScreen message="타로 타이머 로딩 중..." />;
+  }
 
   const renderScreen = () => {
     switch (activeTab) {
@@ -41,21 +48,23 @@ export default function App() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background.primary }}>
+    <GradientBackground variant="main" style={{ flex: 1 }}>
       {/* Main Screen Content */}
       <View style={{ flex: 1 }}>
         {renderScreen()}
       </View>
       
-      {/* Bottom Tab Navigation */}
-      <TabNavigation
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabPress={(tab) => setActiveTab(tab as TabScreen)}
-        position="bottom"
-        size="medium"
-        variant="filled"
-      />
-    </View>
+      {/* Bottom Tab Navigation with Gradient Background */}
+      <GradientBackground variant="subtle" style={{ flexDirection: 'row' }}>
+        <TabNavigation
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabPress={(tab) => setActiveTab(tab as TabScreen)}
+          position="bottom"
+          size="medium"
+          variant="filled"
+        />
+      </GradientBackground>
+    </GradientBackground>
   );
 }

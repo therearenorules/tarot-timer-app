@@ -18,6 +18,7 @@ import {
   TarotCard,
   TimeDisplay,
   MemoPad,
+  GradientBackground,
   colors,
   spacing,
   typography,
@@ -172,7 +173,7 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.background.primary} />
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       
       <Animated.View style={[styles.content, animatedStyle]}>
         {/* 헤더 */}
@@ -189,14 +190,14 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         {/* 현재 선택된 카드 정보 */}
-        <View style={styles.selectedCardInfo}>
+        <GradientBackground variant="card" style={styles.selectedCardInfo}>
           <Text style={styles.selectedCardTitle}>
             {selectedHour.toString().padStart(2, '0')}:00 시간
           </Text>
           <Text style={styles.selectedCardDescription}>
             {selectedCard?.description || '아직 공개되지 않은 시간입니다'}
           </Text>
-        </View>
+        </GradientBackground>
 
         {/* 24시간 카드 스크롤 */}
         <View style={styles.cardsSection}>
@@ -231,7 +232,7 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         {/* 오늘의 통계 */}
-        <View style={styles.statsSection}>
+        <GradientBackground variant="card" style={styles.statsSection}>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{currentHour + 1}</Text>
             <Text style={styles.statLabel}>공개된 카드</Text>
@@ -244,9 +245,9 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{getSessionStats().cardsWithMemos}</Text>
-            <Text style={styles.statLabel}>작성한 메모</Text>
+            <Text style={styles.statLabel}>작성한 멤모</Text>
           </View>
-        </View>
+        </GradientBackground>
       </Animated.View>
     </SafeAreaView>
   );
@@ -255,7 +256,7 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: 'transparent',
   },
 
   content: {
@@ -277,13 +278,12 @@ const styles = StyleSheet.create({
   },
 
   selectedCardInfo: {
-    backgroundColor: colors.card.background,
     borderRadius: radius['2xl'],
     padding: spacing['2xl'],
     marginBottom: spacing['3xl'],
     borderWidth: 1,
     borderColor: colors.card.border,
-    ...shadows.medium,
+    ...shadows.mysticalGlow,
   },
 
   selectedCardTitle: {
@@ -374,12 +374,11 @@ const styles = StyleSheet.create({
 
   statsSection: {
     flexDirection: 'row',
-    backgroundColor: colors.card.background,
     borderRadius: radius.xl,
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.card.border,
-    ...shadows.small,
+    ...shadows.mystical,
   },
 
   statItem: {
