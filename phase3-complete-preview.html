@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarot Timer App - Phase 3 Backend Integration Complete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .mystical-glow {
+            animation: mysticalGlow 3s ease-in-out infinite alternate;
+        }
+        
+        .mystical-glow-intense {
+            animation: mysticalGlowIntense 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes mysticalGlow {
+            0% { 
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.3),
+                           0 0 40px rgba(212, 175, 55, 0.2),
+                           0 0 80px rgba(212, 175, 55, 0.1);
+                border-color: rgba(212, 175, 55, 0.3);
+            }
+            100% { 
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.5),
+                           0 0 60px rgba(212, 175, 55, 0.3),
+                           0 0 120px rgba(212, 175, 55, 0.2);
+                border-color: rgba(212, 175, 55, 0.6);
+            }
+        }
+        
+        @keyframes mysticalGlowIntense {
+            0% { 
+                box-shadow: 0 0 30px rgba(212, 175, 55, 0.5),
+                           0 0 60px rgba(212, 175, 55, 0.3),
+                           0 0 120px rgba(212, 175, 55, 0.2);
+                transform: scale(1);
+            }
+            100% { 
+                box-shadow: 0 0 40px rgba(212, 175, 55, 0.8),
+                           0 0 80px rgba(212, 175, 55, 0.5),
+                           0 0 160px rgba(212, 175, 55, 0.3);
+                transform: scale(1.02);
+            }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.4);
+        }
+        
+        .tab-active {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1));
+            border-color: rgba(212, 175, 55, 0.6);
+            color: #d4af37;
+        }
+        
+        .screen-container {
+            min-height: calc(100vh - 80px);
+            padding-bottom: 20px;
+        }
+        
+        .tab-navigation {
+            height: 80px;
+            background: linear-gradient(to top, #0f172a, #1e293b);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .backend-connected {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .store-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            padding: 8px 12px;
+            background: rgba(16, 185, 129, 0.9);
+            border-radius: 8px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .enhanced-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.6, 1);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .enhanced-card:hover {
+            backdrop-filter: blur(24px);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-slate-900 via-slate-900 to-blue-900 text-white">
+    <!-- Backend Connection Indicator -->
+    <div class="store-indicator">
+        🔄 Zustand Store Connected
+    </div>
+
+    <!-- App Container -->
+    <div class="min-h-screen">
+        
+        <!-- Screen Content -->
+        <div id="screen-content" class="screen-container">
+            <!-- Home Screen (Default) -->
+            <div id="home-screen" class="screen-view p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-yellow-400 mb-2">🔮 타로 타이머</h1>
+                    <p class="text-slate-400">24시간 타로 카드와 함께하는 하루</p>
+                    <div class="mt-2 text-xs text-green-400 backend-connected px-3 py-1 rounded-full inline-block">
+                        ✅ DailyTarotStore 연동 완료
+                    </div>
+                </div>
+                
+                <!-- Current Time Card with Enhanced Glow -->
+                <div class="enhanced-card bg-slate-800/30 rounded-2xl p-6 mb-6 mystical-glow-intense">
+                    <div class="text-center mb-4">
+                        <div class="text-6xl font-bold text-yellow-400" id="current-time">14:30</div>
+                        <div class="text-slate-400">현재 시간</div>
+                        <div class="text-xs text-green-300 mt-1">실시간 Store 연동</div>
+                    </div>
+                    
+                    <!-- Current Hour Card with Enhanced Effects -->
+                    <div class="flex justify-center">
+                        <div class="w-24 h-36 enhanced-card bg-slate-700/50 rounded-lg border border-yellow-400/30 flex items-center justify-center mystical-glow card-hover">
+                            <div class="text-center">
+                                <div class="text-2xl mb-2">🃏</div>
+                                <div class="text-xs text-slate-400">The Fool</div>
+                                <div class="text-xs text-yellow-400 mt-1">선택된 카드</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced 24 Hour Cards Grid -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-yellow-400 mb-4 flex items-center gap-2">
+                        오늘의 24시간 카드 
+                        <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">세션 카드 로드됨</span>
+                    </h3>
+                    <div class="grid grid-cols-6 gap-3">
+                        <div class="w-12 h-16 enhanced-card bg-slate-700/50 rounded border border-yellow-400/50 flex items-center justify-center text-xs mystical-glow">
+                            <div>🃏<br/>0시</div>
+                        </div>
+                        <div class="w-12 h-16 enhanced-card bg-slate-700/50 rounded border border-yellow-400/50 flex items-center justify-center text-xs mystical-glow">
+                            <div>🎩<br/>1시</div>
+                        </div>
+                        <div class="w-12 h-16 enhanced-card bg-slate-700/50 rounded border border-yellow-400/50 flex items-center justify-center text-xs mystical-glow">
+                            <div>🌙<br/>2시</div>
+                        </div>
+                        <div class="w-12 h-16 enhanced-card bg-slate-700/50 rounded border border-yellow-400/50 flex items-center justify-center text-xs mystical-glow">
+                            <div>👑<br/>3시</div>
+                        </div>
+                        <div class="w-12 h-16 enhanced-card bg-slate-700/50 rounded border border-yellow-400/50 flex items-center justify-center text-xs mystical-glow">
+                            <div>⚡<br/>4시</div>
+                        </div>
+                        <div class="w-12 h-16 enhanced-card bg-slate-700/50 rounded border border-yellow-400/50 flex items-center justify-center text-xs mystical-glow">
+                            <div>📿<br/>5시</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Quick Memo -->
+                <div class="enhanced-card bg-slate-800/30 rounded-xl p-4">
+                    <h4 class="text-yellow-400 font-medium mb-3 flex items-center gap-2">
+                        현재 시간 메모 
+                        <span class="text-xs text-blue-400">자동 저장</span>
+                    </h4>
+                    <textarea class="w-full h-20 enhanced-card bg-slate-700/50 border border-slate-600 rounded-lg p-3 text-white placeholder-slate-400 resize-none focus:border-yellow-400/50 transition-all" placeholder="지금 이 시간에 대한 생각을 기록해보세요... (Store에 자동 저장됩니다)"></textarea>
+                    <button class="mt-3 w-full bg-yellow-400/20 border border-yellow-400/50 text-yellow-400 py-2 rounded-lg hover:bg-yellow-400/30 transition-all mystical-glow">메모 저장</button>
+                </div>
+                
+                <!-- Store Statistics -->
+                <div class="mt-6 enhanced-card bg-slate-800/30 rounded-xl p-4">
+                    <h4 class="text-yellow-400 font-medium mb-3">📊 Store 통계</h4>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-green-400">24</div>
+                            <div class="text-xs text-slate-400">세션 카드</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-blue-400">5</div>
+                            <div class="text-xs text-slate-400">저장된 메모</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-purple-400">1</div>
+                            <div class="text-xs text-slate-400">활성 세션</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enhanced Spread Screen -->
+            <div id="spread-screen" class="screen-view hidden p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-yellow-400 mb-2">🔮 타로 스프레드</h1>
+                    <p class="text-slate-400">다양한 스프레드로 미래를 탐구하세요</p>
+                    <div class="mt-2 text-xs text-green-400 backend-connected px-3 py-1 rounded-full inline-block">
+                        ✅ SpreadStore 연동 완료
+                    </div>
+                </div>
+                
+                <!-- Enhanced Spread Categories -->
+                <div class="space-y-4">
+                    <!-- Beginner Spreads -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-400 mb-3 flex items-center gap-2">
+                            🌱 초급자 스프레드
+                            <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">실시간 카드 드로우</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-green-400/30 card-hover mystical-glow">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h4 class="text-white font-medium">1카드 스프레드</h4>
+                                        <p class="text-slate-400 text-sm">빠른 질문과 답변</p>
+                                        <p class="text-xs text-green-400 mt-1">Zustand로 카드 관리</p>
+                                    </div>
+                                    <button class="bg-green-400/20 text-green-400 px-4 py-2 rounded-lg hover:bg-green-400/30 transition-all mystical-glow">시작</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Intermediate Spreads -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-blue-400 mb-3 flex items-center gap-2">
+                            ⚡ 중급자 스프레드
+                            <span class="text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded">고급 레이아웃</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-blue-400/30 card-hover mystical-glow">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h4 class="text-white font-medium">3카드 스프레드</h4>
+                                        <p class="text-slate-400 text-sm">과거, 현재, 미래</p>
+                                        <p class="text-xs text-blue-400 mt-1">카드 위치 추적</p>
+                                    </div>
+                                    <button class="bg-blue-400/20 text-blue-400 px-4 py-2 rounded-lg hover:bg-blue-400/30 transition-all mystical-glow">시작</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Premium Spreads -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-purple-400 mb-3 flex items-center gap-2">
+                            🎯 프리미엄 스프레드
+                            <span class="text-xs text-purple-400 bg-purple-400/10 px-2 py-1 rounded">완전한 Store 통합</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-purple-400/30 card-hover mystical-glow-intense">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h4 class="text-white font-medium">켈틱 크로스</h4>
+                                        <p class="text-slate-400 text-sm">완전한 상황 분석</p>
+                                        <p class="text-xs text-purple-400 mt-1">10카드 자동 배치</p>
+                                    </div>
+                                    <button class="bg-purple-400/20 text-purple-400 px-4 py-2 rounded-lg hover:bg-purple-400/30 transition-all mystical-glow">시작</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Store Status -->
+                <div class="mt-8 enhanced-card bg-slate-800/30 rounded-xl p-4">
+                    <h4 class="text-yellow-400 font-medium mb-3">🔄 SpreadStore 상태</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">현재 스프레드:</span>
+                            <span class="text-green-400">없음</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">드로운 카드:</span>
+                            <span class="text-blue-400">0장</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">완료된 스프레드:</span>
+                            <span class="text-purple-400">3개</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Journal Screen -->
+            <div id="journal-screen" class="screen-view hidden p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-yellow-400 mb-2">📖 타로 일기</h1>
+                    <p class="text-slate-400">나의 타로 여정을 기록하세요</p>
+                    <div class="mt-2 text-xs text-orange-400 bg-orange-400/10 px-3 py-1 rounded-full inline-block">
+                        🔄 DiaryStore 준비중
+                    </div>
+                </div>
+                
+                <!-- Enhanced Tab Navigation -->
+                <div class="flex mb-6 enhanced-card bg-slate-800/30 rounded-xl p-1">
+                    <button id="daily-tab" class="flex-1 py-2 px-4 rounded-lg text-center transition-all tab-active mystical-glow">일별 기록</button>
+                    <button id="spread-tab" class="flex-1 py-2 px-4 rounded-lg text-center transition-all text-slate-400">스프레드 기록</button>
+                </div>
+                
+                <!-- Enhanced Daily Records -->
+                <div id="daily-records" class="space-y-4">
+                    <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-slate-700 mystical-glow">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-white font-medium">2025.01.07</h4>
+                            <div class="flex gap-2">
+                                <span class="text-xs text-slate-400 bg-slate-700/50 px-2 py-1 rounded">메모 12개</span>
+                                <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">Store 연동</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 mb-3">
+                            <div class="w-8 h-12 enhanced-card bg-slate-700/50 rounded border border-slate-600 mystical-glow"></div>
+                            <div class="w-8 h-12 enhanced-card bg-slate-700/50 rounded border border-slate-600 mystical-glow"></div>
+                            <div class="w-8 h-12 enhanced-card bg-slate-700/50 rounded border border-slate-600 mystical-glow"></div>
+                            <div class="text-slate-500 text-sm self-center">+21개</div>
+                        </div>
+                        <button class="text-yellow-400 text-sm hover:text-yellow-300 mystical-glow">자세히 보기 →</button>
+                    </div>
+                    
+                    <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-slate-700">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-white font-medium">2025.01.06</h4>
+                            <span class="text-xs text-slate-400 bg-slate-700/50 px-2 py-1 rounded">메모 8개</span>
+                        </div>
+                        <div class="flex space-x-2 mb-3">
+                            <div class="w-8 h-12 enhanced-card bg-slate-700/50 rounded border border-slate-600"></div>
+                            <div class="w-8 h-12 enhanced-card bg-slate-700/50 rounded border border-slate-600"></div>
+                            <div class="w-8 h-12 enhanced-card bg-slate-700/50 rounded border border-slate-600"></div>
+                            <div class="text-slate-500 text-sm self-center">+21개</div>
+                        </div>
+                        <button class="text-yellow-400 text-sm hover:text-yellow-300">자세히 보기 →</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Screen -->
+            <div id="settings-screen" class="screen-view hidden p-6">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-yellow-400 mb-2">⚙️ 설정</h1>
+                    <p class="text-slate-400">앱 설정을 관리하세요</p>
+                    <div class="mt-2 text-xs text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full inline-block">
+                        🔄 SettingsStore 준비중
+                    </div>
+                </div>
+                
+                <!-- Enhanced Settings Sections -->
+                <div class="space-y-6">
+                    <!-- App Settings -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-yellow-400 mb-4 flex items-center gap-2">
+                            ⚙️ 앱 설정
+                            <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded">Store 연동됨</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-slate-700 flex justify-between items-center mystical-glow">
+                                <div>
+                                    <h4 class="text-white font-medium">알림 설정</h4>
+                                    <p class="text-slate-400 text-sm">타로 타이머 및 스프레드 알림</p>
+                                    <p class="text-xs text-green-400 mt-1">실시간 상태 동기화</p>
+                                </div>
+                                <div class="w-12 h-6 bg-yellow-400 rounded-full relative mystical-glow">
+                                    <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-slate-700 flex justify-between items-center">
+                                <div>
+                                    <h4 class="text-white font-medium">Mystical 애니메이션</h4>
+                                    <p class="text-slate-400 text-sm">카드 및 UI 신비로운 애니메이션</p>
+                                    <p class="text-xs text-yellow-400 mt-1">고급 효과 활성화됨</p>
+                                </div>
+                                <div class="w-12 h-6 bg-yellow-400 rounded-full relative mystical-glow-intense">
+                                    <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 right-0.5"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data & Premium -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-yellow-400 mb-4">💎 데이터 & 프리미엄</h3>
+                        <div class="space-y-3">
+                            <div class="enhanced-card bg-slate-800/30 rounded-xl p-4 border border-slate-700 flex justify-between items-center">
+                                <div>
+                                    <h4 class="text-white font-medium">데이터 백업</h4>
+                                    <p class="text-slate-400 text-sm">클라우드 백업 및 복원</p>
+                                    <p class="text-xs text-blue-400 mt-1">Zustand 상태 백업 지원</p>
+                                </div>
+                                <div class="text-slate-400 text-xl">→</div>
+                            </div>
+                            
+                            <div class="enhanced-card bg-yellow-400/10 border-yellow-400/30 rounded-xl p-4 border flex justify-between items-center mystical-glow-intense">
+                                <div>
+                                    <h4 class="text-white font-medium flex items-center gap-2">
+                                        카드팩 관리 
+                                        <span class="text-xs bg-yellow-400/30 text-yellow-400 px-2 py-1 rounded">Premium</span>
+                                    </h4>
+                                    <p class="text-slate-400 text-sm">타로 카드 테마 및 스타일 변경</p>
+                                    <p class="text-xs text-purple-400 mt-1">고급 렌더링 엔진</p>
+                                </div>
+                                <div class="text-yellow-400 text-xl">→</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Phase 3 Status */
+                <div class="mt-8 enhanced-card bg-gradient-to-r from-green-400/10 to-blue-400/10 rounded-xl p-4 border border-green-400/30">
+                    <h4 class="text-green-400 font-medium mb-3">🎉 Phase 3 완성 현황</h4>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400">✅</span>
+                            <span class="text-white">DailyTarotStore → HomeScreen 연동</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400">✅</span>
+                            <span class="text-white">SpreadStore → SpreadScreen 연동</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400">✅</span>
+                            <span class="text-white">HTML 디자인 고급 효과 적용</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400">✅</span>
+                            <span class="text-white">Mystical Glow 애니메이션 완성</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-blue-400">🔄</span>
+                            <span class="text-slate-300">Phase 4 네이티브 최적화 준비중</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enhanced Bottom Tab Navigation -->
+        <div class="tab-navigation flex items-center justify-around px-6 mystical-glow">
+            <button onclick="switchTab('home')" id="tab-home" class="tab-item flex flex-col items-center py-2 px-4 rounded-lg transition-all tab-active mystical-glow-intense">
+                <div class="text-xl mb-1">🏠</div>
+                <div class="text-xs">홈</div>
+            </button>
+            
+            <button onclick="switchTab('spread')" id="tab-spread" class="tab-item flex flex-col items-center py-2 px-4 rounded-lg transition-all text-slate-400">
+                <div class="text-xl mb-1">🔮</div>
+                <div class="text-xs">스프레드</div>
+            </button>
+            
+            <button onclick="switchTab('journal')" id="tab-journal" class="tab-item flex flex-col items-center py-2 px-4 rounded-lg transition-all text-slate-400">
+                <div class="text-xl mb-1">📖</div>
+                <div class="text-xs">일기</div>
+            </button>
+            
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-item flex flex-col items-center py-2 px-4 rounded-lg transition-all text-slate-400">
+                <div class="text-xl mb-1">⚙️</div>
+                <div class="text-xs">설정</div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Tab switching with animations
+        function switchTab(tabName) {
+            // Hide all screens with fade effect
+            document.querySelectorAll('.screen-view').forEach(screen => {
+                screen.style.opacity = '0';
+                setTimeout(() => {
+                    screen.classList.add('hidden');
+                }, 150);
+            });
+            
+            // Show selected screen with fade in
+            setTimeout(() => {
+                const targetScreen = document.getElementById(tabName + '-screen');
+                targetScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    targetScreen.style.opacity = '1';
+                }, 50);
+            }, 150);
+            
+            // Update tab styles with enhanced effects
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('tab-active', 'mystical-glow-intense');
+                tab.classList.add('text-slate-400');
+            });
+            
+            // Activate selected tab
+            const activeTab = document.getElementById('tab-' + tabName);
+            activeTab.classList.add('tab-active', 'mystical-glow-intense');
+            activeTab.classList.remove('text-slate-400');
+            
+            console.log('📱 Enhanced Tab switched to:', tabName);
+        }
+        
+        // Journal tab switching with enhanced effects
+        function switchJournalTab(tabType) {
+            if (tabType === 'daily') {
+                document.getElementById('daily-records').classList.remove('hidden');
+                document.getElementById('spread-records').classList.add('hidden');
+                document.getElementById('daily-tab').classList.add('tab-active', 'mystical-glow');
+                document.getElementById('spread-tab').classList.remove('tab-active');
+                document.getElementById('spread-tab').classList.add('text-slate-400');
+            } else {
+                document.getElementById('daily-records').classList.add('hidden');
+                document.getElementById('spread-records').classList.remove('hidden');
+                document.getElementById('spread-tab').classList.add('tab-active', 'mystical-glow');
+                document.getElementById('daily-tab').classList.remove('tab-active');
+                document.getElementById('daily-tab').classList.add('text-slate-400');
+            }
+        }
+        
+        // Initialize enhanced effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Journal tab event listeners
+            document.getElementById('daily-tab')?.addEventListener('click', () => switchJournalTab('daily'));
+            document.getElementById('spread-tab')?.addEventListener('click', () => switchJournalTab('spread'));
+            
+            // Enhanced time update with store simulation
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ko-KR', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                document.getElementById('current-time').textContent = timeString;
+            }
+            
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Simulate store updates
+            console.log('🔄 Phase 3: Backend stores initialized');
+            console.log('✅ DailyTarotStore connected');
+            console.log('✅ SpreadStore connected');
+            console.log('🎨 Enhanced mystical effects active');
+        });
+        
+        console.log('🎉 Tarot Timer App - Phase 3 Backend Integration Complete');
+    </script>
+</body>
+</html>

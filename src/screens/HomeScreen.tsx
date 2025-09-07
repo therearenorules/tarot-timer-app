@@ -25,16 +25,32 @@ import {
   shadows,
   TarotAnimations,
 } from '../components/ui';
+import { useDailyTarotStore } from '../stores/dailyTarotStore';
 
 const { width: screenWidth } = Dimensions.get('window');
 const CARD_WIDTH = 80;
 const CARD_HEIGHT = 120;
 
 export const HomeScreen: React.FC = () => {
-  const [currentHour, setCurrentHour] = useState(new Date().getHours());
-  const [selectedHour, setSelectedHour] = useState(currentHour);
+  // Zustand store 사용
+  const {
+    sessionCards,
+    selectedHour,
+    selectedCard,
+    currentHour,
+    timeUntilNextHour,
+    isLoading,
+    error,
+    initializeToday,
+    selectHour,
+    saveMemo,
+    getMemoForHour,
+    updateCurrentTime,
+    getSessionStats,
+  } = useDailyTarotStore();
+  
   const [memo, setMemo] = useState('');
-  const [timeRemaining, setTimeRemaining] = useState({ minutes: 0, seconds: 0 });
+  const [timeRemaining, setTimeRemaining] = useState({ minutes: timeUntilNextHour || 0, seconds: 0 });
   
   const scrollViewRef = React.useRef<ScrollView>(null);
   const fadeAnimation = useSharedValue(1);
@@ -42,20 +58,23 @@ export const HomeScreen: React.FC = () => {
   // 24시간 배열 생성
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  // Mock 카드 데이터 (실제로는 dailyTarotStore에서 가져옴)
-  const mockCards = hours.map(hour => ({
-    hour,
-    card: hour <= currentHour ? {
-      name: `Card ${hour}`,
-      image: `https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=500&fit=crop&seed=${hour}`,
-      description: `${hour}시의 메시지`,
-    } : null,
-    memo: hour === selectedHour ? memo : '',
-  }));
+  // Store 초기화
+  useEffect(() => {
+    initializeToday().catch(console.error);
+  }, [initializeToday]);
 
-  // 현재 시간까지 다음 시간 계산
+  // 선택된 시간의 메모 동기화
+  useEffect(() => {
+    if (selectedHour !== null) {
+      const existingMemo = getMemoForHour(selectedHour);
+      setMemo(existingMemo);
+    }
+  }, [selectedHour, getMemoForHour]);
+
+  // 시간 업데이트
   useEffect(() => {
     const updateTime = () => {
+      updateCurrentTime();
       const now = new Date();
       const nextHour = new Date(now);
       nextHour.setHours(now.getHours() + 1, 0, 0, 0);
@@ -70,7 +89,7 @@ export const HomeScreen: React.FC = () => {
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [updateCurrentTime]);
 
   // 선택된 시간 변경 시 스크롤
   useEffect(() => {
@@ -86,20 +105,23 @@ export const HomeScreen: React.FC = () => {
 
   const handleCardPress = (hour: number) => {
     if (hour <= currentHour) {
-      setSelectedHour(hour);
+      selectHour(hour);
       fadeAnimation.value = withTiming(0.7, { duration: 200 }, () => {
         fadeAnimation.value = withTiming(1, { duration: 200 });
       });
     }
   };
 
-  const handleMemoSave = (text: string) => {
+  const handleMemoSave = async (text: string) => {
     setMemo(text);
-    console.log(`메모 저장: ${selectedHour}시 - ${text}`);
+    if (selectedHour !== null) {
+      await saveMemo(selectedHour, text);
+      console.log(`메모 저장: ${selectedHour}시 - ${text}`);
+    }
   };
 
   const renderHourCard = (hour: number, index: number) => {
-    const cardData = mockCards[hour];
+    const cardData = sessionCards.find(card => card.hour === hour);
     const isPast = hour < currentHour;
     const isCurrent = hour === currentHour;
     const isFuture = hour > currentHour;
@@ -117,9 +139,9 @@ export const HomeScreen: React.FC = () => {
         <TarotCard
           size="medium"
           variant={variant}
-          cardImage={cardData.card?.image}
-          cardName={cardData.card?.name}
-          description={cardData.card?.description}
+          cardImage={cardData?.cardImage}
+          cardName={cardData?.cardName}
+          description={cardData?.description}
           position={hour.toString()}
           mysticalEffect={isSelected && (isPast || isCurrent)}
           onPress={() => handleCardPress(hour)}
@@ -172,7 +194,7 @@ export const HomeScreen: React.FC = () => {
             {selectedHour.toString().padStart(2, '0')}:00 시간
           </Text>
           <Text style={styles.selectedCardDescription}>
-            {mockCards[selectedHour].card?.description || '아직 공개되지 않은 시간입니다'}
+            {selectedCard?.description || '아직 공개되지 않은 시간입니다'}
           </Text>
         </View>
 
@@ -221,7 +243,7 @@ export const HomeScreen: React.FC = () => {
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{Math.floor(Math.random() * 3) + 1}</Text>
+            <Text style={styles.statNumber}>{getSessionStats().cardsWithMemos}</Text>
             <Text style={styles.statLabel}>작성한 메모</Text>
           </View>
         </View>

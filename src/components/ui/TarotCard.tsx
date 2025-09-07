@@ -241,7 +241,8 @@ const styles = StyleSheet.create({
 
   mystical: {
     shadowColor: colors.primary.main,
-    ...shadows.mysticalGlow,
+    ...shadows.mysticalGlowIntense,
+    borderColor: colors.primary.main + '60',
   } as ViewStyle,
 
   placeholderContent: {

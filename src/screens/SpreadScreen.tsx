@@ -110,33 +110,33 @@ export const SpreadScreen: React.FC = () => {
     'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=500&fit=crop&seed=5',
   ];
 
-  const startSpreadReading = (spread: SpreadDefinition) => {
-    setSelectedSpread(spread);
-    const cards = spread.positions.map((position, index) => ({
-      position,
-      card: {
-        name: `Card ${index + 1}`,
-        image: mockCardImages[index % mockCardImages.length],
-        description: `${position}에 대한 메시지`,
-      },
-      revealed: false,
-    }));
-    setCurrentSpreadCards(cards);
-    setIsReading(true);
+  const startSpreadReading = async (spread: SpreadDefinition) => {
+    try {
+      setSelectedSpread(spread);
+      setIsReading(true);
+      
+      // Zustand store를 통한 스프레드 시작
+      await startNewSpread(spread.id);
+      console.log(`스프레드 시작: ${spread.name}`);
+    } catch (error) {
+      console.error('스프레드 시작 오류:', error);
+    }
   };
 
-  const drawCard = (index: number) => {
-    setCurrentSpreadCards(prev => 
-      prev.map((card, i) => 
-        i === index ? { ...card, revealed: true } : card
-      )
-    );
+  const drawCard = async (index: number) => {
+    try {
+      // Zustand store를 통해 실제 카드 드로우
+      await drawCardAtPosition(index);
+      console.log(`카드 ${index + 1} 공개`);
+    } catch (error) {
+      console.error('카드 드로우 오류:', error);
+    }
   };
 
   const backToSpreadSelection = () => {
+    clearCurrentSpread();
     setIsReading(false);
     setSelectedSpread(null);
-    setCurrentSpreadCards([]);
   };
 
   const getLevelColor = (level: string) => {
@@ -172,7 +172,7 @@ export const SpreadScreen: React.FC = () => {
         styles.spreadCard,
         spread.level === 'premium' && styles.premiumCard,
       ]}
-      onPress={() => startSpreadReading(spread)}
+      onPress={() => startSpreadReading(spread).catch(console.error)}
     >
       <View style={styles.cardHeader}>
         <View style={styles.cardIcon}>
@@ -209,7 +209,7 @@ export const SpreadScreen: React.FC = () => {
   );
 
   const renderSpreadLayout = () => {
-    if (!selectedSpread || currentSpreadCards.length === 0) return null;
+    if (!selectedSpread) return null;
 
     const layoutStyle = getLayoutStyle(selectedSpread.layout);
 
@@ -218,28 +218,40 @@ export const SpreadScreen: React.FC = () => {
         <Text style={styles.spreadTitle}>{selectedSpread.name}</Text>
         
         <View style={[styles.cardsLayout, layoutStyle]}>
-          {currentSpreadCards.map((cardData, index) => (
-            <View key={index} style={styles.cardPosition}>
-              <TarotCard
-                size="medium"
-                variant={cardData.revealed ? 'revealed' : 'placeholder'}
-                cardImage={cardData.revealed ? cardData.card.image : undefined}
-                cardName={cardData.revealed ? cardData.card.name : undefined}
-                description={cardData.revealed ? cardData.card.description : undefined}
-                position={(index + 1).toString()}
-                mysticalEffect={cardData.revealed}
-                onPress={() => {
-                  if (!cardData.revealed) {
-                    drawCard(index);
-                  } else {
-                    setSelectedCardModal(cardData);
-                  }
-                }}
-                style={styles.spreadCard}
-              />
-              <Text style={styles.positionLabel}>{cardData.position}</Text>
-            </View>
-          ))}
+          {selectedSpread.positions.map((position, index) => {
+            const isDrawn = drawnCards.some(card => card.positionIndex === index);
+            const drawnCard = drawnCards.find(card => card.positionIndex === index);
+            
+            return (
+              <View key={index} style={styles.cardPosition}>
+                <TarotCard
+                  size="medium"
+                  variant={isDrawn ? 'revealed' : 'placeholder'}
+                  cardImage={isDrawn ? mockCardImages[index % mockCardImages.length] : undefined}
+                  cardName={drawnCard?.cardName}
+                  description={isDrawn ? `${position} - ${drawnCard?.keywords?.join(', ') || ''}` : undefined}
+                  position={(index + 1).toString()}
+                  mysticalEffect={isDrawn}
+                  onPress={() => {
+                    if (!isDrawn) {
+                      drawCard(index);
+                    } else {
+                      setSelectedCardModal({
+                        card: {
+                          name: drawnCard?.cardName || '',
+                          image: mockCardImages[index % mockCardImages.length],
+                          description: `${position} - ${drawnCard?.keywords?.join(', ') || ''}`
+                        },
+                        position
+                      });
+                    }
+                  }}
+                  style={styles.spreadCard}
+                />
+                <Text style={styles.positionLabel}>{position}</Text>
+              </View>
+            );
+          })}
         </View>
 
         <View style={styles.spreadActions}>

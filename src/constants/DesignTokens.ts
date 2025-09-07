@@ -187,11 +187,20 @@ export const shadows = {
   },
   
   mysticalGlow: {
-    shadowColor: colors.mystical.glow,
+    shadowColor: colors.primary.main,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.6,
     shadowRadius: 20,
     elevation: 8,
+  },
+  
+  // HTML 디자인의 고급 mystical glow 재현
+  mysticalGlowIntense: {
+    shadowColor: colors.primary.main,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 40,
+    elevation: 12,
   },
 } as const;
 
@@ -209,6 +218,42 @@ export const animation = {
   easing: {
     default: 'ease-in-out',
     mystical: [0.4, 0, 0.6, 1], // cubic-bezier for mystical-pulse
+  },
+} as const;
+
+// ===== HTML DESIGN EFFECTS =====
+export const htmlEffects = {
+  // 배경 그라데이션
+  backgroundGradients: {
+    main: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%)',
+    card: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+    mystical: 'linear-gradient(45deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.05) 100%)',
+  },
+  
+  // Mystical Glow 효과
+  mysticalGlow: {
+    boxShadow: '0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.2), 0 0 80px rgba(212, 175, 55, 0.1)',
+    borderGlow: '1px solid rgba(212, 175, 55, 0.3)',
+    textGlow: '0 0 10px rgba(212, 175, 55, 0.5)',
+  },
+  
+  // 블러 효과
+  blur: {
+    backdrop: 'blur(16px)',
+    light: 'blur(8px)',
+    heavy: 'blur(24px)',
+  },
+  
+  // 카드 호버 효과
+  cardEffects: {
+    hover: {
+      transform: 'translateY(-8px) scale(1.02)',
+      boxShadow: '0 20px 40px rgba(212, 175, 55, 0.3)',
+      borderGlow: '2px solid rgba(212, 175, 55, 0.5)',
+    },
+    revealed: {
+      animation: 'cardReveal 0.8s ease-out forwards',
+    },
   },
 } as const;
 
