@@ -6,6 +6,11 @@
 // ===== UI COMPONENTS =====
 export * from './ui';
 
+// ===== ERROR BOUNDARY COMPONENTS =====
+export { ErrorBoundary } from './ErrorBoundary';
+export { FeatureErrorBoundary } from './FeatureErrorBoundary';
+export { AdvancedErrorBoundary } from './AdvancedErrorBoundary';
+
 // 편의를 위한 개별 export (자주 사용되는 컴포넌트들)
 export { Button } from './ui/Button';
 export { Card } from './ui/Card';

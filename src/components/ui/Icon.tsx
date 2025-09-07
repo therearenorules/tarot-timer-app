@@ -27,6 +27,15 @@ const ICONS = {
     <path d="M12 1v6m0 8v6m11-6h-6M8 12H2m15.5-5l-4.5 4.5m0 3l4.5 4.5M6.5 6.5l4.5 4.5m0-3L6.5 17.5" stroke-width="2" />
   </svg>`,
 
+  // 추가 아이콘들
+  'arrow-left': `<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19 12H5M12 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  
+  zap: `<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
   // 브랜드 아이콘
   'tarot-cards': `<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
     <g transform="rotate(-15 8 12)">
