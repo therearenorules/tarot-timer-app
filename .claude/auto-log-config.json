@@ -1,0 +1,37 @@
+{
+  "autoLogging": {
+    "enabled": true,
+    "logOnTaskCompletion": true,
+    "logOnFileChange": true,
+    "logOnGitCommit": true,
+    "createDailyLogs": true,
+    "updateProgressTracking": true
+  },
+  "logSettings": {
+    "logDirectory": "./",
+    "logFilePrefix": "WORK_LOG_",
+    "dateFormat": "YYYY_MM_DD",
+    "timeFormat": "HH:mm:ss",
+    "language": "ko"
+  },
+  "progressTracking": {
+    "totalPhases": 4,
+    "currentPhase": 1,
+    "trackFileChanges": true,
+    "trackTaskCompletion": true,
+    "generateNextTaskSuggestions": true
+  },
+  "integration": {
+    "withGit": true,
+    "withTodoWrite": true,
+    "withProjectStatus": true,
+    "autoCommitOnCompletion": false,
+    "suggestNextTasks": true
+  },
+  "notifications": {
+    "onTaskCompletion": true,
+    "onPhaseCompletion": true,
+    "onProgressMilestone": true,
+    "showProgressPercentage": true
+  }
+}

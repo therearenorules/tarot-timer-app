@@ -30,7 +30,13 @@
     "analyze": "npm run build:analyze",
     "validate:web": "node scripts/validate-web-config.js",
     "assets:validate": "node scripts/validate-assets.js",
-    "assets:create": "node scripts/create-simple-pngs.js"
+    "assets:create": "node scripts/create-simple-pngs.js",
+    "log:complete": "node scripts/auto-logger.js complete",
+    "log:status": "node scripts/auto-logger.js status",
+    "work:start": "./scripts/work-tracker.sh start",
+    "work:complete": "./scripts/work-tracker.sh complete",
+    "work:status": "./scripts/work-tracker.sh status",
+    "work:summary": "./scripts/work-tracker.sh summary"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
