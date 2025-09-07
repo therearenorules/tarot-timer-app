@@ -1,454 +1,359 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  View, 
-  TouchableOpacity, 
-  Image, 
-  ActivityIndicator,
-  ViewStyle,
-  ImageStyle,
+import React, { useEffect } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
   StyleSheet,
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
 } from 'react-native';
-import { theme } from '@/constants';
-import { Text } from './Text';
-import { MoonIcon, SparklesIcon } from './Icon';
-import { TarotCardBackImage } from './TarotImage';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
+import { colors, layout, radius, shadows, typography, spacing } from '../../constants/DesignTokens';
+import { TarotAnimations } from '../../constants/Animations';
 
-/**
- * 🎴 React Native Tarot Card Component (Figma UI Enhanced)
- * 
- * Premium tarot card component optimized for React Native with Figma UI design.
- * 
- * Features:
- * - Touch interactions with Figma UI styling
- * - Loading states with mystical shimmer
- * - Responsive sizing for mobile devices
- * - Accessibility support
- * - Performance optimized with React.memo
- * - Figma UI design tokens integration
- */
-
-export type CardSize = 'small' | 'medium' | 'large';
-export type CardState = 'face-down' | 'face-up' | 'loading' | 'error';
-
-interface TarotCardData {
-  id: string;
-  name: string;
-  nameKr: string;
+export interface TarotCardProps {
+  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  variant?: 'placeholder' | 'revealed' | 'flipped';
+  cardImage?: string;
+  cardName?: string;
+  position?: string;
   description?: string;
-  descriptionKr?: string;
-  keywords?: string[];
-  keywordsKr?: string[];
-  imageUrl?: string;
-}
-
-interface TarotCardProps {
-  // Core props
-  card?: TarotCardData;
-  size?: CardSize;
-  state?: CardState;
-  
-  // Interactive props
-  interactive?: boolean;
-  selected?: boolean;
-  disabled?: boolean;
-  
-  // Display props
-  showTitle?: boolean;
-  showDescription?: boolean;
-  
-  // Animation props
-  glowIntensity?: 'subtle' | 'normal' | 'intense';
-  
-  // Event handlers
+  isAnimated?: boolean;
+  mysticalEffect?: boolean;
   onPress?: () => void;
-  onFlip?: () => void;
-  
-  // Style props
+  onLongPress?: () => void;
   style?: ViewStyle;
+  testID?: string;
 }
 
-/**
- * React Native Tarot Card Component with Figma UI Design
- */
-export const TarotCard = React.memo<TarotCardProps>(({
-  card,
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
+export const TarotCard: React.FC<TarotCardProps> = ({
   size = 'medium',
-  state = 'face-down',
-  interactive = true,
-  selected = false,
-  disabled = false,
-  showTitle = true,
-  showDescription = false,
-  glowIntensity = 'normal',
+  variant = 'placeholder',
+  cardImage,
+  cardName,
+  position,
+  description,
+  isAnimated = true,
+  mysticalEffect = false,
   onPress,
-  onFlip,
+  onLongPress,
   style,
+  testID,
 }) => {
-  // Component state
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const scaleValue = useSharedValue(1);
+  const pulseValue = useSharedValue(0);
+  const glowValue = useSharedValue(0);
+  const floatValue = useSharedValue(0);
 
-  // Figma UI size configurations for mobile
-  const sizeConfig = useMemo(() => {
-    const configs = {
-      small: { 
-        width: 90, 
-        height: 135, 
-        borderRadius: theme.borderRadius.md, 
-        titleSize: 12,
-        padding: theme.spacing.sm,
-      },
-      medium: { 
-        width: 120, 
-        height: 180, 
-        borderRadius: theme.borderRadius.lg, 
-        titleSize: 14,
-        padding: theme.spacing.md,
-      },
-      large: { 
-        width: 200, 
-        height: 300, 
-        borderRadius: theme.borderRadius.lg, 
-        titleSize: 16,
-        padding: theme.spacing.lg,
-      },
+  useEffect(() => {
+    if (isAnimated && variant === 'revealed') {
+      scaleValue.value = withTiming(1, {
+        duration: TarotAnimations.presets.cardEntrance.duration,
+        easing: TarotAnimations.easing.cardFlip,
+      });
+    }
+
+    if (mysticalEffect && variant !== 'placeholder') {
+      pulseValue.value = withRepeat(
+        withTiming(1, {
+          duration: TarotAnimations.presets.mysticalPulse.duration,
+          easing: TarotAnimations.easing.mystical,
+        }),
+        -1,
+        true
+      );
+
+      glowValue.value = withRepeat(
+        withTiming(1, {
+          duration: TarotAnimations.presets.mysticalGlow.duration,
+          easing: TarotAnimations.easing.mystical,
+        }),
+        -1,
+        true
+      );
+
+      floatValue.value = withRepeat(
+        withTiming(1, {
+          duration: TarotAnimations.timing.mystical * 3,
+          easing: TarotAnimations.easing.mystical,
+        }),
+        -1,
+        true
+      );
+    }
+  }, [variant, isAnimated, mysticalEffect, scaleValue, pulseValue, glowValue, floatValue]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const scale = mysticalEffect 
+      ? interpolate(pulseValue.value, [0, 1], [1, 1.02])
+      : scaleValue.value;
+
+    const translateY = mysticalEffect 
+      ? interpolate(floatValue.value, [0, 0.5, 1], [0, -2, 0])
+      : 0;
+
+    const shadowOpacity = mysticalEffect 
+      ? interpolate(glowValue.value, [0, 1], [0.3, 0.8])
+      : shadows.mystical.shadowOpacity;
+
+    const shadowRadius = mysticalEffect 
+      ? interpolate(glowValue.value, [0, 1], [10, 20])
+      : shadows.mystical.shadowRadius;
+
+    return {
+      transform: [
+        { scale },
+        { translateY },
+      ],
+      shadowOpacity,
+      shadowRadius,
     };
-    return configs[size];
-  }, [size]);
+  });
 
-  // Figma UI Glow effect configuration
-  const glowConfig = useMemo(() => {
-    const configs = {
-      subtle: { shadowOpacity: 0.1, shadowRadius: 8, elevation: 2 },
-      normal: { shadowOpacity: 0.2, shadowRadius: 12, elevation: 4 },
-      intense: { shadowOpacity: 0.4, shadowRadius: 16, elevation: 8 },
-    };
-    return configs[glowIntensity];
-  }, [glowIntensity]);
-
-  // Handle press events
   const handlePress = () => {
-    if (disabled || !interactive) return;
-    
-    if (state === 'face-down' && onFlip) {
-      onFlip();
-    } else if (onPress) {
+    if (onPress) {
+      scaleValue.value = withTiming(0.95, {
+        duration: TarotAnimations.presets.buttonPress.duration,
+        easing: TarotAnimations.easing.easeInOut,
+      }, () => {
+        scaleValue.value = withTiming(1, {
+          duration: TarotAnimations.presets.buttonRelease.duration,
+          easing: TarotAnimations.easing.cardSlide,
+        });
+      });
       onPress();
     }
   };
 
-  // Get container styles
-  const getContainerStyle = (): ViewStyle => {
-    return {
-      width: sizeConfig.width,
-      height: sizeConfig.height,
-      borderRadius: sizeConfig.borderRadius,
-      backgroundColor: theme.colors.surface,
-      borderWidth: 2,
-      borderColor: selected 
-        ? theme.colors.premiumGold 
-        : state === 'face-up' && card 
-          ? `${theme.colors.premiumGold}40`
-          : `${theme.colors.border}80`,
-      overflow: 'hidden',
-      opacity: disabled ? 0.5 : 1,
-      // Figma UI enhanced shadows
-      shadowColor: selected || (state === 'face-up' && card) 
-        ? theme.colors.premiumGold 
-        : theme.colors.mystical.shadow,
-      shadowOffset: { width: 0, height: 4 },
-      ...glowConfig,
-      // Mystical border effect
-      ...(selected && {
-        borderColor: theme.colors.premiumGold,
-        shadowColor: theme.colors.premiumGold,
-      }),
-    };
-  };
-
-  // Render loading state
-  const renderLoading = () => (
-    <View style={styles.loadingContainer}>
-      <ActivityIndicator 
-        size="large" 
-        color={theme.colors.premiumGold} 
-      />
-      <Text 
-        style={[styles.loadingText, { fontSize: sizeConfig.titleSize }]}
-        color={theme.colors.textSecondary}
-      >
-        Loading...
-      </Text>
-    </View>
-  );
-
-  // Render error state
-  const renderError = () => (
-    <View style={styles.errorContainer}>
-      <Text style={styles.errorIcon}>❌</Text>
-      <Text 
-        style={[styles.errorText, { fontSize: sizeConfig.titleSize }]}
-        color={theme.colors.error}
-      >
-        Error
-      </Text>
-    </View>
-  );
-
-  // Render face-down card with Figma UI card back
-  const renderFaceDown = () => (
-    <View style={styles.faceDownContainer}>
-      <TarotCardBackImage 
-        name="tarot-card-back"
-        width={sizeConfig.width - 8}
-        height={sizeConfig.height - 8}
-        style={styles.cardBackImage}
-      />
-      {showTitle && (
-        <View style={styles.faceDownTitleContainer}>
-          <Text 
-            style={[styles.faceDownTitle, { fontSize: sizeConfig.titleSize }]}
-            color={theme.colors.textTertiary}
-          >
-            Tap to reveal
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-
-  // Render face-up card
-  const renderFaceUp = () => {
-    if (!card) return null;
-
-    return (
-      <View style={styles.faceUpContainer}>
-        {card.imageUrl && (
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: card.imageUrl }}
-              style={[styles.cardImage, { borderRadius: sizeConfig.borderRadius - 4 }]}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-              resizeMode="cover"
-            />
-            {!imageLoaded && !imageError && (
-              <View style={styles.imageLoading}>
-                <ActivityIndicator 
-                  size="small" 
-                  color={theme.colors.premiumGold} 
-                />
-              </View>
-            )}
-          </View>
-        )}
-        
-        {showTitle && (
-          <View style={[styles.titleContainer, { padding: sizeConfig.padding }]}>
-            <Text 
-              style={[styles.cardTitle, { fontSize: sizeConfig.titleSize }]}
-              color={theme.colors.text}
-              numberOfLines={2}
-            >
-              {card.nameKr || card.name}
-            </Text>
-            
-            {showDescription && card.descriptionKr && (
-              <Text 
-                style={[styles.cardDescription, { fontSize: sizeConfig.titleSize - 2 }]}
-                color={theme.colors.textSecondary}
-                numberOfLines={3}
-              >
-                {card.descriptionKr}
-              </Text>
-            )}
-          </View>
-        )}
-
-        {/* Figma UI mystical corners */}
-        <View style={styles.mysticalCorners}>
-          <View style={[styles.corner, styles.topLeft]} />
-          <View style={[styles.corner, styles.topRight]} />
-          <View style={[styles.corner, styles.bottomLeft]} />
-          <View style={[styles.corner, styles.bottomRight]} />
-        </View>
-      </View>
-    );
-  };
-
-  // Render content based on state
-  const renderContent = () => {
-    switch (state) {
-      case 'loading':
-        return renderLoading();
-      case 'error':
-        return renderError();
-      case 'face-up':
-        return renderFaceUp();
-      case 'face-down':
-      default:
-        return renderFaceDown();
-    }
-  };
+  const cardDimensions = layout.card[size];
+  const isPlaceholder = variant === 'placeholder';
+  const isRevealed = variant === 'revealed';
+  const isFlipped = variant === 'flipped';
 
   return (
-    <TouchableOpacity
-      style={[getContainerStyle(), style]}
+    <AnimatedTouchableOpacity
+      style={[
+        styles.container,
+        {
+          width: cardDimensions.width,
+          height: cardDimensions.height,
+        },
+        isPlaceholder && styles.placeholder,
+        isRevealed && styles.revealed,
+        isFlipped && styles.flipped,
+        mysticalEffect && styles.mystical,
+        animatedStyle,
+        style,
+      ]}
       onPress={handlePress}
-      disabled={disabled || !interactive}
+      onLongPress={onLongPress}
       activeOpacity={0.8}
-      accessibilityRole="button"
-      accessibilityLabel={
-        state === 'face-up' && card 
-          ? `Tarot card: ${card.nameKr || card.name}` 
-          : 'Hidden tarot card'
-      }
-      accessibilityHint={
-        state === 'face-down' 
-          ? 'Tap to reveal the card' 
-          : card?.descriptionKr || 'View card details'
-      }
+      testID={testID}
     >
-      {renderContent()}
-    </TouchableOpacity>
+      {isPlaceholder && (
+        <View style={styles.placeholderContent}>
+          <View style={styles.placeholderPattern} />
+          <Text style={styles.placeholderText}>?</Text>
+        </View>
+      )}
+
+      {isRevealed && cardImage && (
+        <Image 
+          source={{ uri: cardImage }} 
+          style={[
+            styles.cardImage,
+            {
+              width: cardDimensions.width - 4,
+              height: cardDimensions.height - 4,
+            }
+          ]}
+          resizeMode="cover"
+        />
+      )}
+
+      {isFlipped && (
+        <View style={styles.cardBack}>
+          <View style={styles.cardBackPattern} />
+          <View style={styles.cardBackCenter}>
+            <Text style={styles.cardBackText}>TAROT</Text>
+          </View>
+        </View>
+      )}
+
+      {position && (
+        <View style={styles.positionBadge}>
+          <Text style={styles.positionText}>{position}</Text>
+        </View>
+      )}
+
+      {cardName && isRevealed && (
+        <View style={styles.cardInfo}>
+          <Text style={styles.cardName} numberOfLines={1}>
+            {cardName}
+          </Text>
+          {description && (
+            <Text style={styles.cardDescription} numberOfLines={2}>
+              {description}
+            </Text>
+          )}
+        </View>
+      )}
+    </AnimatedTouchableOpacity>
   );
-});
+};
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
+  container: {
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: theme.spacing.sm,
-  },
-  loadingText: {
-    fontWeight: '500',
-  },
-  
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
-  },
-  errorIcon: {
-    fontSize: 24,
-  },
-  errorText: {
-    fontWeight: '600',
-  },
-  
-  faceDownContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  cardBackImage: {
-    position: 'absolute',
-    top: 4,
-    left: 4,
-  },
-  faceDownTitleContainer: {
-    position: 'absolute',
-    bottom: 8,
-    left: 8,
-    right: 8,
-    backgroundColor: `${theme.colors.background}80`,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
-  },
-  faceDownTitle: {
-    fontWeight: '500',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  
-  faceUpContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  imageContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  cardImage: {
-    flex: 1,
-    width: '100%',
-  } as ImageStyle,
-  imageLoading: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: `${theme.colors.surface}90`,
-  },
-  
-  titleContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: `${theme.colors.background}90`,
-    paddingVertical: theme.spacing.sm,
-  },
-  cardTitle: {
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: theme.spacing.xs,
-  },
-  cardDescription: {
-    textAlign: 'center',
-    lineHeight: 16,
-  },
+    ...shadows.medium,
+  } as ViewStyle,
 
-  // Figma UI mystical corners
-  mysticalCorners: {
+  placeholder: {
+    backgroundColor: colors.card.background,
+    borderColor: colors.card.border,
+  } as ViewStyle,
+
+  revealed: {
+    backgroundColor: colors.background.secondary,
+    borderColor: colors.primary.main,
+    ...shadows.mystical,
+  } as ViewStyle,
+
+  flipped: {
+    backgroundColor: colors.primary.main,
+    borderColor: colors.primary.dark,
+  } as ViewStyle,
+
+  mystical: {
+    shadowColor: colors.primary.main,
+    ...shadows.mysticalGlow,
+  } as ViewStyle,
+
+  placeholderContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+  } as ViewStyle,
+
+  placeholderPattern: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    pointerEvents: 'none',
-  },
-  corner: {
+    backgroundColor: colors.card.background,
+    opacity: 0.5,
+  } as ViewStyle,
+
+  placeholderText: {
+    fontSize: typography.size.displayLarge,
+    fontWeight: typography.weight.bold,
+    color: colors.text.tertiary,
+    textAlign: 'center',
+  } as TextStyle,
+
+  cardImage: {
+    borderRadius: radius.lg,
+  } as ImageStyle,
+
+  cardBack: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.primary.main,
+  } as ViewStyle,
+
+  cardBackPattern: {
     position: 'absolute',
-    width: 12,
-    height: 12,
-    borderColor: theme.colors.premiumGold,
+    top: spacing.sm,
+    left: spacing.sm,
+    right: spacing.sm,
+    bottom: spacing.sm,
     borderWidth: 2,
-  },
-  topLeft: {
-    top: 4,
-    left: 4,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-    borderTopLeftRadius: 4,
-  },
-  topRight: {
-    top: 4,
-    right: 4,
-    borderLeftWidth: 0,
-    borderBottomWidth: 0,
-    borderTopRightRadius: 4,
-  },
-  bottomLeft: {
-    bottom: 4,
-    left: 4,
-    borderRightWidth: 0,
-    borderTopWidth: 0,
-    borderBottomLeftRadius: 4,
-  },
-  bottomRight: {
-    bottom: 4,
-    right: 4,
-    borderLeftWidth: 0,
-    borderTopWidth: 0,
-    borderBottomRightRadius: 4,
-  },
+    borderColor: colors.primary.dark,
+    borderRadius: radius.md,
+  } as ViewStyle,
+
+  cardBackCenter: {
+    width: '60%',
+    height: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.primary.dark,
+    borderRadius: radius.sm,
+  } as ViewStyle,
+
+  cardBackText: {
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.bold,
+    color: colors.background.primary,
+    letterSpacing: 2,
+  } as TextStyle,
+
+  positionBadge: {
+    position: 'absolute',
+    top: -spacing.sm,
+    right: -spacing.sm,
+    width: 24,
+    height: 24,
+    borderRadius: radius.full,
+    backgroundColor: colors.primary.main,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shadows.small,
+  } as ViewStyle,
+
+  positionText: {
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.bold,
+    color: colors.background.primary,
+  } as TextStyle,
+
+  cardInfo: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    padding: spacing.sm,
+    borderBottomLeftRadius: radius.xl,
+    borderBottomRightRadius: radius.xl,
+  } as ViewStyle,
+
+  cardName: {
+    fontSize: typography.size.bodySmall,
+    fontWeight: typography.weight.medium,
+    color: colors.text.primary,
+    textAlign: 'center',
+    marginBottom: 2,
+  } as TextStyle,
+
+  cardDescription: {
+    fontSize: typography.size.caption,
+    fontWeight: typography.weight.regular,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: typography.size.caption * typography.lineHeight.normal,
+  } as TextStyle,
 });
 
-TarotCard.displayName = 'TarotCard';
+export default TarotCard;
