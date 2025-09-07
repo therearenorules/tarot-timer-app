@@ -48,6 +48,3 @@ export {
   presets,
   utils 
 } from '../../constants/DesignTokens';
-
-// Re-export animations
-export { TarotAnimations, AnimationUtils } from '../../constants/Animations';

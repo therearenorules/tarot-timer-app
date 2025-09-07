@@ -26,6 +26,7 @@ import {
   shadows,
   TarotAnimations,
 } from '../components/ui';
+import { getTarotCardByKey } from '../assets/tarot-cards';
 import { useDailyTarotStore } from '../stores/dailyTarotStore';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -135,14 +136,17 @@ export const HomeScreen: React.FC = () => {
       variant = 'placeholder';
     }
 
+    // Get the actual tarot card data from our resource system
+    const tarotCard = cardData?.cardKey ? getTarotCardByKey(cardData.cardKey) : undefined;
+
     return (
       <View key={hour} style={styles.cardContainer}>
         <TarotCard
           size="medium"
           variant={variant}
-          cardImage={cardData?.cardImage}
-          cardName={cardData?.cardName}
-          description={cardData?.description}
+          tarotCard={tarotCard}
+          cardName={cardData?.cardName || tarotCard?.name}
+          description={cardData?.memo || tarotCard?.description}
           position={hour.toString()}
           mysticalEffect={isSelected && (isPast || isCurrent)}
           onPress={() => handleCardPress(hour)}
@@ -192,10 +196,12 @@ export const HomeScreen: React.FC = () => {
         {/* 현재 선택된 카드 정보 */}
         <GradientBackground variant="card" style={styles.selectedCardInfo}>
           <Text style={styles.selectedCardTitle}>
-            {selectedHour.toString().padStart(2, '0')}:00 시간
+            {selectedHour !== null ? selectedHour.toString().padStart(2, '0') : '--'}:00 시간
           </Text>
           <Text style={styles.selectedCardDescription}>
-            {selectedCard?.description || '아직 공개되지 않은 시간입니다'}
+            {selectedCard?.cardKey ? (
+              getTarotCardByKey(selectedCard.cardKey)?.description || selectedCard.memo || '아직 해석이 없습니다'
+            ) : '아직 공개되지 않은 시간입니다'}
           </Text>
         </GradientBackground>
 
@@ -216,14 +222,14 @@ export const HomeScreen: React.FC = () => {
         {/* 메모 영역 */}
         <View style={styles.memoSection}>
           <Text style={styles.sectionTitle}>
-            {selectedHour.toString().padStart(2, '0')}:00 메모
+            {selectedHour !== null ? selectedHour.toString().padStart(2, '0') : '--'}:00 메모
           </Text>
           <MemoPad
             value={memo}
             onChangeText={setMemo}
             variant="mystical"
             size="compact"
-            placeholder={`${selectedHour}시의 느낌과 생각을 기록해보세요...`}
+            placeholder={selectedHour !== null ? `${selectedHour}시의 느낌과 생각을 기록해보세요...` : '시간을 선택해주세요...'}
             showWordCount={true}
             onSave={handleMemoSave}
             maxLength={500}
@@ -245,7 +251,7 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{getSessionStats().cardsWithMemos}</Text>
-            <Text style={styles.statLabel}>작성한 멤모</Text>
+            <Text style={styles.statLabel}>작성한 메모</Text>
           </View>
         </GradientBackground>
       </Animated.View>
@@ -272,8 +278,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: typography.size.displayMedium,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.displayMedium,
     color: colors.primary.main,
   },
 
@@ -287,16 +292,14 @@ const styles = StyleSheet.create({
   },
 
   selectedCardTitle: {
-    fontSize: typography.size.titleMedium,
-    fontWeight: typography.weight.semibold,
+    ...typography.styles.titleMedium,
     color: colors.primary.main,
     marginBottom: spacing.sm,
   },
 
   selectedCardDescription: {
-    fontSize: typography.size.bodyMedium,
+    ...typography.styles.bodyMedium,
     color: colors.text.secondary,
-    lineHeight: typography.size.bodyMedium * typography.lineHeight.relaxed,
   },
 
   cardsSection: {
@@ -304,8 +307,7 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    fontSize: typography.size.titleSmall,
-    fontWeight: typography.weight.medium,
+    ...typography.styles.titleSmall,
     color: colors.text.primary,
     marginBottom: spacing.lg,
   },
@@ -334,18 +336,19 @@ const styles = StyleSheet.create({
   },
 
   hourLabel: {
-    fontSize: typography.size.caption,
+    ...typography.styles.caption,
     color: colors.text.tertiary,
     marginTop: spacing.sm,
-    fontWeight: typography.weight.medium,
   },
 
   currentHourLabel: {
+    ...typography.styles.caption,
     color: colors.primary.main,
-    fontWeight: typography.weight.bold,
+    fontFamily: typography.fontFamily.bold,
   },
 
   selectedHourLabel: {
+    ...typography.styles.caption,
     color: colors.primary.main,
   },
 
@@ -359,9 +362,9 @@ const styles = StyleSheet.create({
   },
 
   currentText: {
-    fontSize: typography.size.overline,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.overline,
     color: colors.background.primary,
+    fontFamily: typography.fontFamily.bold,
   },
 
   memoSection: {
@@ -387,14 +390,14 @@ const styles = StyleSheet.create({
   },
 
   statNumber: {
-    fontSize: typography.size.titleLarge,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.titleLarge,
     color: colors.primary.main,
     marginBottom: spacing.xs,
+    fontFamily: typography.fontFamily.bold,
   },
 
   statLabel: {
-    fontSize: typography.size.caption,
+    ...typography.styles.caption,
     color: colors.text.secondary,
     textAlign: 'center',
   },

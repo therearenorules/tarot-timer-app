@@ -1,6 +1,7 @@
 /**
  * Design Tokens - HTML CSS에서 추출한 완전한 디자인 시스템
  * React Native StyleSheet에서 사용할 수 있는 형태로 변환
+ * HTML 디자인 기준: figma UI/full-app-demo.html
  */
 
 // ===== TYPOGRAPHY SCALE =====
@@ -38,16 +39,81 @@ export const typography = {
     medium: 'NotoSansKR-Medium',
     semibold: 'NotoSansKR-SemiBold',
     bold: 'NotoSansKR-Bold',
+  },
+  
+  // 완전한 스타일 객체 (React Native용)
+  styles: {
+    displayLarge: {
+      fontSize: 32,
+      fontWeight: '700' as const,
+      fontFamily: 'NotoSansKR-Bold',
+      lineHeight: 32 * 1.2,
+    },
+    displayMedium: {
+      fontSize: 28,
+      fontWeight: '700' as const,
+      fontFamily: 'NotoSansKR-Bold', 
+      lineHeight: 28 * 1.2,
+    },
+    titleLarge: {
+      fontSize: 24,
+      fontWeight: '600' as const,
+      fontFamily: 'NotoSansKR-SemiBold',
+      lineHeight: 24 * 1.3,
+    },
+    titleMedium: {
+      fontSize: 20,
+      fontWeight: '600' as const,
+      fontFamily: 'NotoSansKR-SemiBold',
+      lineHeight: 20 * 1.3,
+    },
+    titleSmall: {
+      fontSize: 18,
+      fontWeight: '500' as const,
+      fontFamily: 'NotoSansKR-Medium',
+      lineHeight: 18 * 1.3,
+    },
+    bodyLarge: {
+      fontSize: 16,
+      fontWeight: '400' as const,
+      fontFamily: 'NotoSansKR-Regular',
+      lineHeight: 16 * 1.4,
+    },
+    bodyMedium: {
+      fontSize: 14,
+      fontWeight: '400' as const,
+      fontFamily: 'NotoSansKR-Regular',
+      lineHeight: 14 * 1.4,
+    },
+    bodySmall: {
+      fontSize: 12,
+      fontWeight: '400' as const,
+      fontFamily: 'NotoSansKR-Regular',
+      lineHeight: 12 * 1.4,
+    },
+    caption: {
+      fontSize: 11,
+      fontWeight: '400' as const,
+      fontFamily: 'NotoSansKR-Regular',
+      lineHeight: 11 * 1.4,
+    },
+    overline: {
+      fontSize: 10,
+      fontWeight: '500' as const,
+      fontFamily: 'NotoSansKR-Medium',
+      lineHeight: 10 * 1.5,
+    },
   }
 } as const;
 
 // ===== COLOR PALETTE =====
 export const colors = {
-  // 메인 컬러 (타로 테마)
+  // 메인 컬러 (타로 테마) - HTML에서 추출
   primary: {
-    main: '#d4af37',        // yellow-400 (금색)
-    light: '#fbbf24',       // yellow-400 lighter
-    dark: '#b8860b',        // yellow-600 darker
+    main: '#d4af37',        // HTML 기본 금색 (212, 175, 55)
+    light: '#f4d03f',       // HTML 그라디언트 시작색
+    dark: '#b8860b',        // 더 진한 금색
+    mystical: '#fbbf24',    // yellow-400 (HTML에서 많이 사용)
   },
   
   // 배경 컬러 (그라디언트)
@@ -230,8 +296,19 @@ export const htmlEffects = {
     mystical: 'linear-gradient(45deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.05) 100%)',
   },
   
-  // Mystical Glow 효과
+  // 텍스트 그라디언트 (HTML에서 추출)
+  textGradients: {
+    gold: 'linear-gradient(135deg, #f4d03f 0%, #d4af37 100%)',
+    mystical: 'linear-gradient(135deg, #f4d03f 0%, #ffffff 50%, #f4d03f 100%)',
+  },
+  
+  // Mystical Glow 효과 (HTML에서 추출)
   mysticalGlow: {
+    // 기본 글로우: box-shadow: 0 0 20px rgba(212, 175, 55, 0.3)
+    base: '0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.1)',
+    // 강화된 글로우: box-shadow: 0 0 30px rgba(212, 175, 55, 0.5)
+    intense: '0 0 30px rgba(212, 175, 55, 0.5), 0 0 60px rgba(212, 175, 55, 0.2)',
+    // 풀 글로우 박스
     boxShadow: '0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.2), 0 0 80px rgba(212, 175, 55, 0.1)',
     borderGlow: '1px solid rgba(212, 175, 55, 0.3)',
     textGlow: '0 0 10px rgba(212, 175, 55, 0.5)',

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui';
 import { Layout } from '@/components/ui/Layout';
 import { Card, CardHeader, CardContent } from '@/components/ui/Card';
 import { theme } from '@/constants';
+import { colors, typography, spacing, radius, htmlEffects } from '@/constants/DesignTokens';
 
 export default function TimerScreen() {
   const today = new Date().toLocaleDateString('ko-KR', {
@@ -30,43 +31,36 @@ export default function TimerScreen() {
         showsVerticalScrollIndicator={false}
       >
         
-        {/* 헤더 */}
+        {/* 헤더 - HTML 디자인과 일치 */}
         <View style={styles.header}>
-          <Text style={styles.appTitle}>🔮</Text>
+          {/* 타로카드 아이콘 SVG 대신 이모지 */}
+          <Text style={styles.appIcon}>🔮</Text>
           <Text style={styles.title}>Tarot Timer</Text>
-          <Text style={styles.date}>{today}</Text>
+          <Text style={styles.subtitle}>24시간 타로 여정을 시작하세요</Text>
         </View>
 
-        {/* 메인 카드 */}
-        <Card variant="premium" size="large" style={styles.mainCard}>
-          <CardContent>
+        {/* Initial State - HTML 디자인 그대로 */}
+        <View style={styles.initialState}>
+          <View style={styles.mainCard}>
             <View style={styles.cardContent}>
-              <Text style={styles.iconLarge}>⚡</Text>
-              <Text style={styles.mainText}>운명을 받아보세요</Text>
-              <Text style={styles.subText}>
-                오늘 하루 각 시간에 조리는 우주의 에너지를 받아서 세요
+              {/* 3장 카드 아이콘 */}
+              <Text style={styles.cardsIcon}>🃏</Text>
+              <Text style={styles.mainTitle}>24시간의 신비로운 여정</Text>
+              <Text style={styles.mainDescription}>
+                하루 24시간, 각 시간마다의 특별한 메시지를 담은 타로카드를 뽑아보세요.
               </Text>
             </View>
-          </CardContent>
-        </Card>
-
-        {/* 메인 액션 버튼 */}
-        <Button
-          title="⚡ 24시간 타로 뽑기"
-          variant="primary"
-          size="large"
-          onPress={() => console.log('타로 뽑기 clicked')}
-          style={styles.mainButton}
-        />
-
-        {/* 하단 메시지 */}
-        <Card variant="elevated" size="medium" style={styles.bottomCard}>
-          <CardContent>
-            <Text style={styles.bottomText}>
-              "매 순간마다 우주의 메시지가 와닿니다. 마음을 열고 저를를 받아들이세요."
-            </Text>
-          </CardContent>
-        </Card>
+            
+            {/* 메인 액션 버튼 - HTML의 gradient button */}
+            <Button
+              title="24시간 타로 뽑기"
+              variant="primary"
+              size="large"
+              onPress={() => console.log('24시간 타로 뽑기 clicked')}
+              style={styles.drawCardsButton}
+            />
+          </View>
+        </View>
 
       </ScrollView>
     </Layout>
@@ -78,72 +72,84 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: theme.spacing.lg,
+    padding: spacing.lg,
     alignItems: 'center',
   },
   
+  // HTML 헤더 스타일 - text-center space-y-4
   header: {
     alignItems: 'center',
-    marginBottom: theme.spacing.xl,
+    marginBottom: spacing.xl,
   },
-  appTitle: {
+  appIcon: {
     fontSize: 48,
-    marginBottom: theme.spacing.sm,
+    marginBottom: spacing.sm,
   },
+  // display-large text-gradient-mystical
   title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
+    ...typography.styles.displayLarge,
+    color: colors.primary.light, // HTML 그라디언트 효과 단색으로 대체
+    textAlign: 'center',
+    marginBottom: spacing.xs,
   },
-  date: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
+  // body-small text-white/70
+  subtitle: {
+    ...typography.styles.bodySmall,
+    color: colors.text.secondary,
+    textAlign: 'center',
   },
 
+  // Initial State 컨테이너 - space-y-8
+  initialState: {
+    width: '100%',
+    alignItems: 'center',
+    marginVertical: spacing.xl,
+  },
+  
+  // HTML: bg-white/5 border border-white/10 rounded-2xl p-8 space-y-6
   mainCard: {
     width: '100%',
     maxWidth: 320,
-    marginBottom: theme.spacing.xl,
+    backgroundColor: colors.card.background,
+    borderWidth: 1,
+    borderColor: colors.card.border,
+    borderRadius: radius['2xl'],
+    padding: spacing.xl,
+    alignItems: 'center',
   },
+  
   cardContent: {
     alignItems: 'center',
-    padding: theme.spacing.lg,
+    marginBottom: spacing.lg,
   },
-  iconLarge: {
-    fontSize: 48,
-    marginBottom: theme.spacing.md,
-    color: theme.colors.premiumGold,
+  
+  // 3장 카드 아이콘 - h-16 w-16 mx-auto text-yellow-400
+  cardsIcon: {
+    fontSize: 64,
+    color: colors.primary.mystical,
+    marginBottom: spacing.md,
   },
-  mainText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: theme.colors.text,
+  
+  // title-large text-white
+  mainTitle: {
+    ...typography.styles.titleLarge,
+    color: colors.text.primary,
     textAlign: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: spacing.md,
   },
-  subText: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
+  
+  // body-medium text-white/70 max-w-sm mx-auto
+  mainDescription: {
+    ...typography.styles.bodyMedium,
+    color: colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: typography.styles.bodyMedium.lineHeight * 1.2,
+    maxWidth: 280, // max-w-sm 근사치
   },
-
-  mainButton: {
+  
+  // HTML: bg-gradient-to-r from-yellow-400 to-yellow-500 ... animate-mystical-pulse
+  drawCardsButton: {
     width: '100%',
-    maxWidth: 320,
-    marginBottom: theme.spacing.xl,
-  },
-
-  bottomCard: {
-    width: '100%',
-    maxWidth: 320,
-  },
-  bottomText: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    lineHeight: 20,
+    backgroundColor: colors.primary.mystical,
   },
 });

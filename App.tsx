@@ -15,10 +15,10 @@ import { useFonts } from './src/hooks/useFonts';
 type TabScreen = 'home' | 'spread' | 'journal' | 'settings';
 
 const tabs = [
-  { key: 'home', label: '홈', icon: '🏠' },
-  { key: 'spread', label: '스프레드', icon: '🔮' },
-  { key: 'journal', label: '일기', icon: '📖' },
-  { key: 'settings', label: '설정', icon: '⚙️' },
+  { id: 'home', key: 'home', label: '홈', icon: '🏠' },
+  { id: 'spread', key: 'spread', label: '스프레드', icon: '🔮' },
+  { id: 'journal', key: 'journal', label: '일기', icon: '📖' },
+  { id: 'settings', key: 'settings', label: '설정', icon: '⚙️' },
 ];
 
 export default function App() {
@@ -58,11 +58,8 @@ export default function App() {
       <GradientBackground variant="subtle" style={{ flexDirection: 'row' }}>
         <TabNavigation
           tabs={tabs}
-          activeTab={activeTab}
-          onTabPress={(tab) => setActiveTab(tab as TabScreen)}
-          position="bottom"
-          size="medium"
-          variant="filled"
+          activeTabId={activeTab}
+          onTabPress={(tabId) => setActiveTab(tabId as TabScreen)}
         />
       </GradientBackground>
     </GradientBackground>

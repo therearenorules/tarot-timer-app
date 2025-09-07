@@ -9,6 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import { colors, typography, spacing, shadows } from '../constants/DesignTokens';
+import { GradientBackground } from '../components/ui';
 
 export interface SettingsScreenProps {}
 
@@ -319,15 +320,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = () => {
   };
 
   return (
-    <Animated.View
-      style={[
-        {
-          flex: 1,
-          backgroundColor: colors.background.primary,
-          opacity: fadeAnim,
-        },
-      ]}
-    >
+    <GradientBackground variant="main" style={{ flex: 1 }}>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            backgroundColor: 'transparent',
+            opacity: fadeAnim,
+          },
+        ]}
+      >
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -463,6 +465,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = () => {
           </Text>
         </View>
       </ScrollView>
-    </Animated.View>
+      </Animated.View>
+    </GradientBackground>
   );
 };

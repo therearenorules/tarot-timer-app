@@ -17,6 +17,7 @@ import Animated, {
 import {
   TarotCard,
   TabNavigation,
+  GradientBackground,
   colors,
   spacing,
   typography,
@@ -297,8 +298,9 @@ export const JournalScreen: React.FC = () => {
   }));
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.background.primary} />
+    <GradientBackground variant="main" style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       
       <Animated.View style={[styles.content, animatedStyle]}>
         {/* 헤더 */}
@@ -355,7 +357,8 @@ export const JournalScreen: React.FC = () => {
 
       {/* 상세 모달 */}
       {selectedRecord && renderDetailModal()}
-    </SafeAreaView>
+      </SafeAreaView>
+    </GradientBackground>
   );
 };
 

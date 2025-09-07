@@ -19,14 +19,16 @@ import Animated, {
 } from 'react-native-reanimated';
 import { colors, layout, radius, shadows, typography, spacing } from '../../constants/DesignTokens';
 import { TarotAnimations } from '../../constants/Animations';
+import { TarotCardImage } from '../../assets/tarot-cards';
 
 export interface TarotCardProps {
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   variant?: 'placeholder' | 'revealed' | 'flipped';
-  cardImage?: string;
+  cardImage?: any; // React Native require() image source
   cardName?: string;
   position?: string;
   description?: string;
+  tarotCard?: TarotCardImage; // Full tarot card data
   isAnimated?: boolean;
   mysticalEffect?: boolean;
   onPress?: () => void;
@@ -44,6 +46,7 @@ export const TarotCard: React.FC<TarotCardProps> = ({
   cardName,
   position,
   description,
+  tarotCard,
   isAnimated = true,
   mysticalEffect = false,
   onPress,
@@ -141,6 +144,11 @@ export const TarotCard: React.FC<TarotCardProps> = ({
   const isRevealed = variant === 'revealed';
   const isFlipped = variant === 'flipped';
 
+  // Use tarotCard data if available, otherwise fallback to individual props
+  const finalCardImage = tarotCard?.image || cardImage;
+  const finalCardName = tarotCard?.name || cardName;
+  const finalDescription = tarotCard?.description || description;
+
   return (
     <AnimatedTouchableOpacity
       style={[
@@ -168,9 +176,9 @@ export const TarotCard: React.FC<TarotCardProps> = ({
         </View>
       )}
 
-      {isRevealed && cardImage && (
+      {isRevealed && finalCardImage && (
         <Image 
-          source={{ uri: cardImage }} 
+          source={typeof finalCardImage === 'string' ? { uri: finalCardImage } : finalCardImage}
           style={[
             styles.cardImage,
             {
@@ -197,14 +205,14 @@ export const TarotCard: React.FC<TarotCardProps> = ({
         </View>
       )}
 
-      {cardName && isRevealed && (
+      {finalCardName && isRevealed && (
         <View style={styles.cardInfo}>
           <Text style={styles.cardName} numberOfLines={1}>
-            {cardName}
+            {finalCardName}
           </Text>
-          {description && (
+          {finalDescription && (
             <Text style={styles.cardDescription} numberOfLines={2}>
-              {description}
+              {finalDescription}
             </Text>
           )}
         </View>
@@ -264,8 +272,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 
   placeholderText: {
-    fontSize: typography.size.displayLarge,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.displayLarge,
     color: colors.text.tertiary,
     textAlign: 'center',
   } as TextStyle,
@@ -304,8 +311,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 
   cardBackText: {
-    fontSize: typography.size.bodySmall,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.bodySmall,
+    fontFamily: typography.fontFamily.bold,
     color: colors.background.primary,
     letterSpacing: 2,
   } as TextStyle,
@@ -324,8 +331,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 
   positionText: {
-    fontSize: typography.size.caption,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.caption,
+    fontFamily: typography.fontFamily.bold,
     color: colors.background.primary,
   } as TextStyle,
 
@@ -341,19 +348,17 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 
   cardName: {
-    fontSize: typography.size.bodySmall,
-    fontWeight: typography.weight.medium,
+    ...typography.styles.bodySmall,
+    fontFamily: typography.fontFamily.medium,
     color: colors.text.primary,
     textAlign: 'center',
     marginBottom: 2,
   } as TextStyle,
 
   cardDescription: {
-    fontSize: typography.size.caption,
-    fontWeight: typography.weight.regular,
+    ...typography.styles.caption,
     color: colors.text.secondary,
     textAlign: 'center',
-    lineHeight: typography.size.caption * typography.lineHeight.normal,
   } as TextStyle,
 });
 

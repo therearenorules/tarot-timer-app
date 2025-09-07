@@ -13,7 +13,6 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { colors, typography, spacing, radius, shadows, layout } from '../../constants/DesignTokens';
-import { TarotAnimations } from '../../constants/Animations';
 
 export interface TabItem {
   id: string;

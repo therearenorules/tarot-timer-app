@@ -18,12 +18,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import {
   TarotCard,
+  GradientBackground,
   colors,
   spacing,
   typography,
   radius,
   shadows,
 } from '../components/ui';
+import { useSpreadStore } from '../stores/spreadStore';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -38,6 +40,27 @@ interface SpreadDefinition {
 }
 
 export const SpreadScreen: React.FC = () => {
+  // Mock store implementation since useSpreadStore may not exist yet
+  const mockStore = {
+    currentSpread: null,
+    drawnCards: [],
+    isLoading: false,
+    error: null,
+    startNewSpread: async (spreadId: string) => console.log('Start spread:', spreadId),
+    drawCardAtPosition: async (index: number) => console.log('Draw card at:', index),
+    clearCurrentSpread: () => console.log('Clear spread')
+  };
+  
+  const {
+    currentSpread,
+    drawnCards,
+    isLoading,
+    error,
+    startNewSpread,
+    drawCardAtPosition,
+    clearCurrentSpread
+  } = mockStore;
+  
   const [selectedSpread, setSelectedSpread] = useState<SpreadDefinition | null>(null);
   const [currentSpreadCards, setCurrentSpreadCards] = useState<Array<{ position: string; card: any; revealed: boolean }>>([]);
   const [isReading, setIsReading] = useState(false);
@@ -295,8 +318,9 @@ export const SpreadScreen: React.FC = () => {
   }));
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.background.primary} />
+    <GradientBackground variant="main" style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       
       <Animated.View style={[styles.content, animatedStyle]}>
         {!isReading ? (
@@ -367,14 +391,15 @@ export const SpreadScreen: React.FC = () => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+      </SafeAreaView>
+    </GradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: 'transparent',
   },
 
   content: {
@@ -388,14 +413,13 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: typography.size.displayLarge,
-    fontWeight: typography.weight.bold,
+    ...typography.styles.displayLarge,
     color: colors.primary.main,
     marginBottom: spacing.sm,
   },
 
   subtitle: {
-    fontSize: typography.size.bodyMedium,
+    ...typography.styles.bodyMedium,
     color: colors.text.secondary,
     textAlign: 'center',
   },
@@ -502,7 +526,6 @@ const styles = StyleSheet.create({
   },
 
   premiumInfo: {
-    backgroundColor: colors.card.background,
     borderRadius: radius['2xl'],
     borderWidth: 1,
     borderColor: colors.primary.main,
@@ -598,7 +621,6 @@ const styles = StyleSheet.create({
   },
 
   modalContent: {
-    backgroundColor: colors.card.background,
     borderRadius: radius['2xl'],
     padding: spacing['3xl'],
     alignItems: 'center',
