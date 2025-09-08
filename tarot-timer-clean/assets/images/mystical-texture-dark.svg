@@ -1,0 +1,81 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark Mode Mystical Texture Pattern -->
+  
+  <!-- Base pattern -->
+  <pattern id="darkMysticalPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+    <!-- Subtle glowing dots -->
+    <circle cx="20" cy="20" r="1" fill="#f4d03f" opacity="0.2" />
+    <circle cx="0" cy="0" r="0.5" fill="#ffffff" opacity="0.1" />
+    <circle cx="40" cy="40" r="0.5" fill="#ffffff" opacity="0.1" />
+    <circle cx="40" cy="0" r="0.3" fill="#f4d03f" opacity="0.15" />
+    <circle cx="0" cy="40" r="0.3" fill="#f4d03f" opacity="0.15" />
+    
+    <!-- Glowing lines -->
+    <line x1="0" y1="20" x2="40" y2="20" stroke="#d4af37" stroke-width="0.3" opacity="0.08" />
+    <line x1="20" y1="0" x2="20" y2="40" stroke="#d4af37" stroke-width="0.3" opacity="0.08" />
+    
+    <!-- Mystical stars -->
+    <g transform="translate(10, 30)" opacity="0.15">
+      <path d="M0,-2.5 L0.7,-0.7 L2.5,0 L0.7,0.7 L0,2.5 L-0.7,0.7 L-2.5,0 L-0.7,-0.7 Z" fill="#f4d03f" />
+      <circle r="0.8" fill="#f4d03f" opacity="0.6" />
+    </g>
+    
+    <g transform="translate(30, 10)" opacity="0.12">
+      <path d="M0,-2 L0.5,-0.5 L2,0 L0.5,0.5 L0,2 L-0.5,0.5 L-2,0 L-0.5,-0.5 Z" fill="#ffffff" />
+      <circle r="0.6" fill="#ffffff" opacity="0.4" />
+    </g>
+    
+    <!-- Tiny sparkles -->
+    <circle cx="5" cy="15" r="0.2" fill="#f4d03f" opacity="0.3" />
+    <circle cx="35" cy="25" r="0.2" fill="#ffffff" opacity="0.25" />
+    <circle cx="15" cy="5" r="0.15" fill="#d4af37" opacity="0.2" />
+    <circle cx="25" cy="35" r="0.15" fill="#f4d03f" opacity="0.25" />
+  </pattern>
+  
+  <!-- Apply pattern -->
+  <rect width="200" height="200" fill="url(#darkMysticalPattern)" />
+  
+  <!-- Mystical glow overlay -->
+  <rect width="200" height="200" fill="url(#darkOverlay)" />
+  
+  <!-- Sacred geometry overlay with glow -->
+  <g opacity="0.08">
+    <g transform="translate(100, 100)">
+      <!-- Glowing flower of life -->
+      <circle r="30" fill="none" stroke="#f4d03f" stroke-width="0.8" />
+      <circle cx="0" cy="-52" r="30" fill="none" stroke="#d4af37" stroke-width="0.5" />
+      <circle cx="45" cy="-26" r="30" fill="none" stroke="#d4af37" stroke-width="0.5" />
+      <circle cx="45" cy="26" r="30" fill="none" stroke="#d4af37" stroke-width="0.5" />
+      <circle cx="0" cy="52" r="30" fill="none" stroke="#d4af37" stroke-width="0.5" />
+      <circle cx="-45" cy="26" r="30" fill="none" stroke="#d4af37" stroke-width="0.5" />
+      <circle cx="-45" cy="-26" r="30" fill="none" stroke="#d4af37" stroke-width="0.5" />
+      
+      <!-- Central glow -->
+      <circle r="15" fill="#f4d03f" opacity="0.05" />
+    </g>
+  </g>
+  
+  <!-- Floating mystical elements -->
+  <g opacity="0.1">
+    <!-- Orbiting particles -->
+    <circle cx="50" cy="50" r="1" fill="#f4d03f" opacity="0.6" />
+    <circle cx="150" cy="60" r="0.8" fill="#ffffff" opacity="0.4" />
+    <circle cx="40" cy="120" r="1.2" fill="#d4af37" opacity="0.5" />
+    <circle cx="160" cy="140" r="0.6" fill="#f4d03f" opacity="0.7" />
+    <circle cx="80" cy="170" r="0.9" fill="#ffffff" opacity="0.3" />
+    
+    <!-- Energy wisps -->
+    <path d="M20,30 Q30,25 40,35 Q45,40 35,45" 
+          stroke="#f4d03f" stroke-width="0.5" fill="none" opacity="0.3" />
+    <path d="M160,160 Q170,155 180,165 Q175,170 165,175" 
+          stroke="#d4af37" stroke-width="0.4" fill="none" opacity="0.25" />
+  </g>
+  
+  <defs>
+    <radialGradient id="darkOverlay" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#f4d03f;stop-opacity:0.03" />
+      <stop offset="50%" style="stop-color:#d4af37;stop-opacity:0.02" />
+      <stop offset="100%" style="stop-color:#1a1f3a;stop-opacity:0.04" />
+    </radialGradient>
+  </defs>
+</svg>

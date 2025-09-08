@@ -18,7 +18,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { colors, layout, radius, shadows, typography, spacing } from '../../constants/DesignTokens';
-import { TarotAnimations } from '../../constants/Animations';
+import { TarotAnimations } from '../../constants/animations';
 import { TarotCardImage } from '../../assets/tarot-cards';
 
 export interface TarotCardProps {

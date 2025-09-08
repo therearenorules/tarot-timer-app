@@ -1,10 +1,6 @@
 // React Native 통합 테마 시스템
 import { Dimensions, Platform } from 'react-native';
-import { TarotColors } from './colors';
-import { TarotTypography } from './typography';
-import { TarotIcons } from './icons';
-import { TarotAnimations } from './animations';
-import { ComponentStyles } from './componentStyles';
+import { colors, typography, animation, components, shadows } from './DesignTokens';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -201,24 +197,21 @@ export const Layout = {
 // 통합 테마 객체
 export const TarotTheme = {
   // 색상
-  colors: TarotColors,
+  colors: colors,
   
   // 타이포그래피
-  typography: TarotTypography,
-  
-  // 아이콘
-  icons: TarotIcons,
+  typography: typography,
   
   // 애니메이션
-  animations: TarotAnimations,
+  animations: animation,
   
   // 컴포넌트 스타일
-  components: ComponentStyles,
+  components: components,
   
   // 레이아웃
   spacing: Spacing,
   borderRadius: BorderRadius,
-  shadows: Shadows,
+  shadows: shadows,
   opacity: Opacity,
   layout: Layout,
   

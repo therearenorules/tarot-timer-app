@@ -35,6 +35,12 @@ export type { MemoPadProps } from './MemoPad';
 export { GradientBackground } from './GradientBackground';
 export type { GradientBackgroundProps } from './GradientBackground';
 
+export { MysticalParticles } from './MysticalParticles';
+export type { MysticalParticlesProps } from './MysticalParticles';
+
+export { GradientText } from './GradientText';
+export type { GradientTextProps } from './GradientText';
+
 // Re-export design tokens for convenience
 export { 
   colors, 

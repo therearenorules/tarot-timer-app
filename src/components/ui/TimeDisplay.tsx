@@ -14,7 +14,7 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import { colors, typography, spacing, radius, shadows } from '../../constants/DesignTokens';
-import { TarotAnimations } from '../../constants/Animations';
+import { TarotAnimations } from '../../constants/animations';
 
 export interface TimeDisplayProps {
   minutes: number;

@@ -1,67 +1,135 @@
-/**
- * Main App Entry Point - Phase 2 Complete with Tab Navigation
- */
-
 import React, { useState } from 'react';
-import { View } from 'react-native';
-import { HomeScreen } from './src/screens/HomeScreen';
-import { SpreadScreen } from './src/screens/SpreadScreen';
-import { JournalScreen } from './src/screens/JournalScreen';
-import { SettingsScreen } from './src/screens/SettingsScreen';
-import { TabNavigation, GradientBackground, LoadingScreen } from './src/components/ui';
-import { colors } from './src/constants/DesignTokens';
-import { useFonts } from './src/hooks/useFonts';
-
-type TabScreen = 'home' | 'spread' | 'journal' | 'settings';
-
-const tabs = [
-  { id: 'home', key: 'home', label: '홈', icon: '🏠' },
-  { id: 'spread', key: 'spread', label: '스프레드', icon: '🔮' },
-  { id: 'journal', key: 'journal', label: '일기', icon: '📖' },
-  { id: 'settings', key: 'settings', label: '설정', icon: '⚙️' },
-];
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 export default function App() {
-  console.log('🔮 Tarot Timer App - Phase 4 Visual Enhancement');
-  
-  const { isReady: fontsReady } = useFonts();
-  const [activeTab, setActiveTab] = useState<TabScreen>('home');
+  console.log('🚀 CLEAN PROJECT - WELCOME SCREEN LOADED! 🚀');
+  console.log('🔮 Clean Tarot Timer - Testing Welcome Implementation');
 
-  // 폰트가 로드되지 않았다면 로딩 화면 표시
-  if (!fontsReady) {
-    return <LoadingScreen message="타로 타이머 로딩 중..." />;
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  if (showWelcome) {
+    return (
+      <View style={styles.welcomeContainer}>
+        <Text style={styles.icon}>🔮</Text>
+        <Text style={styles.title}>Tarot Timer</Text>
+        <Text style={styles.subtitle}>매 시간마다 새로운 타로 카드로 하루를 시작하세요</Text>
+        
+        <TouchableOpacity 
+          style={styles.startButton}
+          onPress={() => {
+            console.log('🎯 24시간 타로 뽑기 버튼 클릭됨!');
+            setShowWelcome(false);
+          }}
+        >
+          <Text style={styles.startButtonText}>24시간 타로 뽑기</Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.quote}>
+          "시간은 모든 상처를 치유하며, 모든 진실을 드러낸다"
+        </Text>
+      </View>
+    );
   }
 
-  const renderScreen = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HomeScreen />;
-      case 'spread':
-        return <SpreadScreen />;
-      case 'journal':
-        return <JournalScreen />;
-      case 'settings':
-        return <SettingsScreen />;
-      default:
-        return <HomeScreen />;
-    }
-  };
-
   return (
-    <GradientBackground variant="main" style={{ flex: 1 }}>
-      {/* Main Screen Content */}
-      <View style={{ flex: 1 }}>
-        {renderScreen()}
-      </View>
+    <View style={styles.mainContainer}>
+      <Text style={styles.mainTitle}>✅ 환영 화면에서 메인 앱으로 이동 성공!</Text>
+      <Text style={styles.successMessage}>24시간 타로 뽑기 버튼이 정상 작동합니다.</Text>
       
-      {/* Bottom Tab Navigation with Gradient Background */}
-      <GradientBackground variant="subtle" style={{ flexDirection: 'row' }}>
-        <TabNavigation
-          tabs={tabs}
-          activeTabId={activeTab}
-          onTabPress={(tabId) => setActiveTab(tabId as TabScreen)}
-        />
-      </GradientBackground>
-    </GradientBackground>
+      <TouchableOpacity 
+        style={styles.backButton}
+        onPress={() => {
+          console.log('🔄 환영 화면으로 돌아가기');
+          setShowWelcome(true);
+        }}
+      >
+        <Text style={styles.backButtonText}>환영 화면으로 돌아가기</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  welcomeContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a2e',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  icon: {
+    fontSize: 80,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#cccccc',
+    textAlign: 'center',
+    marginBottom: 40,
+    paddingHorizontal: 20,
+  },
+  startButton: {
+    backgroundColor: '#4a90e2',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+    marginBottom: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  startButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  quote: {
+    fontSize: 14,
+    color: '#888888',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingHorizontal: 40,
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4a90e2',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  successMessage: {
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 40,
+  },
+  backButton: {
+    backgroundColor: '#cccccc',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  backButtonText: {
+    color: '#333333',
+    fontSize: 16,
+  },
+});

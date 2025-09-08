@@ -22,9 +22,9 @@ export const GradientBackground: React.FC<GradientBackgroundProps> = ({
   const getGradientConfig = () => {
     switch (variant) {
       case 'main':
-        // HTML: background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e3a8a 100%)
+        // HTML: background: linear-gradient(135deg, #1a1f3a 0%, #4a1a4f 50%, #1a1f3a 100%)
         return {
-          colors: [colors.background.primary, colors.background.secondary, colors.background.tertiary],
+          colors: ['#1a1f3a', '#4a1a4f', '#1a1f3a'],
           locations: [0, 0.5, 1],
           start: { x: 0, y: 0 },
           end: { x: 1, y: 1 },

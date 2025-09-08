@@ -116,15 +116,15 @@ export const colors = {
     mystical: '#fbbf24',    // yellow-400 (HTML에서 많이 사용)
   },
   
-  // 배경 컬러 (그라디언트)
+  // 배경 컬러 (그라디언트) - HTML 가이드 기준
   background: {
-    primary: '#0f172a',     // slate-900
-    secondary: '#1e293b',   // slate-800  
-    tertiary: '#1e3a8a',    // blue-900
+    primary: '#1a1f3a',     // midnight-blue (HTML 기준)
+    secondary: '#4a1a4f',   // deep-purple (HTML 기준)  
+    tertiary: '#1a1f3a',    // midnight-blue (HTML 기준)
     gradient: {
-      from: '#0f172a',      // slate-900
-      via: '#0f172a',       // slate-900
-      to: '#1e3a8a',        // blue-900
+      from: '#1a1f3a',      // midnight-blue
+      via: '#4a1a4f',       // deep-purple
+      to: '#1a1f3a',        // midnight-blue
     },
   },
   
@@ -281,9 +281,34 @@ export const animation = {
     mysticalFloat: 6000,
   },
   
+  timing: {
+    mystical: 2000,
+  },
+  
   easing: {
     default: 'ease-in-out',
     mystical: [0.4, 0, 0.6, 1], // cubic-bezier for mystical-pulse
+    cardFlip: [0.25, 0.1, 0.25, 1], // cubic-bezier for card flip
+    easeInOut: [0.4, 0, 0.2, 1], // cubic-bezier for general ease
+    cardSlide: [0.23, 1, 0.32, 1], // cubic-bezier for card slide
+  },
+  
+  presets: {
+    cardEntrance: {
+      duration: 600,
+    },
+    mysticalPulse: {
+      duration: 2000,
+    },
+    mysticalGlow: {
+      duration: 3000,
+    },
+    buttonPress: {
+      duration: 100,
+    },
+    buttonRelease: {
+      duration: 150,
+    },
   },
 } as const;
 

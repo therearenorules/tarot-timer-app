@@ -100,7 +100,6 @@ export default {
     // Enhanced web configuration
     web: {
       bundler: "metro",
-      output: "static",
       favicon: "./assets/favicon.png",
       // PWA configuration for mystical experience
       meta: {
@@ -120,7 +119,6 @@ export default {
     
     // Enhanced plugin configuration
     plugins: [
-      "expo-router",
       // Background tasks for tarot timer
       [
         "expo-background-fetch",
