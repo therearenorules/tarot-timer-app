@@ -1,0 +1,100 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Brand Logo -->
+  
+  <!-- Outer Glow Circle -->
+  <circle cx="60" cy="60" r="58" fill="none" stroke="url(#glowGradient)" stroke-width="2" opacity="0.6" />
+  
+  <!-- Main Circle -->
+  <circle cx="60" cy="60" r="50" fill="url(#mainGradient)" stroke="url(#borderGradient)" stroke-width="2" />
+  
+  <!-- Three Tarot Cards Arrangement -->
+  <g transform="translate(60, 60)">
+    <!-- Left Card (tilted -15 degrees) -->
+    <g transform="rotate(-15) translate(-18, 0)">
+      <rect x="-8" y="-16" width="16" height="24" rx="2" fill="url(#cardGradient)" 
+            stroke="#d4af37" stroke-width="1" />
+      <rect x="-6" y="-14" width="12" height="20" rx="1" fill="none" 
+            stroke="#f4d03f" stroke-width="0.5" opacity="0.7" />
+      <!-- Card symbol -->
+      <circle cx="0" cy="-4" r="2" fill="#d4af37" />
+      <rect x="-4" y="2" width="8" height="1" fill="#d4af37" opacity="0.8" />
+      <rect x="-4" y="6" width="8" height="1" fill="#d4af37" opacity="0.8" />
+    </g>
+    
+    <!-- Center Card (straight) -->
+    <g transform="translate(0, -3)">
+      <rect x="-8" y="-16" width="16" height="24" rx="2" fill="url(#cardGradient)" 
+            stroke="#f4d03f" stroke-width="1.5" />
+      <rect x="-6" y="-14" width="12" height="20" rx="1" fill="none" 
+            stroke="#d4af37" stroke-width="0.5" opacity="0.9" />
+      <!-- Central star -->
+      <path d="M0,-8 L1.5,-2 L6,-2 L2,1 L3.5,6 L0,3 L-3.5,6 L-2,1 L-6,-2 L-1.5,-2 Z" 
+            fill="#f4d03f" stroke="#d4af37" stroke-width="0.5" />
+      <rect x="-4" y="8" width="8" height="1" fill="#d4af37" opacity="0.8" />
+    </g>
+    
+    <!-- Right Card (tilted +15 degrees) -->
+    <g transform="rotate(15) translate(18, 0)">
+      <rect x="-8" y="-16" width="16" height="24" rx="2" fill="url(#cardGradient)" 
+            stroke="#d4af37" stroke-width="1" />
+      <rect x="-6" y="-14" width="12" height="20" rx="1" fill="none" 
+            stroke="#f4d03f" stroke-width="0.5" opacity="0.7" />
+      <!-- Card symbol -->
+      <circle cx="0" cy="-4" r="2" fill="#d4af37" />
+      <rect x="-4" y="2" width="8" height="1" fill="#d4af37" opacity="0.8" />
+      <rect x="-4" y="6" width="8" height="1" fill="#d4af37" opacity="0.8" />
+    </g>
+  </g>
+  
+  <!-- Mystical Elements -->
+  <g opacity="0.8">
+    <!-- Top sparkle -->
+    <g transform="translate(60, 15)">
+      <path d="M0,-4 L1,-1 L4,0 L1,1 L0,4 L-1,1 L-4,0 L-1,-1 Z" fill="#f4d03f" />
+    </g>
+    
+    <!-- Bottom left sparkle -->
+    <g transform="translate(20, 95)">
+      <path d="M0,-3 L0.8,-0.8 L3,0 L0.8,0.8 L0,3 L-0.8,0.8 L-3,0 L-0.8,-0.8 Z" fill="#d4af37" />
+    </g>
+    
+    <!-- Bottom right sparkle -->
+    <g transform="translate(100, 95)">
+      <path d="M0,-3 L0.8,-0.8 L3,0 L0.8,0.8 L0,3 L-0.8,0.8 L-3,0 L-0.8,-0.8 Z" fill="#d4af37" />
+    </g>
+    
+    <!-- Small dots -->
+    <circle cx="25" cy="35" r="1.5" fill="#f4d03f" opacity="0.6" />
+    <circle cx="95" cy="35" r="1" fill="#d4af37" opacity="0.6" />
+    <circle cx="35" cy="85" r="1" fill="#f4d03f" opacity="0.6" />
+    <circle cx="85" cy="25" r="1.5" fill="#d4af37" opacity="0.6" />
+  </g>
+  
+  <!-- Inner Sacred Circle -->
+  <circle cx="60" cy="60" r="25" fill="none" stroke="#d4af37" stroke-width="0.5" opacity="0.4" />
+  
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="mainGradient" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" style="stop-color:#4a1a4f;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#1a1f3a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f0f1a;stop-opacity:1" />
+    </radialGradient>
+    
+    <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f4d03f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#f4d03f;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#d4af37;stop-opacity:0.2" />
+    </radialGradient>
+    
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a2f4a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f3a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

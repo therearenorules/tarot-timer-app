@@ -1,0 +1,22 @@
+{
+  "timer": {
+    "title": "Timer",
+    "current_hour": "Current Hour",
+    "minutes_left": "Minutes Left",
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset"
+  },
+  "spreads": {
+    "title": "Tarot Spreads",
+    "select": "Select Spread"
+  },
+  "journal": {
+    "title": "Journal",
+    "saved_spreads": "Saved Spreads"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "timer": {
+    "title": "타이머",
+    "current_hour": "현재 시간",
+    "minutes_left": "남은 시간",
+    "start": "시작",
+    "pause": "일시정지",
+    "reset": "리셋"
+  },
+  "spreads": {
+    "title": "타로 스프레드",
+    "select": "스프레드 선택"
+  },
+  "journal": {
+    "title": "저널",
+    "saved_spreads": "저장된 스프레드"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어"
+  }
+}

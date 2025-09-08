@@ -1,0 +1,1 @@
+Marking SpreadDetailScreen.tsx for deletion - using existing SpreadDetail.tsx instead

@@ -1,0 +1,621 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Base font size */
+  --font-size: 14px;
+  
+  /* Light Mode Color Tokens */
+  --background: #ffffff;
+  --foreground: #1a1f3a;
+  --card: #ffffff;
+  --card-foreground: #1a1f3a;
+  --popover: #ffffff;
+  --popover-foreground: #1a1f3a;
+  --primary: #4a1a4f;
+  --primary-foreground: #ffffff;
+  --secondary: #fafafa;
+  --secondary-foreground: #4a1a4f;
+  --muted: #f8f6f9;
+  --muted-foreground: #6b7280;
+  --accent: #d4af37;
+  --accent-foreground: #1a1f3a;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e8e1e8;
+  --input: transparent;
+  --ring: #4a1a4f;
+  
+  /* Brand specific tokens */
+  --premium-gold: #d4af37;
+  --deep-purple: #4a1a4f;
+  --midnight-blue: #1a1f3a;
+  
+  --radius: 8px;
+}
+
+.dark {
+  /* Dark Mode Color Tokens */
+  --background: #0f0f1a;
+  --foreground: #ffffff;
+  --card: #1a1f3a;
+  --card-foreground: #ffffff;
+  --popover: #1a1f3a;
+  --popover-foreground: #ffffff;
+  --primary: #4a1a4f;
+  --primary-foreground: #ffffff;
+  --secondary: #1a1f3a;
+  --secondary-foreground: #c8b8d4;
+  --muted: #1a1f3a;
+  --muted-foreground: #8e8e93;
+  --accent: #f4d03f;
+  --accent-foreground: #0f0f1a;
+  --destructive: #ff453a;
+  --destructive-foreground: #ffffff;
+  --border: #2a2f4a;
+  --input: #1a1f3a;
+  --ring: #4a1a4f;
+  
+  /* Dark mode brand tokens */
+  --premium-gold: #f4d03f;
+}
+
+@theme inline {
+  /* Tailwind color mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  /* Brand color utilities */
+  --color-premium-gold: var(--premium-gold);
+  --color-deep-purple: var(--deep-purple);
+  --color-midnight-blue: var(--midnight-blue);
+  
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  /* Brand color utilities */
+  .text-premium-gold { 
+    color: var(--premium-gold); 
+  }
+  .text-midnight-blue { 
+    color: var(--midnight-blue); 
+  }
+  .text-deep-purple { 
+    color: var(--deep-purple); 
+  }
+  
+  .bg-premium-gold { 
+    background-color: var(--premium-gold); 
+  }
+  .bg-midnight-blue { 
+    background-color: var(--midnight-blue); 
+  }
+  .bg-deep-purple { 
+    background-color: var(--deep-purple); 
+  }
+  
+  .border-premium-gold { 
+    border-color: var(--premium-gold); 
+  }
+  
+  /* Mystical animations */
+  @keyframes mystical-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+  }
+  
+  .animate-mystical-pulse {
+    animation: mystical-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Scrollbar utilities */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Gradient utilities */
+  .from-midnight-blue {
+    --tw-gradient-from: var(--midnight-blue) var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(26 31 58 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+  
+  .via-deep-purple {
+    --tw-gradient-to: rgb(74 26 79 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--deep-purple) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  }
+  
+  .to-midnight-blue {
+    --tw-gradient-to: var(--midnight-blue) var(--tw-gradient-to-position);
+  }
+  
+  /* Text truncation */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Celtic Cross Spread Styles - Uniform Column Spacing */
+  .celtic-grid {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(100, 1fr);
+    grid-template-rows: repeat(100, 1fr);
+    gap: 0;
+  }
+  
+  .celtic-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform-origin: center;
+    width: min(12vw, 70px);
+    height: calc(min(12vw, 70px) * 1.5);
+  }
+  
+  /* 중앙 십자가 (버튼 넓이에 맞춘 균등한 간격, 상하단 100% 활용) */
+  .celtic-card.pos-1 { left: 35%; top: 50%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-2 { left: 35%; top: 50%; transform: translate(-50%, -50%) rotate(90deg); z-index: 2; }
+  .celtic-card.pos-3 { left: 35%; top: 80%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-4 { left: 15%; top: 50%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-5 { left: 35%; top: 20%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-6 { left: 55%; top: 50%; transform: translate(-50%, -50%); }
+  
+  /* 오른쪽 스태프 (버튼 넓이에 맞춘 위치, 상하단 100% 활용) */
+  .celtic-card.pos-7 { left: 75%; top: 95%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-8 { left: 75%; top: 70%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-9 { left: 75%; top: 30%; transform: translate(-50%, -50%); }
+  .celtic-card.pos-10 { left: 75%; top: 5%; transform: translate(-50%, -50%); }
+  
+  .celtic-grid::before,
+  .celtic-grid::after {
+    content: '';
+    position: absolute;
+    background: rgba(212, 175, 55, 0.1);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  /* 세로선 (새로운 중앙 십자가 기준, 상하단 확장) */
+  .celtic-grid::before {
+    left: 35%;
+    top: 15%;
+    width: 1px;
+    height: 70%;
+    transform: translateX(-50%);
+  }
+  
+  /* 가로선 (새로운 배치에 맞게 조정) */
+  .celtic-grid::after {
+    left: 10%;
+    top: 50%;
+    width: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  /* AB Choice Spread Styles - Uniform Column Spacing */
+  .ab-grid {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(100, 1fr);
+    grid-template-rows: repeat(100, 1fr);
+  }
+  
+  .ab-card {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: min(14vw, 85px);
+    height: calc(min(14vw, 85px) * 1.5);
+  }
+  
+  /* A 그룹 - 왼쪽 열 (균등한 세로 간격) */
+  .ab-card.ab-1 { left: 25%; top: 25%; transform: translate(-50%, -50%); }
+  .ab-card.ab-2 { left: 25%; top: 50%; transform: translate(-50%, -50%); }
+  .ab-card.ab-3 { left: 25%; top: 75%; transform: translate(-50%, -50%); }
+  
+  /* 중앙 조언 카드 */
+  .ab-card.ab-4 { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  
+  /* B 그룹 - 오른쪽 열 (A 그룹과 대칭인 균등한 세로 간격) */
+  .ab-card.ab-5 { left: 75%; top: 25%; transform: translate(-50%, -50%); }
+  .ab-card.ab-6 { left: 75%; top: 50%; transform: translate(-50%, -50%); }
+  .ab-card.ab-7 { left: 75%; top: 75%; transform: translate(-50%, -50%); }
+  
+  .ab-label {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: #d4af37;
+    z-index: 10;
+  }
+  
+  .ab-grid::before,
+  .ab-grid::after {
+    content: '';
+    position: absolute;
+    width: 20%;
+    height: 70%;
+    border: 1px dashed rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    background: rgba(212, 175, 55, 0.05);
+    pointer-events: none;
+    top: 15%;
+  }
+  
+  /* A 그룹 영역 (균등한 좌우 배치) */
+  .ab-grid::before {
+    left: 15%;
+  }
+  
+  /* B 그룹 영역 (A 그룹과 대칭) */
+  .ab-grid::after {
+    right: 15%;
+  }
+
+  /* Relationship Spread Styles - Centered Button Width Layout with Uniform Column Spacing */
+  .relationship-grid {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    margin: 0 auto;
+  }
+  
+  .rel-card {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 50px;
+    height: 75px;
+  }
+  
+  /* 상단 행: 9 - 11 - 10 (균등한 3열 배치, 최상단으로 이동) */
+  .rel-card.rel-9 { left: 20%; top: 2%; transform: translate(-50%, -50%); }
+  .rel-card.rel-11 { left: 50%; top: 2%; transform: translate(-50%, -50%); }
+  .rel-card.rel-10 { left: 80%; top: 2%; transform: translate(-50%, -50%); }
+  
+  /* 중상단 행: 7 | 8 (균등한 2열 배치) */
+  .rel-card.rel-7 { left: 35%; top: 28%; transform: translate(-50%, -50%); }
+  .rel-card.rel-8 { left: 65%; top: 28%; transform: translate(-50%, -50%); }
+  
+  /* 중앙: 5 (4% 위로 이동) */
+  .rel-card.rel-5 { left: 50%; top: 41%; transform: translate(-50%, -50%); }
+  
+  /* 중하단: 6 (오른쪽, 4% 위로 이동) */
+  .rel-card.rel-6 { left: 65%; top: 58%; transform: translate(-50%, -50%); }
+  
+  /* 하단 중앙: 4 (4% 위로 이동) */
+  .rel-card.rel-4 { left: 50%; top: 71%; transform: translate(-50%, -50%); }
+  
+  /* 최하단 행: 1 - 3 - 2 (상단 행과 동일한 균등 배치, 최하단으로 이동) */
+  .rel-card.rel-1 { left: 20%; top: 99%; transform: translate(-50%, -50%); }
+  .rel-card.rel-3 { left: 50%; top: 99%; transform: translate(-50%, -50%); }
+  .rel-card.rel-2 { left: 80%; top: 99%; transform: translate(-50%, -50%); }
+  
+  .relationship-grid::before,
+  .relationship-grid::after {
+    content: '';
+    position: absolute;
+    background: rgba(212, 175, 55, 0.2);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  /* 중앙 세로선 (5에서 6으로, 그리고 4로, 카드 이동에 맞게 조정) */
+  .relationship-grid::before {
+    left: 50%;
+    top: 33%;
+    width: 1px;
+    height: 47%;
+    transform: translateX(-50%);
+  }
+  
+  /* 상단 가로선 (9-11-10, 최상단 위치에 맞게 조정) */
+  .relationship-grid::after {
+    left: 20%;
+    top: 2%;
+    width: 60%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  /* Shared Card Styles */
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    background: white;
+  }
+  
+  .card-inner.revealed {
+    border-color: #d4af37;
+    box-shadow: 0 8px 32px rgba(212, 175, 55, 0.4);
+  }
+  
+  .card-inner.empty {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px dashed rgba(212, 175, 55, 0.5);
+  }
+  
+  .card-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    font-size: 10px;
+    color: #d4af37;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 80px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .rel-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    font-size: 9px;
+    color: #d4af37;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 70px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  
+  .pos-2 .card-label {
+    transform: translateX(-50%) rotate(-90deg);
+    transform-origin: center top;
+  }
+
+  /* Three Card Spread Styles */
+  .three-card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .three-card {
+    position: relative;
+    width: 90px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  
+  .three-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .three-card-inner {
+    width: 100%;
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .three-card-inner.revealed {
+    border-color: #d4af37;
+    box-shadow: 0 12px 48px rgba(212, 175, 55, 0.4);
+  }
+  
+  .three-card-inner.empty {
+    border-style: dashed;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Four Card Spread Styles */
+  .four-card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .four-card {
+    position: relative;
+    flex: 1;
+    max-width: 80px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  
+  .four-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .four-card-inner {
+    width: 100%;
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .four-card-inner.revealed {
+    border-color: #d4af37;
+    box-shadow: 0 12px 48px rgba(212, 175, 55, 0.4);
+  }
+  
+  .four-card-inner.empty {
+    border-style: dashed;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Five Card Reverse V-Shape Spread Styles - Balanced Spacing */
+  .five-card-v-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 28px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 48px 20px 20px;
+    height: 280px;
+  }
+  
+  .five-card-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .five-card-row.row-1 {
+    gap: 100px; /* 상단 - 역V자의 넓은 부분 */
+  }
+  
+  .five-card-row.row-2 {
+    gap: 50px; /* 중간 - 균등하게 축소 */
+  }
+  
+  .five-card-row.row-3 {
+    gap: 0; /* 하단 1장 - V자의 꼭짓점 */
+  }
+  
+  .five-card {
+    position: relative;
+    width: 80px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  
+  .five-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .five-card-inner {
+    width: 100%;
+    aspect-ratio: 2/3;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .five-card-inner.revealed {
+    border-color: #d4af37;
+    box-shadow: 0 12px 48px rgba(212, 175, 55, 0.4);
+  }
+  
+  .five-card-inner.empty {
+    border-style: dashed;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+html {
+  font-size: var(--font-size);
+  scroll-behavior: smooth;
+}

@@ -1,0 +1,7 @@
+Unnecessary files removed:
+- BaseComponentsDemo.tsx
+- CompositeDemo.tsx
+- TokenTest.tsx
+- Duplicate component files (Timer.tsx, Spreads.tsx, etc.)
+
+These files were replaced by screen-modules and cleaned up for better organization.

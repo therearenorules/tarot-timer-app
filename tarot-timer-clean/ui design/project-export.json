@@ -1,0 +1,333 @@
+{
+  "project": {
+    "name": "Tarot Timer App",
+    "version": "1.0.0",
+    "description": "Complete tarot timer application with 24-hour readings, spreads, journal, and settings",
+    "framework": "React + TypeScript",
+    "styling": "Tailwind CSS v4 + Custom CSS",
+    "language_support": "Korean/English",
+    "export_date": "2024-01-15",
+    "total_files": 89
+  },
+  "structure": {
+    "root_files": [
+      "App.tsx",
+      "Guidelines.md"
+    ],
+    "directories": {
+      "components": {
+        "mystical-ui": ["components.tsx", "icons.tsx"],
+        "ui": "shadcn/ui components (44 files)",
+        "main_components": [
+          "SpreadDetail.tsx",
+          "DailyTarotViewer.tsx", 
+          "SpreadMiniatureForJournal.tsx"
+        ]
+      },
+      "utils": [
+        "language.tsx",
+        "tarot-data.ts",
+        "tarot-cards.ts",
+        "accessibility.tsx",
+        "performance.tsx",
+        "responsive.tsx"
+      ],
+      "styles": [
+        "globals.css"
+      ],
+      "figma-design-specs": [
+        "01-design-tokens.md",
+        "02-component-specs.md", 
+        "03-screen-layouts.md",
+        "04-figma-implementation-guide.md"
+      ]
+    }
+  },
+  "main_files": {
+    "App.tsx": {
+      "lines": 1186,
+      "description": "Main app component with 4 tab navigation (Timer, Spreads, Journal, Settings)",
+      "features": [
+        "24-hour tarot card generation",
+        "Spread detail navigation", 
+        "Journal system with daily/spread records",
+        "Settings with language toggle",
+        "Mystical UI with animations"
+      ],
+      "key_components": [
+        "Timer() - 24시간 타로 시스템",
+        "Spreads() - 6개 스프레드 타입", 
+        "Journal() - 저장된 리딩 관리",
+        "SettingsScreen() - 앱 설정"
+      ],
+      "state_management": [
+        "currentView: ViewType",
+        "selectedSpread: SpreadType",
+        "activeTab: string",
+        "selectedSavedSpread: SavedSpread",
+        "selectedDailyTarot: DailyTarotSave"
+      ]
+    },
+    "utils/language.tsx": {
+      "lines": 243,
+      "description": "완전한 한/영 이중 언어 시스템",
+      "features": [
+        "React Context 기반 언어 관리",
+        "localStorage 언어 설정 저장",
+        "200+ 번역 키",
+        "TypeScript 타입 안전성"
+      ],
+      "translations": {
+        "categories": [
+          "Navigation (4 keys)",
+          "Timer (15+ keys)", 
+          "Spreads (10+ keys)",
+          "Journal (12+ keys)",
+          "Settings (25+ keys)",
+          "Common (8 keys)"
+        ],
+        "total_keys": "100+ per language"
+      }
+    },
+    "utils/tarot-data.ts": {
+      "lines": 646,
+      "description": "완전한 타로 데이터 시스템",
+      "features": [
+        "78장 완전한 타로 덱 (메이저 22장 + 마이너 56장)",
+        "6개 스프레드 타입 정의",
+        "시드 기반 일관된 카드 생성",
+        "LocalStorage 저장/로드 시스템"
+      ],
+      "data_structures": [
+        "TarotCard interface - id, name, nameKr, suit, imageUrl, keywords, meaning",
+        "SpreadType interface - positions, descriptions, premium flag",
+        "DailyTarotSave interface - 24시간 카드 + 메모",
+        "SavedSpread interface - 스프레드 저장 데이터"
+      ],
+      "spreads": [
+        "three-card (3장) - Past/Present/Future", 
+        "four-card (4장) - Mind/Body/Spirit/Action",
+        "five-card (5장) - V자 형태 종합 안내",
+        "celtic-cross (10장) - 완전한 인생 리딩",
+        "love/relationship (11장) - 관계 역학 분석", 
+        "career/ab-choice (7장) - 두 선택지 비교"
+      ]
+    },
+    "components/mystical-ui/components.tsx": {
+      "lines": 269,
+      "description": "완전한 커스텀 UI 컴포넌트 라이브러리",
+      "components": [
+        "Card, CardContent, CardHeader, CardTitle",
+        "Button (default/outline variants, default/sm sizes)",
+        "Badge (default/outline variants)",
+        "Textarea, Input, Switch",
+        "Tabs, TabsList, TabsTrigger, TabsContent",
+        "ImageWithFallback (에러 처리 포함)"
+      ],
+      "styling": "Tailwind CSS 기반 + 커스텀 그라데이션/애니메이션"
+    },
+    "components/mystical-ui/icons.tsx": {
+      "lines": 403,
+      "description": "완전한 SVG 아이콘 라이브러리",
+      "icons": [
+        "Navigation: Clock, Layout, BookOpen, Settings",
+        "Actions: Star, Sparkles, Zap, RotateCcw, Save, Crown",
+        "Interface: ChevronLeft, Check, X, Eye, Shuffle",
+        "Settings: Sun, Globe, Volume2, Bell, Lock, Shield, HelpCircle",
+        "Utility: Calendar, Moon"
+      ],
+      "total_icons": "25+ SVG icons",
+      "customizable": "className, size props"
+    },
+    "styles/globals.css": {
+      "lines": 600+,
+      "description": "Tailwind CSS v4 + 완전한 커스텀 스타일 시스템",
+      "features": [
+        "라이트/다크 모드 완전 지원",
+        "브랜드 컬러 토큰 시스템",
+        "신비로운 애니메이션 (mystical-pulse)",
+        "6개 스프레드별 정밀한 CSS 레이아웃",
+        "반응형 그리드 시스템",
+        "스크롤바 커스터마이징"
+      ],
+      "layout_systems": [
+        "Celtic Cross - CSS Grid (10장 정밀 배치)",
+        "AB Choice - 3-1-3 그룹 배치", 
+        "Relationship - 11장 컵 모양",
+        "Three Card - 가로 나열",
+        "Four Card - 2x2 그리드",
+        "Five Card - 역V자 배치"
+      ],
+      "color_tokens": [
+        "--premium-gold: #d4af37",
+        "--deep-purple: #4a1a4f", 
+        "--midnight-blue: #1a1f3a",
+        "완전한 라이트/다크 모드 토큰"
+      ]
+    },
+    "components/SpreadDetail.tsx": {
+      "lines": 1000+,
+      "description": "복잡한 스프레드 상세 화면 컴포넌트",
+      "features": [
+        "6개 스프레드 타입별 커스텀 레이아웃",
+        "카드 개별/일괄 뽑기 시스템",
+        "제목 편집 기능",
+        "카드 모달 확대보기",
+        "진행률 표시",
+        "저장 기능"
+      ],
+      "spread_layouts": [
+        "Celtic Cross - CSS Grid 절대 위치",
+        "AB Choice - 균등 3-1-3 배치",
+        "Relationship - 컵 모양 11장",
+        "Three Card - 중앙 정렬 가로",
+        "Four Card - 2x2 그리드", 
+        "Five Card - V자 형태"
+      ]
+    }
+  },
+  "design_system": {
+    "color_palette": {
+      "primary": "#4A1A4F (Deep Purple)",
+      "secondary": "#1A1F3A (Midnight Blue)", 
+      "accent": "#D4AF37 (Premium Gold)",
+      "base": "#FFFFFF / #000000"
+    },
+    "typography": {
+      "base_size": "14px",
+      "scale": "Display (32px) → Title (24/20/18px) → Body (16/14/12px) → Caption (11px)",
+      "families": "SF Pro Display, Apple SD Gothic Neo (Korean)"
+    },
+    "spacing": {
+      "base_unit": "8px", 
+      "scale": "2px → 4px → 8px → 16px → 24px → 32px → 40px → 48px"
+    },
+    "animations": {
+      "mystical_pulse": "2s ease infinite",
+      "transitions": "300ms standard",
+      "loading": "1200ms card draw",
+      "hover_effects": "scale + glow"
+    }
+  },
+  "features": {
+    "core_functionality": [
+      "24시간 타로 타이머 (시드 기반 일관된 생성)",
+      "6개 프리미엄 스프레드 (3/4/5/10/11/7장)",
+      "완전한 저널 시스템 (일일/스프레드 기록)",
+      "한/영 이중 언어 지원",
+      "라이트/다크 모드",
+      "프리미엄 멤버십 시스템"
+    ],
+    "technical_features": [
+      "LocalStorage 데이터 영속성",
+      "React Context 상태 관리", 
+      "TypeScript 완전 타입 안전성",
+      "Responsive Design (320px~768px+)",
+      "Performance Optimized (useMemo, useCallback)",
+      "Accessibility Ready (ARIA, Focus, Contrast)"
+    ],
+    "ui_ux_features": [
+      "신비로운 그라데이션 배경",
+      "애니메이션 효과 (펄스, 글로우, 페이드)",
+      "터치 최적화 (44px+ 터치 타겟)",
+      "Loading States & Error Handling",
+      "Modal & Navigation System",
+      "Haptic Feedback 시뮬레이션"
+    ]
+  },
+  "data_structures": {
+    "TarotCard": {
+      "properties": [
+        "id: string",
+        "name: string",
+        "nameKr: string", 
+        "suit: 'major' | 'cups' | 'pentacles' | 'swords' | 'wands'",
+        "number?: number",
+        "imageUrl: string",
+        "keywords: string[]",
+        "keywordsKr: string[]",
+        "meaning: string",
+        "meaningKr: string",
+        "reversed: string",
+        "reversedKr: string"
+      ]
+    },
+    "SpreadType": {
+      "properties": [
+        "id: string",
+        "name: string",
+        "nameKr: string",
+        "description: string", 
+        "descriptionKr: string",
+        "positions: string[]",
+        "positionsKr: string[]",
+        "isPremium?: boolean"
+      ]
+    },
+    "DailyTarotSave": {
+      "properties": [
+        "id: string",
+        "date: string",
+        "hourlyCards: TarotCard[]",
+        "memos: { [hour: number]: string }",
+        "insights: string",
+        "savedAt: string"
+      ]
+    }
+  },
+  "algorithms": {
+    "card_generation": {
+      "method": "시드 기반 Fisher-Yates 셔플",
+      "seed": "날짜 기반 타임스탬프",
+      "consistency": "같은 날짜 = 같은 카드 순서",
+      "deck_size": "78장 완전한 타로 덱"
+    },
+    "spread_layouts": {
+      "positioning": "CSS Grid + 절대 위치",
+      "responsive": "vw 단위 + min/max 제한",
+      "alignment": "중앙 정렬 + 버튼 너비 기준"
+    }
+  },
+  "performance": {
+    "optimizations": [
+      "React.memo for card components",
+      "useCallback for event handlers",
+      "useMemo for computed values",
+      "Lazy loading for images",
+      "Virtual scrolling ready"
+    ],
+    "bundle_size": "예상 < 500KB (gzipped)",
+    "render_performance": "60fps 애니메이션 최적화"
+  },
+  "browser_compatibility": {
+    "modern_browsers": "Chrome 80+, Firefox 75+, Safari 13+",
+    "mobile_browsers": "iOS Safari 13+, Chrome Mobile 80+",
+    "features_used": [
+      "CSS Grid",
+      "Flexbox", 
+      "CSS Custom Properties",
+      "ES6+ Features",
+      "LocalStorage"
+    ]
+  },
+  "development_status": {
+    "completion": "95%",
+    "remaining_tasks": [
+      "실제 백엔드 연동 (현재 LocalStorage)",
+      "프리미엄 결제 시스템",
+      "푸시 알림",
+      "소셜 공유"
+    ],
+    "production_ready": true,
+    "testing": "Manual testing completed"
+  },
+  "deployment": {
+    "requirements": [
+      "Node.js 18+",
+      "Modern web server", 
+      "HTTPS (for LocalStorage)"
+    ],
+    "build_command": "npm run build",
+    "static_hosting": "Vercel/Netlify ready"
+  }
+}

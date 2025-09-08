@@ -1,10 +1,15 @@
 /**
- * Design Tokens - HTML CSS에서 추출한 완전한 디자인 시스템
- * React Native StyleSheet에서 사용할 수 있는 형태로 변환
- * HTML 디자인 기준: figma UI/full-app-demo.html
+ * 🔮 Mystical Design Tokens - Complete Sacred Design System
+ * Enhanced mystical design system for the tarot timer application
+ * Unified system combining all mystical design elements
  */
 
-// ===== TYPOGRAPHY SCALE =====
+import { MysticalTheme } from '../design-system/themes/mystical-theme';
+
+// Re-export all theme elements for backward compatibility
+export const { colors: mysticalColors, typography: mysticalTypography, spacing: mysticalSpacing } = MysticalTheme;
+
+// ===== ENHANCED TYPOGRAPHY SCALE =====
 export const typography = {
   size: {
     displayLarge: 32,
@@ -106,57 +111,65 @@ export const typography = {
   }
 } as const;
 
-// ===== COLOR PALETTE =====
+// ===== ENHANCED MYSTICAL COLOR PALETTE =====
 export const colors = {
-  // 메인 컬러 (타로 테마) - HTML에서 추출
+  // 🌌 Primary Cosmic Colors (Enhanced)
   primary: {
-    main: '#d4af37',        // HTML 기본 금색 (212, 175, 55)
-    light: '#f4d03f',       // HTML 그라디언트 시작색
-    dark: '#b8860b',        // 더 진한 금색
-    mystical: '#fbbf24',    // yellow-400 (HTML에서 많이 사용)
+    main: mysticalColors.sacred.premiumGold,        // '#D4AF37' - Premium mystical gold
+    light: mysticalColors.sacred.shimmerGold,       // '#F4D03F' - Shimmering gold light
+    dark: mysticalColors.sacred.cosmicGold,         // '#FFD700' - Deep cosmic gold
+    mystical: mysticalColors.sacred.aurum,          // '#FF6B35' - Sacred aurum glow
   },
   
-  // 배경 컬러 (그라디언트) - HTML 가이드 기준
+  // 🌌 Enhanced Background Colors (Cosmic Depths)
   background: {
-    primary: '#1a1f3a',     // midnight-blue (HTML 기준)
-    secondary: '#4a1a4f',   // deep-purple (HTML 기준)  
-    tertiary: '#1a1f3a',    // midnight-blue (HTML 기준)
+    primary: mysticalColors.cosmic.deepSpace,       // '#0a051a' - Deepest cosmic space
+    secondary: mysticalColors.cosmic.voidPurple,    // '#1a0933' - Void purple depths
+    tertiary: mysticalColors.cosmic.mysticalDepth,  // '#2a1f3d' - Mystical depth layer
+    quaternary: mysticalColors.cosmic.etherealMid,  // '#4a148c' - Ethereal middle
     gradient: {
-      from: '#1a1f3a',      // midnight-blue
-      via: '#4a1a4f',       // deep-purple
-      to: '#1a1f3a',        // midnight-blue
+      cosmic: mysticalColors.gradients.cosmicBackground,    // Full cosmic gradient
+      mystical: mysticalColors.gradients.mysticalPurple,   // Mystical purple gradient
+      sacred: mysticalColors.gradients.sacredGold,         // Sacred gold gradient
+      aurum: mysticalColors.gradients.auramGlow,           // Aurum glow gradient
     },
   },
   
-  // 카드 및 UI 배경
+  // 🔮 Enhanced Card & UI Components
   card: {
-    background: 'rgba(255, 255, 255, 0.05)',  // bg-white/5
-    border: 'rgba(255, 255, 255, 0.1)',       // border-white/10
-    backdropBlur: 'rgba(255, 255, 255, 0.1)', // backdrop-blur
+    background: mysticalColors.components.card.background,  // 'rgba(26, 9, 51, 0.95)'
+    border: mysticalColors.components.card.border,          // 'rgba(212, 175, 55, 0.3)'
+    shadow: mysticalColors.components.card.shadow,          // 'rgba(212, 175, 55, 0.2)'
+    backdropBlur: mysticalColors.components.glass.background, // Glass morphism
   },
   
-  // 텍스트 컬러
+  // ✨ Enhanced Text Colors (Sacred Typography)
   text: {
-    primary: '#ffffff',              // text-white
-    secondary: 'rgba(255, 255, 255, 0.7)',  // text-white/70
-    tertiary: 'rgba(255, 255, 255, 0.6)',   // text-white/60
-    quaternary: 'rgba(255, 255, 255, 0.5)', // text-white/50
-    accent: '#d4af37',               // text-yellow-400
+    primary: mysticalColors.text.primary,              // '#FFFFFF' - Pure white
+    secondary: mysticalColors.text.secondary,          // '#E0E0E0' - Light gray
+    muted: mysticalColors.text.muted,                  // '#B0B0B0' - Muted gray
+    accent: mysticalColors.text.accent,                // '#FF6B35' - Aurum accent
+    gold: mysticalColors.text.gold,                    // '#D4AF37' - Sacred gold
+    mystical: mysticalColors.text.mystical,            // '#9c27b0' - Mystical purple
   },
   
-  // 신비로운 효과 컬러
+  // 🌟 Enhanced Mystical Effects
   mystical: {
-    glow: 'rgba(212, 175, 55, 0.3)',     // mystical-glow base
-    glowIntense: 'rgba(212, 175, 55, 0.5)', // mystical-glow intense
-    shimmer: 'rgba(212, 175, 55, 0.8)',  // shimmer effect
+    glow: mysticalColors.glow.gold,                    // Gold glow effect
+    glowIntense: mysticalColors.glow.orange,           // Intense orange glow
+    shimmer: mysticalColors.sacred.starlight,          // Starlight shimmer
+    cosmicGlow: mysticalColors.glow.cosmic,            // Cosmic blue glow
+    purpleGlow: mysticalColors.glow.purple,            // Purple mystical glow
   },
   
-  // 상태 컬러
+  // 🎯 Status Colors (Enhanced)
   status: {
     success: '#10b981',     // green-500
-    warning: '#f59e0b',     // amber-500
+    warning: '#f59e0b',     // amber-500  
     error: '#ef4444',       // red-500
     info: '#3b82f6',        // blue-500
+    mysticalSuccess: mysticalColors.sacred.lightGold,    // Mystical success
+    mysticalWarning: mysticalColors.sacred.aurum,        // Mystical warning
   },
 } as const;
 
@@ -509,6 +522,70 @@ export const utils = {
   },
 };
 
+// ===== ENHANCED TOKENS 통합 객체 (App.tsx에서 사용) =====
+export const tokens = {
+  colors: {
+    // 🎨 App.tsx에서 필요한 색상 속성들 (Enhanced)
+    background: colors.background.primary,              // Deep space background
+    foreground: colors.text.primary,                   // Pure white text
+    card: colors.card.background,                       // Mystical card background
+    cardForeground: colors.text.primary,               // Card text color
+    primary: colors.primary.main,                       // Premium gold primary
+    primaryForeground: colors.background.primary,      // Primary text on gold
+    secondary: colors.card.background,                  // Secondary background
+    secondaryForeground: colors.text.primary,          // Secondary text
+    muted: colors.card.background,                      // Muted background
+    mutedForeground: colors.text.muted,                // Muted text
+    accent: colors.primary.mystical,                    // Aurum accent color
+    accentForeground: colors.text.primary,             // Text on accent
+    border: colors.card.border,                         // Golden borders
+    input: colors.card.backdropBlur,                    // Glass input background
+    ring: colors.primary.main,                          // Focus ring color
+    
+    // 🌟 Enhanced mystical color palette
+    ...colors,
+    
+    // 🔮 Premium mystical colors (backward compatibility + new)
+    premiumGold: mysticalColors.sacred.premiumGold,        // '#D4AF37'
+    mysticalPurple: mysticalColors.cosmic.luminousPurple,  // '#8e24aa'
+    midnightBlue: mysticalColors.cosmic.deepSpace,         // '#0a051a'
+    deepPurple: mysticalColors.cosmic.voidPurple,          // '#1a0933'
+    cosmicGlow: mysticalColors.glow.cosmic,                // '#6366F1'
+    aurumGlow: mysticalColors.sacred.aurum,                // '#FF6B35'
+    starlight: mysticalColors.sacred.starlight,            // '#FFF8DC'
+    ethereal: mysticalColors.cosmic.etherealMid,           // '#4a148c'
+    celestial: mysticalColors.cosmic.celestialBright,      // '#6a1b99'
+    transcendent: mysticalColors.cosmic.transcendent,      // '#3f006a'
+  },
+  
+  // 🏗️ Enhanced system tokens
+  spacing: mysticalSpacing.spacing,                    // Sacred geometry spacing
+  borderRadius: mysticalSpacing.borderRadius,         // Sacred border radius
+  fontSize: mysticalTypography.fontSize,              // Mystical typography
+  fontWeight: mysticalTypography.fontWeight,          // Font weights
+  lineHeight: mysticalTypography.lineHeight,          // Line heights
+  letterSpacing: mysticalTypography.letterSpacing,    // Letter spacing
+  
+  // 🌟 Enhanced shadow system
+  shadows: MysticalTheme.shadows,                      // Mystical shadows
+  
+  // 📐 Layout system
+  layout,
+  animation,
+  
+  // 📱 Screen dimensions
+  screen: {
+    width: 375,  // Default width (updated by Dimensions)
+    height: 667, // Default height (updated by Dimensions)
+  },
+  
+  // 🎭 Component presets from mystical theme
+  components: MysticalTheme.components,
+  
+  // ⚡ Animation configurations
+  animations: MysticalTheme.animations,
+};
+
 // ===== 기본 내보내기 =====
 export default {
   typography,
@@ -521,4 +598,5 @@ export default {
   components,
   presets,
   utils,
+  tokens,
 };
